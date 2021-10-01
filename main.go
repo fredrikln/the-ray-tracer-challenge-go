@@ -6,12 +6,30 @@ import (
 	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
 )
 
+type Projectile struct {
+	Position g.Vec
+	Velocity g.Vec
+}
+
+type Environment struct {
+	Gravity g.Vec
+	Wind    g.Vec
+}
+
+func tick(p Projectile, e Environment) Projectile {
+	return Projectile{
+		p.Position.Add(p.Velocity),
+		p.Velocity.Add(e.Gravity).Add(e.Wind),
+	}
+}
+
 func main() {
-	vector := g.NewVec(1, 2, 3)
-	point := g.NewVec(2, 3, 4)
+	projectile := Projectile{Position: g.NewVec(0, 1, 0), Velocity: g.NewVec(1, 1, 0).Norm()}
+	environment := Environment{g.NewVec(0, -0.1, 0), g.NewVec(-0.01, 0, 0)}
 
-	newVector := vector.Add(vector)
-	newPoint := vector.Add(point)
+	for projectile.Position.Y > 0 {
+		projectile = tick(projectile, environment)
 
-	fmt.Println("Hello world", newVector, newPoint)
+		fmt.Printf("%+v\n", projectile)
+	}
 }

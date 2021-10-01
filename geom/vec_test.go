@@ -167,3 +167,44 @@ func TestNorm(t *testing.T) {
 		}
 	})
 }
+
+func TestDot(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Vec
+		b    Vec
+		want float64
+	}{
+		{"Test 1", Vec{1.0, 2.0, 3.0}, Vec{2.0, 3.0, 4.0}, 20},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			if got := tt.a.Dot(tt.b); got != tt.want {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCross(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Vec
+		b    Vec
+		want Vec
+	}{
+		{"Test 1", Vec{1.0, 2.0, 3.0}, Vec{2.0, 3.0, 4.0}, Vec{-1, 2, -1}},
+		{"Test 2", Vec{2.0, 3.0, 4.0}, Vec{1.0, 2.0, 3.0}, Vec{1, -2, 1}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			if got := tt.a.Cross(tt.b); got != tt.want {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

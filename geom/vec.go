@@ -32,9 +32,9 @@ func (a Vec) Sub(b Vec) Vec {
 
 func (a Vec) Neg() Vec {
 	return Vec{
-		0 - a.X,
-		0 - a.Y,
-		0 - a.Z,
+		-a.X,
+		-a.Y,
+		-a.Z,
 	}
 }
 
@@ -65,5 +65,17 @@ func (a Vec) Norm() Vec {
 		a.X / mag,
 		a.Y / mag,
 		a.Z / mag,
+	}
+}
+
+func (a Vec) Dot(b Vec) float64 {
+	return a.X*b.X + a.Y*b.Y + a.Z*b.Z
+}
+
+func (a Vec) Cross(b Vec) Vec {
+	return Vec{
+		a.Y*b.Z - a.Z*b.Y,
+		a.Z*b.X - a.X*b.Z,
+		a.X*b.Y - a.Y*b.X,
 	}
 }
