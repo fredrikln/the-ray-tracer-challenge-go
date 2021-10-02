@@ -59,7 +59,7 @@ func (a *Matrix) Mul(b *Matrix) *Matrix {
 	return m
 }
 
-func (a *Matrix) MulVec(b *Vec) *Vec {
+func (a *Matrix) MulVec(b Vec) Vec {
 	return NewVec(
 		a.data[0][0]*b.X+a.data[0][1]*b.Y+a.data[0][2]*b.Z+a.data[0][3],
 		a.data[1][0]*b.X+a.data[1][1]*b.Y+a.data[1][2]*b.Z+a.data[1][3],

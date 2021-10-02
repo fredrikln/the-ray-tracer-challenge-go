@@ -18,9 +18,9 @@ func TestNewVec(t *testing.T) {
 func TestAdd(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
-		b    *Vec
-		want *Vec
+		a    Vec
+		b    Vec
+		want Vec
 	}{
 		{"Test", NewVec(3.0, -2.0, 5.0), NewVec(-2.0, 3.0, 1.0), NewVec(1.0, 1.0, 6.0)},
 	}
@@ -38,9 +38,9 @@ func TestAdd(t *testing.T) {
 func TestSub(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
-		b    *Vec
-		want *Vec
+		a    Vec
+		b    Vec
+		want Vec
 	}{
 		{"Test 1", NewVec(3.0, 2.0, 1.0), NewVec(5.0, 6.0, 7.0), NewVec(-2.0, -4.0, -6.0)},
 		{"Test 2", NewVec(0.0, 0.0, 0.0), NewVec(1.0, -2.0, 3.0), NewVec(-1.0, 2.0, -3.0)},
@@ -59,8 +59,8 @@ func TestSub(t *testing.T) {
 func TestNeg(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
-		want *Vec
+		a    Vec
+		want Vec
 	}{
 		{"Test", NewVec(1.0, -2.0, 3.0), NewVec(-1.0, 2.0, -3.0)},
 	}
@@ -78,9 +78,9 @@ func TestNeg(t *testing.T) {
 func TestMul(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
+		a    Vec
 		b    float64
-		want *Vec
+		want Vec
 	}{
 		{"Test 1", NewVec(1.0, -2.0, 3.0), 3.5, NewVec(3.5, -7.0, 10.5)},
 		{"Test 2", NewVec(1.0, -2.0, 3.0), 0.5, NewVec(0.5, -1.0, 1.5)},
@@ -99,9 +99,9 @@ func TestMul(t *testing.T) {
 func TestMulMat(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
+		a    Vec
 		b    *Matrix
-		want *Vec
+		want Vec
 	}{
 		{"Test 1",
 			NewVec(1, 2, 3),
@@ -132,9 +132,9 @@ func TestMulMat(t *testing.T) {
 func TestDiv(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
+		a    Vec
 		b    float64
-		want *Vec
+		want Vec
 	}{
 		{"Test", NewVec(1.0, -2.0, 3.0), 2.0, NewVec(0.5, -1.0, 1.5)},
 	}
@@ -152,7 +152,7 @@ func TestDiv(t *testing.T) {
 func TestMag(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
+		a    Vec
 		want float64
 	}{
 		{"Test 1", NewVec(1.0, 0.0, 0.0), 1.0},
@@ -175,8 +175,8 @@ func TestMag(t *testing.T) {
 func TestNorm(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
-		want *Vec
+		a    Vec
+		want Vec
 	}{
 		{"Test 1", NewVec(1.0, 0.0, 0.0), NewVec(1.0, 0.0, 0.0)},
 		{"Test 2", NewVec(1.0, 2.0, 3.0), NewVec(1/math.Sqrt(14.0), 2/math.Sqrt(14.0), 3/math.Sqrt(14.0))},
@@ -204,8 +204,8 @@ func TestNorm(t *testing.T) {
 func TestDot(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
-		b    *Vec
+		a    Vec
+		b    Vec
 		want float64
 	}{
 		{"Test 1", NewVec(1.0, 2.0, 3.0), NewVec(2.0, 3.0, 4.0), 20},
@@ -224,9 +224,9 @@ func TestDot(t *testing.T) {
 func TestCross(t *testing.T) {
 	tests := []struct {
 		name string
-		a    *Vec
-		b    *Vec
-		want *Vec
+		a    Vec
+		b    Vec
+		want Vec
 	}{
 		{"Test 1", NewVec(1.0, 2.0, 3.0), NewVec(2.0, 3.0, 4.0), NewVec(-1, 2, -1)},
 		{"Test 2", NewVec(2.0, 3.0, 4.0), NewVec(1.0, 2.0, 3.0), NewVec(1, -2, 1)},

@@ -129,8 +129,8 @@ func TestMatrixMulVec(t *testing.T) {
 	tests := []struct {
 		name string
 		a    *Matrix
-		b    *Vec
-		want *Vec
+		b    Vec
+		want Vec
 	}{
 		{
 			"Test 1",
