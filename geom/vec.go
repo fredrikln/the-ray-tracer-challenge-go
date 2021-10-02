@@ -1,8 +1,10 @@
 package geom
 
-import "math"
+import (
+	"math"
 
-const vecThreshold = 1e-4
+	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
+)
 
 type Vec struct {
 	X float64
@@ -17,13 +19,13 @@ func NewVec(x, y, z float64) Vec {
 }
 
 func (a Vec) Eq(b Vec) bool {
-	if math.Abs(a.X-b.X) > vecThreshold {
+	if math.Abs(a.X-b.X) > c.EPSILON {
 		return false
 	}
-	if math.Abs(a.Y-b.Y) > vecThreshold {
+	if math.Abs(a.Y-b.Y) > c.EPSILON {
 		return false
 	}
-	if math.Abs(a.Z-b.Z) > vecThreshold {
+	if math.Abs(a.Z-b.Z) > c.EPSILON {
 		return false
 	}
 

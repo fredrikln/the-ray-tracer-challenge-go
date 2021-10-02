@@ -3,9 +3,9 @@ package render
 import (
 	"image/color"
 	"math"
-)
 
-const colorThreshold = 1e-4
+	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
+)
 
 type Color struct {
 	R float64
@@ -20,13 +20,13 @@ func NewColor(r, g, b float64) Color {
 }
 
 func (a Color) Eq(b Color) bool {
-	if math.Abs(a.R-b.R) > colorThreshold {
+	if math.Abs(a.R-b.R) > c.EPSILON {
 		return false
 	}
-	if math.Abs(a.G-b.G) > colorThreshold {
+	if math.Abs(a.G-b.G) > c.EPSILON {
 		return false
 	}
-	if math.Abs(a.B-b.B) > colorThreshold {
+	if math.Abs(a.B-b.B) > c.EPSILON {
 		return false
 	}
 

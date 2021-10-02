@@ -3,9 +3,9 @@ package geom
 import (
 	"errors"
 	"math"
-)
 
-const matThreshold = 1e-4
+	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
+)
 
 type Matrix struct {
 	data [4][4]float64
@@ -34,7 +34,7 @@ func NewIdentityMatrix() Matrix {
 func (a Matrix) Eq(b Matrix) bool {
 	for i := range a.data {
 		for j := range b.data {
-			if math.Abs(a.data[i][j]-b.data[i][j]) > matThreshold {
+			if math.Abs(a.data[i][j]-b.data[i][j]) > c.EPSILON {
 				return false
 			}
 		}

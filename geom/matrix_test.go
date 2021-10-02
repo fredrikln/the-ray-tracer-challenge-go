@@ -1,6 +1,8 @@
 package geom
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMatrix4(t *testing.T) {
 	t.Run("Test", func(t *testing.T) {
