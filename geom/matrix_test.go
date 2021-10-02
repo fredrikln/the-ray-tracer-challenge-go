@@ -1,0 +1,448 @@
+package geom
+
+import "testing"
+
+func TestMatrix4(t *testing.T) {
+	t.Run("Test", func(t *testing.T) {
+		m := NewMatrix(
+			1.0, 2.0, 3.0, 4.0,
+			5.5, 6.5, 7.5, 8.5,
+			9.0, 10.0, 11.0, 12.0,
+			13.5, 14.5, 15.5, 16.5,
+		)
+
+		if m.data[0][0] != 1.0 || m.data[0][3] != 4.0 || m.data[1][0] != 5.5 || m.data[1][2] != 7.5 || m.data[2][2] != 11.0 || m.data[3][0] != 13.5 || m.data[3][2] != 15.5 {
+			t.Error("Invalid matrix content")
+		}
+	})
+
+}
+
+func TestEq(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Matrix
+		b    Matrix
+		want bool
+	}{
+		{
+			"Test 1",
+			NewMatrix(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 8, 7, 6,
+				5, 4, 3, 2,
+			),
+			NewMatrix(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 8, 7, 6,
+				5, 4, 3, 2,
+			),
+			true,
+		},
+		{
+			"Test 2",
+			NewMatrix(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 8, 7, 6,
+				5, 4, 3, 2,
+			),
+			NewMatrix(
+				2, 3, 4, 5,
+				6, 7, 8, 9,
+				8, 7, 6, 5,
+				4, 3, 2, 1,
+			),
+			false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.Eq(tt.b); got != tt.want {
+				t.Errorf("Got %t, want %t", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMatrixMul(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Matrix
+		b    Matrix
+		want Matrix
+	}{
+		{
+			"Test 1",
+			NewMatrix(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 8, 7, 6,
+				5, 4, 3, 2,
+			),
+			NewMatrix(
+				-2, 1, 2, 3,
+				3, 2, 1, -1,
+				4, 3, 6, 5,
+				1, 2, 7, 8,
+			),
+			NewMatrix(
+				20, 22, 50, 48,
+				44, 54, 114, 108,
+				40, 58, 110, 102,
+				16, 26, 46, 42,
+			),
+		},
+		{
+			"Test 2",
+			NewMatrix(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 8, 7, 6,
+				5, 4, 3, 2,
+			),
+			NewIdentityMatrix(),
+			NewMatrix(
+				1, 2, 3, 4,
+				5, 6, 7, 8,
+				9, 8, 7, 6,
+				5, 4, 3, 2,
+			),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.Mul(tt.b); got != tt.want {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMatrixMulVec(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Matrix
+		b    Vec
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewMatrix(
+				1, 2, 3, 4,
+				2, 4, 4, 2,
+				8, 6, 4, 1,
+				0, 0, 0, 1,
+			),
+			NewVec(1, 2, 3),
+			NewVec(18, 24, 33),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulVec(tt.b); got != tt.want {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTranspose(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Matrix
+		want Matrix
+	}{
+		{
+			"Test 1",
+			NewMatrix(
+				0, 9, 3, 0,
+				9, 8, 0, 8,
+				1, 8, 5, 3,
+				0, 0, 5, 8,
+			),
+			NewMatrix(
+				0, 9, 1, 0,
+				9, 8, 8, 0,
+				3, 0, 5, 5,
+				0, 8, 3, 8,
+			),
+		},
+		{
+			"Test 2",
+			NewIdentityMatrix(),
+			NewIdentityMatrix(),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.Transpose(); got != tt.want {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDeterminant(t *testing.T) {
+	tests := []struct {
+		name string
+		a    [2][2]float64
+		want float64
+	}{
+		{
+			"Test 1",
+			[2][2]float64{
+				{1, 5},
+				{-3, 2},
+			},
+			17,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := determinant2(tt.a); got != tt.want {
+				t.Errorf("Got %f, want %f", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSubmatrix3(t *testing.T) {
+	tests := []struct {
+		name string
+		a    [3][3]float64
+		want [2][2]float64
+	}{
+		{
+			"Test 1",
+			[3][3]float64{
+				{1, 5, 0},
+				{-3, 2, 7},
+				{0, 6, -3},
+			},
+			[2][2]float64{
+				{-3, 2},
+				{0, 6},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := submatrix3(tt.a, 0, 2); got != tt.want {
+				t.Errorf("Got %f, want %f", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSubmatrix4(t *testing.T) {
+	tests := []struct {
+		name string
+		a    [4][4]float64
+		want [3][3]float64
+	}{
+		{
+			"Test 1",
+			[4][4]float64{
+				{-6, 1, 1, 6},
+				{-8, 5, 8, 6},
+				{-1, 0, 8, 2},
+				{-7, 1, -1, 1},
+			},
+			[3][3]float64{
+				{-6, 1, 6},
+				{-8, 8, 6},
+				{-7, -1, 1},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := submatrix4(tt.a, 2, 1); got != tt.want {
+				t.Errorf("Got %f, want %f", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMinor3(t *testing.T) {
+	tests := []struct {
+		name string
+		a    [3][3]float64
+		row  int
+		col  int
+		want float64
+	}{
+		{
+			"Test 1",
+			[3][3]float64{
+				{3, 5, 0},
+				{2, -1, -7},
+				{6, -1, 5},
+			},
+			1,
+			0,
+			25,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := minor3(tt.a, tt.row, tt.col); got != tt.want {
+				t.Errorf("Got %f, want %f", got, tt.want)
+			}
+			if got := determinant2(submatrix3(tt.a, tt.row, tt.col)); got != tt.want {
+				t.Errorf("Got %f, want %f", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCofactor3(t *testing.T) {
+	tests := []struct {
+		name     string
+		a        [3][3]float64
+		row      int
+		col      int
+		minor    float64
+		cofactor float64
+	}{
+		{
+			"Test 1",
+			[3][3]float64{
+				{3, 5, 0},
+				{2, -1, -7},
+				{6, -1, 5},
+			},
+			0,
+			0,
+			-12,
+			-12,
+		},
+		{
+			"Test 2",
+			[3][3]float64{
+				{3, 5, 0},
+				{2, -1, -7},
+				{6, -1, 5},
+			},
+			1,
+			0,
+			25,
+			-25,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := cofactor3(tt.a, tt.row, tt.col); got != tt.cofactor {
+				t.Errorf("Got %f, want %f", got, tt.cofactor)
+			}
+			if got := minor3(tt.a, tt.row, tt.col); got != tt.minor {
+				t.Errorf("Got %f, want %f", got, tt.minor)
+			}
+		})
+	}
+}
+
+func TestDeterminant3(t *testing.T) {
+	tests := []struct {
+		name string
+		a    [3][3]float64
+		want float64
+	}{
+		{
+			"Test 1",
+			[3][3]float64{
+				{1, 2, 6},
+				{-5, 8, -4},
+				{2, 6, 4},
+			},
+			-196,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := determinant3(tt.a); got != tt.want {
+				t.Errorf("Got %f, want %f", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDeterminant4(t *testing.T) {
+	tests := []struct {
+		name string
+		a    [4][4]float64
+		want float64
+	}{
+		{
+			"Test 1",
+			[4][4]float64{
+				{-2, -8, 3, 5},
+				{-3, 1, 7, 3},
+				{1, 2, -9, 6},
+				{-6, 7, 7, -9},
+			},
+			-4071,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := determinant4(tt.a); got != tt.want {
+				t.Errorf("Got %f, want %f", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInvertible(t *testing.T) {
+	tests := []struct {
+		name        string
+		a           Matrix
+		determinant float64
+		want        bool
+	}{
+		{
+			"Test 1",
+			NewMatrix(
+				6, 4, 4, 4,
+				5, 5, 7, 8,
+				4, -9, 3, -7,
+				9, 1, 7, -6,
+			),
+			-2120,
+			true,
+		},
+		{
+			"Test 2",
+			NewMatrix(
+				-4, 2, -2, 3,
+				9, 6, 2, 6,
+				0, -5, 1, -5,
+				0, 0, 0, 0,
+			),
+			0,
+			false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.Invertible(); got != tt.want {
+				t.Errorf("Got %t, want %t", got, tt.want)
+			}
+		})
+	}
+}

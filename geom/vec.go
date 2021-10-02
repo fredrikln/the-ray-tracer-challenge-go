@@ -62,6 +62,10 @@ func (a Vec) Mul(b float64) Vec {
 	}
 }
 
+func (a Vec) MulMat(b Matrix) Vec {
+	return b.MulVec(a)
+}
+
 func (a Vec) Div(b float64) Vec {
 	return Vec{
 		a.X / b,
