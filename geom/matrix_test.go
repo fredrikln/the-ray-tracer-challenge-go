@@ -23,8 +23,8 @@ func TestMatrix4(t *testing.T) {
 func TestEq(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Matrix
-		b    Matrix
+		a    *Matrix
+		b    *Matrix
 		want bool
 	}{
 		{
@@ -73,9 +73,9 @@ func TestEq(t *testing.T) {
 func TestMatrixMul(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Matrix
-		b    Matrix
-		want Matrix
+		a    *Matrix
+		b    *Matrix
+		want *Matrix
 	}{
 		{
 			"Test 1",
@@ -118,7 +118,7 @@ func TestMatrixMul(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.a.Mul(tt.b); got != tt.want {
+			if got := tt.a.Mul(tt.b); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -128,9 +128,9 @@ func TestMatrixMul(t *testing.T) {
 func TestMatrixMulVec(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Matrix
-		b    Vec
-		want Vec
+		a    *Matrix
+		b    *Vec
+		want *Vec
 	}{
 		{
 			"Test 1",
@@ -147,7 +147,7 @@ func TestMatrixMulVec(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.a.MulVec(tt.b); got != tt.want {
+			if got := tt.a.MulVec(tt.b); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -157,8 +157,8 @@ func TestMatrixMulVec(t *testing.T) {
 func TestTranspose(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Matrix
-		want Matrix
+		a    *Matrix
+		want *Matrix
 	}{
 		{
 			"Test 1",
@@ -184,7 +184,7 @@ func TestTranspose(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.a.Transpose(); got != tt.want {
+			if got := tt.a.Transpose(); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -412,7 +412,7 @@ func TestDeterminant4(t *testing.T) {
 func TestInvertible(t *testing.T) {
 	tests := []struct {
 		name        string
-		a           Matrix
+		a           *Matrix
 		determinant float64
 		want        bool
 	}{
@@ -452,8 +452,8 @@ func TestInvertible(t *testing.T) {
 func TestInverse(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Matrix
-		want Matrix
+		a    *Matrix
+		want *Matrix
 	}{
 		{
 			"Test 1",
@@ -514,8 +514,8 @@ func TestInverse(t *testing.T) {
 func TestInverseMul(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Matrix
-		b    Matrix
+		a    *Matrix
+		b    *Matrix
 	}{
 		{
 			"Test 1",

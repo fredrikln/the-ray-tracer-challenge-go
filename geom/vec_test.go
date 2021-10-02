@@ -18,11 +18,11 @@ func TestNewVec(t *testing.T) {
 func TestAdd(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
-		b    Vec
-		want Vec
+		a    *Vec
+		b    *Vec
+		want *Vec
 	}{
-		{"Test", Vec{3.0, -2.0, 5.0}, Vec{-2.0, 3.0, 1.0}, Vec{1.0, 1.0, 6.0}},
+		{"Test", NewVec(3.0, -2.0, 5.0), NewVec(-2.0, 3.0, 1.0), NewVec(1.0, 1.0, 6.0)},
 	}
 
 	for _, tt := range tests {
@@ -38,12 +38,12 @@ func TestAdd(t *testing.T) {
 func TestSub(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
-		b    Vec
-		want Vec
+		a    *Vec
+		b    *Vec
+		want *Vec
 	}{
-		{"Test 1", Vec{3.0, 2.0, 1.0}, Vec{5.0, 6.0, 7.0}, Vec{-2.0, -4.0, -6.0}},
-		{"Test 2", Vec{0.0, 0.0, 0.0}, Vec{1.0, -2.0, 3.0}, Vec{-1.0, 2.0, -3.0}},
+		{"Test 1", NewVec(3.0, 2.0, 1.0), NewVec(5.0, 6.0, 7.0), NewVec(-2.0, -4.0, -6.0)},
+		{"Test 2", NewVec(0.0, 0.0, 0.0), NewVec(1.0, -2.0, 3.0), NewVec(-1.0, 2.0, -3.0)},
 	}
 
 	for _, tt := range tests {
@@ -59,10 +59,10 @@ func TestSub(t *testing.T) {
 func TestNeg(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
-		want Vec
+		a    *Vec
+		want *Vec
 	}{
-		{"Test", Vec{1.0, -2.0, 3.0}, Vec{-1.0, 2.0, -3.0}},
+		{"Test", NewVec(1.0, -2.0, 3.0), NewVec(-1.0, 2.0, -3.0)},
 	}
 
 	for _, tt := range tests {
@@ -78,12 +78,12 @@ func TestNeg(t *testing.T) {
 func TestMul(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
+		a    *Vec
 		b    float64
-		want Vec
+		want *Vec
 	}{
-		{"Test 1", Vec{1.0, -2.0, 3.0}, 3.5, Vec{3.5, -7.0, 10.5}},
-		{"Test 2", Vec{1.0, -2.0, 3.0}, 0.5, Vec{0.5, -1.0, 1.5}},
+		{"Test 1", NewVec(1.0, -2.0, 3.0), 3.5, NewVec(3.5, -7.0, 10.5)},
+		{"Test 2", NewVec(1.0, -2.0, 3.0), 0.5, NewVec(0.5, -1.0, 1.5)},
 	}
 
 	for _, tt := range tests {
@@ -99,9 +99,9 @@ func TestMul(t *testing.T) {
 func TestMulMat(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
-		b    Matrix
-		want Vec
+		a    *Vec
+		b    *Matrix
+		want *Vec
 	}{
 		{"Test 1",
 			NewVec(1, 2, 3),
@@ -122,7 +122,7 @@ func TestMulMat(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.a.MulMat(tt.b); got != tt.want {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -132,11 +132,11 @@ func TestMulMat(t *testing.T) {
 func TestDiv(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
+		a    *Vec
 		b    float64
-		want Vec
+		want *Vec
 	}{
-		{"Test", Vec{1.0, -2.0, 3.0}, 2.0, Vec{0.5, -1.0, 1.5}},
+		{"Test", NewVec(1.0, -2.0, 3.0), 2.0, NewVec(0.5, -1.0, 1.5)},
 	}
 
 	for _, tt := range tests {
@@ -152,14 +152,14 @@ func TestDiv(t *testing.T) {
 func TestMag(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
+		a    *Vec
 		want float64
 	}{
-		{"Test 1", Vec{1.0, 0.0, 0.0}, 1.0},
-		{"Test 2", Vec{0.0, 1.0, 0.0}, 1.0},
-		{"Test 3", Vec{0.0, 0.0, 1.0}, 1.0},
-		{"Test 4", Vec{1.0, 2.0, 3.0}, math.Sqrt(14.0)},
-		{"Test 5", Vec{-1.0, -2.0, -3.0}, math.Sqrt(14.0)},
+		{"Test 1", NewVec(1.0, 0.0, 0.0), 1.0},
+		{"Test 2", NewVec(0.0, 1.0, 0.0), 1.0},
+		{"Test 3", NewVec(0.0, 0.0, 1.0), 1.0},
+		{"Test 4", NewVec(1.0, 2.0, 3.0), math.Sqrt(14.0)},
+		{"Test 5", NewVec(-1.0, -2.0, -3.0), math.Sqrt(14.0)},
 	}
 
 	for _, tt := range tests {
@@ -175,11 +175,11 @@ func TestMag(t *testing.T) {
 func TestNorm(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
-		want Vec
+		a    *Vec
+		want *Vec
 	}{
-		{"Test 1", Vec{1.0, 0.0, 0.0}, Vec{1.0, 0.0, 0.0}},
-		{"Test 2", Vec{1.0, 2.0, 3.0}, Vec{1 / math.Sqrt(14.0), 2 / math.Sqrt(14.0), 3 / math.Sqrt(14.0)}},
+		{"Test 1", NewVec(1.0, 0.0, 0.0), NewVec(1.0, 0.0, 0.0)},
+		{"Test 2", NewVec(1.0, 2.0, 3.0), NewVec(1/math.Sqrt(14.0), 2/math.Sqrt(14.0), 3/math.Sqrt(14.0))},
 	}
 
 	for _, tt := range tests {
@@ -192,7 +192,7 @@ func TestNorm(t *testing.T) {
 	}
 
 	t.Run("Test 3", func(t *testing.T) {
-		vec := Vec{1.0, 2.0, 3.0}
+		vec := NewVec(1.0, 2.0, 3.0)
 		mag := vec.Norm().Mag()
 
 		if mag != 1 {
@@ -204,11 +204,11 @@ func TestNorm(t *testing.T) {
 func TestDot(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
-		b    Vec
+		a    *Vec
+		b    *Vec
 		want float64
 	}{
-		{"Test 1", Vec{1.0, 2.0, 3.0}, Vec{2.0, 3.0, 4.0}, 20},
+		{"Test 1", NewVec(1.0, 2.0, 3.0), NewVec(2.0, 3.0, 4.0), 20},
 	}
 
 	for _, tt := range tests {
@@ -224,12 +224,12 @@ func TestDot(t *testing.T) {
 func TestCross(t *testing.T) {
 	tests := []struct {
 		name string
-		a    Vec
-		b    Vec
-		want Vec
+		a    *Vec
+		b    *Vec
+		want *Vec
 	}{
-		{"Test 1", Vec{1.0, 2.0, 3.0}, Vec{2.0, 3.0, 4.0}, Vec{-1, 2, -1}},
-		{"Test 2", Vec{2.0, 3.0, 4.0}, Vec{1.0, 2.0, 3.0}, Vec{1, -2, 1}},
+		{"Test 1", NewVec(1.0, 2.0, 3.0), NewVec(2.0, 3.0, 4.0), NewVec(-1, 2, -1)},
+		{"Test 2", NewVec(2.0, 3.0, 4.0), NewVec(1.0, 2.0, 3.0), NewVec(1, -2, 1)},
 	}
 
 	for _, tt := range tests {

@@ -9,10 +9,11 @@ import (
 
 type Matrix struct {
 	data [4][4]float64
+	inv  *Matrix
 }
 
-func NewMatrix(a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4 float64) Matrix {
-	return Matrix{
+func NewMatrix(a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4 float64) *Matrix {
+	return &Matrix{
 		data: [4][4]float64{
 			{a1, a2, a3, a4},
 			{b1, b2, b3, b4},
@@ -22,7 +23,7 @@ func NewMatrix(a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4 fl
 	}
 }
 
-func NewIdentityMatrix() Matrix {
+func NewIdentityMatrix() *Matrix {
 	return NewMatrix(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
@@ -31,7 +32,7 @@ func NewIdentityMatrix() Matrix {
 	)
 }
 
-func (a Matrix) Eq(b Matrix) bool {
+func (a *Matrix) Eq(b *Matrix) bool {
 	for i := range a.data {
 		for j := range b.data {
 			if math.Abs(a.data[i][j]-b.data[i][j]) > c.EPSILON {
@@ -43,13 +44,8 @@ func (a Matrix) Eq(b Matrix) bool {
 	return true
 }
 
-func (a Matrix) Mul(b Matrix) Matrix {
-	m := NewMatrix(
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-	)
+func (a *Matrix) Mul(b *Matrix) *Matrix {
+	m := &Matrix{}
 
 	for r := 0; r < 4; r += 1 {
 		for c := 0; c < 4; c += 1 {
@@ -63,7 +59,7 @@ func (a Matrix) Mul(b Matrix) Matrix {
 	return m
 }
 
-func (a Matrix) MulVec(b Vec) Vec {
+func (a *Matrix) MulVec(b *Vec) *Vec {
 	return NewVec(
 		a.data[0][0]*b.X+a.data[0][1]*b.Y+a.data[0][2]*b.Z+a.data[0][3],
 		a.data[1][0]*b.X+a.data[1][1]*b.Y+a.data[1][2]*b.Z+a.data[1][3],
@@ -71,13 +67,8 @@ func (a Matrix) MulVec(b Vec) Vec {
 	)
 }
 
-func (a Matrix) Transpose() Matrix {
-	m := NewMatrix(
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 0, 0,
-	)
+func (a *Matrix) Transpose() *Matrix {
+	m := Matrix{}
 
 	for r := 0; r < 4; r += 1 {
 		for c := 0; c < 4; c += 1 {
@@ -85,23 +76,27 @@ func (a Matrix) Transpose() Matrix {
 		}
 	}
 
-	return m
+	return &m
 }
 
-func (a Matrix) Determinant() float64 {
+func (a *Matrix) Determinant() float64 {
 	return determinant4(a.data)
 }
 
-func (a Matrix) Invertible() bool {
+func (a *Matrix) Invertible() bool {
 	return a.Determinant() != 0.0
 }
 
-func (a Matrix) Inverse() (Matrix, error) {
-	if !a.Invertible() {
-		return Matrix{}, errors.New("Matrix is not invertible")
+func (a *Matrix) Inverse() (*Matrix, error) {
+	if a.inv != nil {
+		return a.inv, nil
 	}
 
-	out := NewIdentityMatrix()
+	if !a.Invertible() {
+		return &Matrix{}, errors.New("Matrix is not invertible")
+	}
+
+	i := &Matrix{}
 
 	determinant := determinant4(a.data)
 
@@ -109,11 +104,13 @@ func (a Matrix) Inverse() (Matrix, error) {
 		for c := 0; c < 4; c += 1 {
 			co := cofactor4(a.data, r, c)
 
-			out.data[c][r] = co / determinant
+			i.data[c][r] = co / determinant
 		}
 	}
 
-	return out, nil // Todo: Fix
+	a.inv, i.inv = i, a
+
+	return i, nil
 }
 
 func determinant2(matrix [2][2]float64) float64 {

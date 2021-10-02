@@ -6,13 +6,13 @@ import (
 )
 
 type Projectile struct {
-	Position g.Vec
-	Velocity g.Vec
+	Position *g.Vec
+	Velocity *g.Vec
 }
 
 type Environment struct {
-	Gravity g.Vec
-	Wind    g.Vec
+	Gravity *g.Vec
+	Wind    *g.Vec
 }
 
 func tick(p Projectile, e Environment) Projectile {
