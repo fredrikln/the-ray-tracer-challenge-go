@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-
 	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
+	r "github.com/fredrikln/the-ray-tracer-challenge-go/render"
 )
 
 type Projectile struct {
@@ -24,12 +23,21 @@ func tick(p Projectile, e Environment) Projectile {
 }
 
 func main() {
-	projectile := Projectile{Position: g.NewVec(0, 1, 0), Velocity: g.NewVec(1, 1, 0).Norm()}
+	// Set up canvas
+	canvas := r.NewCanvas(900, 550)
+	c := r.NewColor(1.0, 0.0, 0.0)
+
+	// Set up projectile and environment
+	projectile := Projectile{Position: g.NewVec(0, 1, 0), Velocity: g.NewVec(1, 1.8, 0).Norm().Mul(11.25)}
 	environment := Environment{g.NewVec(0, -0.1, 0), g.NewVec(-0.01, 0, 0)}
 
 	for projectile.Position.Y > 0 {
 		projectile = tick(projectile, environment)
 
-		fmt.Printf("%+v\n", projectile)
+		if projectile.Position.Y > 0 {
+			canvas.SetPixel(int(projectile.Position.X), canvas.Height-int(projectile.Position.Y), c)
+		}
 	}
+
+	canvas.SavePNG("test.png")
 }

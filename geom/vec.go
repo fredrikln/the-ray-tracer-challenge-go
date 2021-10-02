@@ -2,6 +2,8 @@ package geom
 
 import "math"
 
+const threshold = 1e-9
+
 type Vec struct {
 	X float64
 	Y float64
@@ -12,6 +14,20 @@ func NewVec(x, y, z float64) Vec {
 	return Vec{
 		x, y, z,
 	}
+}
+
+func (a Vec) Eq(b Vec) bool {
+	if math.Abs(a.X-b.X) > threshold {
+		return false
+	}
+	if math.Abs(a.Y-b.Y) > threshold {
+		return false
+	}
+	if math.Abs(a.Z-b.Z) > threshold {
+		return false
+	}
+
+	return true
 }
 
 func (a Vec) Add(b Vec) Vec {

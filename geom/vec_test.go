@@ -5,11 +5,11 @@ import (
 	"testing"
 )
 
-func TestVec(t *testing.T) {
+func TestNewVec(t *testing.T) {
 	t.Run("Test", func(t *testing.T) {
-		vector := Vec{1.0, 2.0, 3.0}
+		vector := NewVec(1.0, 2.0, 3.0)
 
-		if vector.X != 1.0 && vector.Y != 2.0 && vector.Z != 3.0 {
+		if vector.X != 1.0 || vector.Y != 2.0 || vector.Z != 3.0 {
 			t.Error("Vector coordinates not correct")
 		}
 	})
@@ -28,7 +28,7 @@ func TestAdd(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if got := tt.a.Add(tt.b); got != tt.want {
+			if got := tt.a.Add(tt.b); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -49,7 +49,7 @@ func TestSub(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if got := tt.a.Sub(tt.b); got != tt.want {
+			if got := tt.a.Sub(tt.b); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -68,7 +68,7 @@ func TestNeg(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if got := tt.a.Neg(); got != tt.want {
+			if got := tt.a.Neg(); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -89,7 +89,7 @@ func TestMul(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if got := tt.a.Mul(tt.b); got != tt.want {
+			if got := tt.a.Mul(tt.b); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -109,7 +109,7 @@ func TestDiv(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if got := tt.a.Div(tt.b); got != tt.want {
+			if got := tt.a.Div(tt.b); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -152,7 +152,7 @@ func TestNorm(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if got := tt.a.Norm(); got != tt.want {
+			if got := tt.a.Norm(); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -202,7 +202,7 @@ func TestCross(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if got := tt.a.Cross(tt.b); got != tt.want {
+			if got := tt.a.Cross(tt.b); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
