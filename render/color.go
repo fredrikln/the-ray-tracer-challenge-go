@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-const threshold = 1e-9
+const colorThreshold = 1e-4
 
 type Color struct {
 	R float64
@@ -20,13 +20,13 @@ func NewColor(r, g, b float64) Color {
 }
 
 func (a Color) Eq(b Color) bool {
-	if math.Abs(a.R-b.R) > threshold {
+	if math.Abs(a.R-b.R) > colorThreshold {
 		return false
 	}
-	if math.Abs(a.G-b.G) > threshold {
+	if math.Abs(a.G-b.G) > colorThreshold {
 		return false
 	}
-	if math.Abs(a.B-b.B) > threshold {
+	if math.Abs(a.B-b.B) > colorThreshold {
 		return false
 	}
 

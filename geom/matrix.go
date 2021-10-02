@@ -1,6 +1,11 @@
 package geom
 
-import "errors"
+import (
+	"errors"
+	"math"
+)
+
+const matThreshold = 1e-4
 
 type Matrix struct {
 	data [4][4]float64
@@ -27,13 +32,9 @@ func NewIdentityMatrix() Matrix {
 }
 
 func (a Matrix) Eq(b Matrix) bool {
-	if len(a.data) != len(b.data) {
-		return false
-	}
-
 	for i := range a.data {
 		for j := range b.data {
-			if a.data[i][j] != b.data[i][j] {
+			if math.Abs(a.data[i][j]-b.data[i][j]) > matThreshold {
 				return false
 			}
 		}
@@ -100,7 +101,19 @@ func (a Matrix) Inverse() (Matrix, error) {
 		return Matrix{}, errors.New("Matrix is not invertible")
 	}
 
-	return NewIdentityMatrix(), nil // Todo: Fix
+	out := NewIdentityMatrix()
+
+	determinant := determinant4(a.data)
+
+	for r := 0; r < 4; r += 1 {
+		for c := 0; c < 4; c += 1 {
+			co := cofactor4(a.data, r, c)
+
+			out.data[c][r] = co / determinant
+		}
+	}
+
+	return out, nil // Todo: Fix
 }
 
 func determinant2(matrix [2][2]float64) float64 {

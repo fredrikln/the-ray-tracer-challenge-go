@@ -446,3 +446,100 @@ func TestInvertible(t *testing.T) {
 		})
 	}
 }
+
+func TestInverse(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Matrix
+		want Matrix
+	}{
+		{
+			"Test 1",
+			NewMatrix(
+				-5, 2, 6, -8,
+				1, -5, 1, 8,
+				7, 7, -6, -7,
+				1, -3, 7, 4,
+			),
+			NewMatrix(
+				0.21805, 0.45113, 0.24060, -0.04511,
+				-0.80827, -1.45677, -0.44361, 0.52068,
+				-0.07895, -0.22368, -0.05263, 0.19737,
+				-0.52256, -0.81391, -0.30075, 0.30639,
+			),
+		},
+		{
+			"Test 2",
+			NewMatrix(
+				8.0, -5.0, 9.0, 2.0,
+				7.0, 5.0, 6.0, 1.0,
+				-6.0, 0.0, 9.0, 6.0,
+				-3.0, 0.0, -9.0, -4.0,
+			),
+			NewMatrix(
+				-0.15385, -0.15385, -0.28205, -0.53846,
+				-0.07692, 0.12308, 0.02564, 0.03077,
+				0.35897, 0.35897, 0.43590, 0.92308,
+				-0.69231, -0.69231, -0.76923, -1.9230,
+			),
+		},
+		{
+			"Test 3",
+			NewMatrix(
+				9.0, 3.0, 0.0, 9.0,
+				-5.0, -2.0, -6.0, -3.0,
+				-4.0, 9.0, 6.0, 4.0,
+				-7.0, 6.0, 6.0, 2.0,
+			),
+			NewMatrix(
+				-0.04074, -0.07778, 0.14444, -0.22222,
+				-0.07778, 0.03333, 0.36667, -0.33333,
+				-0.02901, -0.14630, -0.10926, 0.12963,
+				0.17778, 0.06667, -0.26667, 0.33333,
+			),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got, _ := tt.a.Inverse(); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInverseMul(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Matrix
+		b    Matrix
+	}{
+		{
+			"Test 1",
+			NewMatrix(
+				3, -9, 7, 3,
+				3, -8, 2, -9,
+				-4, 4, 4, 1,
+				-6, 5, -1, 1,
+			),
+			NewMatrix(
+				8, 2, 2, 2,
+				3, -1, 7, 0,
+				7, 0, 5, 4,
+				6, -2, 0, 5,
+			),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := tt.a.Mul(tt.b)
+			bInv, _ := tt.b.Inverse()
+
+			if !c.Mul(bInv).Eq(tt.a) {
+				t.Error("Inverse of a times c does not equal a")
+			}
+		})
+	}
+}

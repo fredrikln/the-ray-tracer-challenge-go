@@ -2,7 +2,7 @@ package geom
 
 import "math"
 
-const threshold = 1e-9
+const vecThreshold = 1e-4
 
 type Vec struct {
 	X float64
@@ -17,13 +17,13 @@ func NewVec(x, y, z float64) Vec {
 }
 
 func (a Vec) Eq(b Vec) bool {
-	if math.Abs(a.X-b.X) > threshold {
+	if math.Abs(a.X-b.X) > vecThreshold {
 		return false
 	}
-	if math.Abs(a.Y-b.Y) > threshold {
+	if math.Abs(a.Y-b.Y) > vecThreshold {
 		return false
 	}
-	if math.Abs(a.Z-b.Z) > threshold {
+	if math.Abs(a.Z-b.Z) > vecThreshold {
 		return false
 	}
 
