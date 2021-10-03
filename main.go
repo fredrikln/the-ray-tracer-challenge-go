@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+
 	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/render"
 )
@@ -24,19 +26,18 @@ func tick(p Projectile, e Environment) Projectile {
 
 func main() {
 	// Set up canvas
-	canvas := r.NewCanvas(900, 550)
+	canvas := r.NewCanvas(500, 500)
 	c := r.NewColor(1.0, 0.0, 0.0)
 
-	// Set up projectile and environment
-	projectile := Projectile{Position: g.NewVec(0, 1, 0), Velocity: g.NewVec(1, 1.8, 0).Norm().Mul(11.25)}
-	environment := Environment{g.NewVec(0, -0.1, 0), g.NewVec(-0.01, 0, 0)}
+	point := g.NewVec(0, 1, 0)
+	rotation := g.NewRotationZ(2 * math.Pi / 60)
 
-	for projectile.Position.Y > 0 {
-		projectile = tick(projectile, environment)
+	for i := 0; i < 60; i += 1 {
+		point = point.MulMat(rotation)
 
-		if projectile.Position.Y > 0 {
-			canvas.SetPixel(int(projectile.Position.X), canvas.Height-int(projectile.Position.Y), c)
-		}
+		x := int(point.X*200) + 250
+		y := int(point.Y*200) + 250
+		canvas.SetPixel(x, y, c)
 	}
 
 	canvas.SavePNG("test.png")

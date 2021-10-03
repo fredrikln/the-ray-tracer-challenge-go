@@ -76,6 +76,15 @@ func NewRotationZ(radians float64) *Matrix {
 	)
 }
 
+func NewShearing(xy, xz, yx, yz, zx, zy float64) *Matrix {
+	return NewMatrix(
+		1, xy, xz, 0,
+		yx, 1, yz, 0,
+		zx, zy, 1, 0,
+		0, 0, 0, 1,
+	)
+}
+
 func (a *Matrix) Eq(b *Matrix) bool {
 	for i := range a.data {
 		for j := range b.data {
@@ -156,6 +165,27 @@ func (a *Matrix) Inverse() *Matrix {
 
 	return i
 }
+
+func (a *Matrix) Translate(x, y, z float64) *Matrix {
+	return a.Mul(NewTranslation(x, y, z))
+}
+func (a *Matrix) Scale(x, y, z float64) *Matrix {
+	return a.Mul(NewScaling(x, y, z))
+}
+func (a *Matrix) RotateX(radians float64) *Matrix {
+	return a.Mul(NewRotationX(radians))
+}
+func (a *Matrix) RotateY(radians float64) *Matrix {
+	return a.Mul(NewRotationY(radians))
+}
+func (a *Matrix) RotateZ(radians float64) *Matrix {
+	return a.Mul(NewRotationZ(radians))
+}
+func (a *Matrix) Shear(xy, xz, yx, yz, zx, zy float64) *Matrix {
+	return a.Mul(NewShearing(xy, xz, yx, yz, zx, zy))
+}
+
+// Helpers below
 
 func determinant2(matrix [2][2]float64) float64 {
 	return (matrix[0][0] * matrix[1][1]) - (matrix[0][1] * matrix[1][0])

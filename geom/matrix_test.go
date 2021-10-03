@@ -708,3 +708,130 @@ func TestNewRotationZ(t *testing.T) {
 		})
 	}
 }
+
+func TestNewShearing(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Vec
+		b    *Matrix
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewVec(2, 3, 4),
+			NewShearing(1, 0, 0, 0, 0, 0),
+			NewVec(5, 3, 4),
+		},
+		{
+			"Test 1",
+			NewVec(2, 3, 4),
+			NewShearing(0, 1, 0, 0, 0, 0),
+			NewVec(6, 3, 4),
+		},
+		{
+			"Test 1",
+			NewVec(2, 3, 4),
+			NewShearing(0, 0, 1, 0, 0, 0),
+			NewVec(2, 5, 4),
+		},
+		{
+			"Test 1",
+			NewVec(2, 3, 4),
+			NewShearing(0, 0, 0, 1, 0, 0),
+			NewVec(2, 7, 4),
+		},
+		{
+			"Test 1",
+			NewVec(2, 3, 4),
+			NewShearing(0, 0, 0, 0, 1, 0),
+			NewVec(2, 3, 6),
+		},
+		{
+			"Test 1",
+			NewVec(2, 3, 4),
+			NewShearing(0, 0, 0, 0, 0, 1),
+			NewVec(2, 3, 7),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestChaining(t *testing.T) {
+	rotationX := NewRotationX(math.Pi / 2)
+	scaling := NewScaling(5, 5, 5)
+	translation := NewTranslation(10, 5, 7)
+
+	tests := []struct {
+		name string
+		a    Vec
+		b    *Matrix
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewVec(1, 0, 1),
+			rotationX,
+			NewVec(1, -1, 0),
+		},
+		{
+			"Test 2",
+			NewVec(1, 0, 1).MulMat(rotationX),
+			scaling,
+			NewVec(5, -5, 0),
+		},
+		{
+			"Test 3",
+			NewVec(1, 0, 1).MulMat(rotationX).MulMat(scaling),
+			translation,
+			NewVec(15, 0, 7),
+		},
+
+		{
+			"Test 3",
+			NewVec(1, 0, 1),
+			translation.Mul(scaling).Mul(rotationX),
+			NewVec(15, 0, 7),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestFluent(t *testing.T) {
+	transform := NewIdentityMatrix().Translate(10, 5, 7).Scale(5, 5, 5).RotateX(math.Pi / 2)
+
+	tests := []struct {
+		name string
+		a    Vec
+		b    *Matrix
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewVec(1, 0, 1),
+			transform,
+			NewVec(15, 0, 7),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
