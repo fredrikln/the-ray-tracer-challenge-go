@@ -8,8 +8,6 @@ import (
 
 type Direction Vec
 
-type Point Vec
-
 type Vec struct {
 	X, Y, Z float64
 }

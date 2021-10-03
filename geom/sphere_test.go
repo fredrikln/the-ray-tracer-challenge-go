@@ -3,7 +3,7 @@ package geom
 import "testing"
 
 func TestSphereIntersectTwoPoints(t *testing.T) {
-	ray := NewRay(NewVec(0, 0, -5), NewVec(0, 0, 1))
+	ray := NewRay(NewPoint(0, 0, -5), NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)
@@ -19,7 +19,7 @@ func TestSphereIntersectTwoPoints(t *testing.T) {
 }
 
 func TestSphereIntersectTangent(t *testing.T) {
-	ray := NewRay(NewVec(0, 1, -5), NewVec(0, 0, 1))
+	ray := NewRay(NewPoint(0, 1, -5), NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)
@@ -35,7 +35,7 @@ func TestSphereIntersectTangent(t *testing.T) {
 }
 
 func TestSphereIntersectMisses(t *testing.T) {
-	ray := NewRay(NewVec(0, 2, -5), NewVec(0, 0, 1))
+	ray := NewRay(NewPoint(0, 2, -5), NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)
@@ -47,7 +47,7 @@ func TestSphereIntersectMisses(t *testing.T) {
 }
 
 func TestSphereIntersectOriginInside(t *testing.T) {
-	ray := NewRay(NewVec(0, 0, 0), NewVec(0, 0, 1))
+	ray := NewRay(NewPoint(0, 0, 0), NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)
@@ -63,7 +63,7 @@ func TestSphereIntersectOriginInside(t *testing.T) {
 }
 
 func TestSphereIntersectBehind(t *testing.T) {
-	ray := NewRay(NewVec(0, 0, 5), NewVec(0, 0, 1))
+	ray := NewRay(NewPoint(0, 0, 5), NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)

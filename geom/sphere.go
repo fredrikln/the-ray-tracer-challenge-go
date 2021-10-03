@@ -13,7 +13,7 @@ func NewSphere() Sphere {
 func (s Sphere) Intersect(ray Ray) []Intersection {
 	intersections := make([]Intersection, 0)
 
-	sphereToRay := ray.Origin.Sub(NewVec(0, 0, 0))
+	sphereToRay := ray.Origin.Sub(NewPoint(0, 0, 0))
 
 	a := ray.Direction.Dot(ray.Direction)
 	b := 2 * ray.Direction.Dot(sphereToRay)

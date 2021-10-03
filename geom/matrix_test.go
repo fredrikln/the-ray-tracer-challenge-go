@@ -126,12 +126,12 @@ func TestMatrixMul(t *testing.T) {
 	}
 }
 
-func TestMatrixMulVec(t *testing.T) {
+func TestMatrixMulPoint(t *testing.T) {
 	tests := []struct {
 		name string
 		a    *Matrix
-		b    Vec
-		want Vec
+		b    Point
+		want Point
 	}{
 		{
 			"Test 1",
@@ -141,14 +141,14 @@ func TestMatrixMulVec(t *testing.T) {
 				8, 6, 4, 1,
 				0, 0, 0, 1,
 			),
-			NewVec(1, 2, 3),
-			NewVec(18, 24, 33),
+			NewPoint(1, 2, 3),
+			NewPoint(18, 24, 33),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.a.MulVec(tt.b); !got.Eq(tt.want) {
+			if got := tt.a.MulPoint(tt.b); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -550,6 +550,36 @@ func TestInverseMul(t *testing.T) {
 func TestMulTranslation(t *testing.T) {
 	tests := []struct {
 		name string
+		a    Point
+		b    *Matrix
+		want Point
+	}{
+		{
+			"Test 1",
+			NewPoint(-3, 4, 5),
+			NewTranslation(5, -3, 2),
+			NewPoint(2, 1, 7),
+		},
+		{
+			"Test 2",
+			NewPoint(-3, 4, 5),
+			NewTranslation(5, -3, 2).Inverse(),
+			NewPoint(-8, 7, 3),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMulTranslationVec(t *testing.T) {
+	tests := []struct {
+		name string
 		a    Vec
 		b    *Matrix
 		want Vec
@@ -558,13 +588,7 @@ func TestMulTranslation(t *testing.T) {
 			"Test 1",
 			NewVec(-3, 4, 5),
 			NewTranslation(5, -3, 2),
-			NewVec(2, 1, 7),
-		},
-		{
-			"Test 2",
 			NewVec(-3, 4, 5),
-			NewTranslation(5, -3, 2).Inverse(),
-			NewVec(-8, 7, 3),
 		},
 	}
 
@@ -601,6 +625,30 @@ func TestMulScaling(t *testing.T) {
 			NewVec(2, 3, 4),
 			NewScaling(-1, 1, 1).Inverse(),
 			NewVec(-2, 3, 4),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMulScalingPoint(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Point
+		b    *Matrix
+		want Point
+	}{
+		{
+			"Test 1",
+			NewPoint(-4, 6, 8),
+			NewScaling(2, 3, 4),
+			NewPoint(-8, 18, 32),
 		},
 	}
 
@@ -770,34 +818,33 @@ func TestChaining(t *testing.T) {
 
 	tests := []struct {
 		name string
-		a    Vec
+		a    Point
 		b    *Matrix
-		want Vec
+		want Point
 	}{
 		{
 			"Test 1",
-			NewVec(1, 0, 1),
+			NewPoint(1, 0, 1),
 			rotationX,
-			NewVec(1, -1, 0),
+			NewPoint(1, -1, 0),
 		},
 		{
 			"Test 2",
-			NewVec(1, 0, 1).MulMat(rotationX),
+			NewPoint(1, 0, 1).MulMat(rotationX),
 			scaling,
-			NewVec(5, -5, 0),
+			NewPoint(5, -5, 0),
 		},
 		{
 			"Test 3",
-			NewVec(1, 0, 1).MulMat(rotationX).MulMat(scaling),
+			NewPoint(1, 0, 1).MulMat(rotationX).MulMat(scaling),
 			translation,
-			NewVec(15, 0, 7),
+			NewPoint(15, 0, 7),
 		},
-
 		{
-			"Test 3",
-			NewVec(1, 0, 1),
+			"Test 4",
+			NewPoint(1, 0, 1),
 			translation.Mul(scaling).Mul(rotationX),
-			NewVec(15, 0, 7),
+			NewPoint(15, 0, 7),
 		},
 	}
 
@@ -815,15 +862,15 @@ func TestFluent(t *testing.T) {
 
 	tests := []struct {
 		name string
-		a    Vec
+		a    Point
 		b    *Matrix
-		want Vec
+		want Point
 	}{
 		{
 			"Test 1",
-			NewVec(1, 0, 1),
+			NewPoint(1, 0, 1),
 			transform,
-			NewVec(15, 0, 7),
+			NewPoint(15, 0, 7),
 		},
 	}
 

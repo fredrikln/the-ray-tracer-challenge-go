@@ -4,7 +4,7 @@ import "testing"
 
 func TestNewRay(t *testing.T) {
 	t.Run("Test", func(t *testing.T) {
-		origin := NewVec(1.0, 2.0, 3.0)
+		origin := NewPoint(1.0, 2.0, 3.0)
 		direction := NewVec(4, 5, 6)
 		ray := NewRay(origin, direction)
 
@@ -20,31 +20,31 @@ func TestRayPosition(t *testing.T) {
 			name string
 			a    Ray
 			time float64
-			want Vec
+			want Point
 		}{
 			{
 				"Test 1",
-				NewRay(NewVec(2, 3, 4), NewVec(1, 0, 0)),
+				NewRay(NewPoint(2, 3, 4), NewVec(1, 0, 0)),
 				0,
-				NewVec(2, 3, 4),
+				NewPoint(2, 3, 4),
 			},
 			{
 				"Test 2",
-				NewRay(NewVec(2, 3, 4), NewVec(1, 0, 0)),
+				NewRay(NewPoint(2, 3, 4), NewVec(1, 0, 0)),
 				1,
-				NewVec(3, 3, 4),
+				NewPoint(3, 3, 4),
 			},
 			{
 				"Test 3",
-				NewRay(NewVec(2, 3, 4), NewVec(1, 0, 0)),
+				NewRay(NewPoint(2, 3, 4), NewVec(1, 0, 0)),
 				-1,
-				NewVec(1, 3, 4),
+				NewPoint(1, 3, 4),
 			},
 			{
 				"Test 4",
-				NewRay(NewVec(2, 3, 4), NewVec(1, 0, 0)),
+				NewRay(NewPoint(2, 3, 4), NewVec(1, 0, 0)),
 				2.5,
-				NewVec(4.5, 3, 4),
+				NewPoint(4.5, 3, 4),
 			},
 		}
 
@@ -56,4 +56,26 @@ func TestRayPosition(t *testing.T) {
 			})
 		}
 	})
+}
+
+func TestRayTranslate(t *testing.T) {
+	r := NewRay(NewPoint(1, 2, 3), NewVec(0, 1, 0))
+	m := NewTranslation(3, 4, 5)
+
+	r2 := r.Mul(m)
+
+	if !r2.Origin.Eq(NewPoint(4, 6, 8)) || !r2.Direction.Eq(NewVec(0, 1, 0)) {
+		t.Error("Invalid ray translation", r2.Origin, r2.Direction)
+	}
+}
+
+func TestRayScale(t *testing.T) {
+	r := NewRay(NewPoint(1, 2, 3), NewVec(0, 1, 0))
+	m := NewScaling(2, 3, 4)
+
+	r2 := r.Mul(m)
+
+	if !r2.Origin.Eq(NewPoint(2, 6, 12)) || !r2.Direction.Eq(NewVec(0, 3, 0)) {
+		t.Errorf("Invalid ray scaling, Got %v %v, Want %v %v", r2.Origin, r2.Direction, NewPoint(2, 6, 12), NewVec(0, 3, 0))
+	}
 }

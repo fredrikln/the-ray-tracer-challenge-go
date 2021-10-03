@@ -96,38 +96,38 @@ func TestMul(t *testing.T) {
 	}
 }
 
-func TestMulMat(t *testing.T) {
-	tests := []struct {
-		name string
-		a    Vec
-		b    *Matrix
-		want Vec
-	}{
-		{"Test 1",
-			NewVec(1, 2, 3),
-			NewMatrix(
-				1, 2, 3, 4,
-				2, 4, 4, 2,
-				8, 6, 4, 1,
-				0, 0, 0, 1,
-			),
-			NewVec(18, 24, 33),
-		},
-		{"Test 2",
-			NewVec(1, 2, 3),
-			NewIdentityMatrix(),
-			NewVec(1, 2, 3),
-		},
-	}
+// func TestMulMat(t *testing.T) {
+// 	tests := []struct {
+// 		name string
+// 		a    Vec
+// 		b    *Matrix
+// 		want Vec
+// 	}{
+// 		{"Test 1",
+// 			NewVec(1, 2, 3),
+// 			NewMatrix(
+// 				1, 2, 3, 4,
+// 				2, 4, 4, 2,
+// 				8, 6, 4, 1,
+// 				0, 0, 0, 1,
+// 			),
+// 			NewVec(18, 24, 33),
+// 		},
+// 		{"Test 2",
+// 			NewVec(1, 2, 3),
+// 			NewIdentityMatrix(),
+// 			NewVec(1, 2, 3),
+// 		},
+// 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
-				t.Errorf("Got %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+// 				t.Errorf("Got %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
 
 func TestDiv(t *testing.T) {
 	tests := []struct {
