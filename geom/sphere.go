@@ -3,20 +3,24 @@ package geom
 import "math"
 
 type Sphere struct {
-	// origin Vec
+	transform *Matrix
 }
 
 func NewSphere() Sphere {
-	return Sphere{}
+	return Sphere{
+		NewIdentityMatrix(),
+	}
 }
 
 func (s Sphere) Intersect(ray Ray) []Intersection {
+	ray2 := ray.Mul(s.transform.Inverse())
+
 	intersections := make([]Intersection, 0)
 
-	sphereToRay := ray.Origin.Sub(NewPoint(0, 0, 0))
+	sphereToRay := ray2.Origin.Sub(NewPoint(0, 0, 0))
 
-	a := ray.Direction.Dot(ray.Direction)
-	b := 2 * ray.Direction.Dot(sphereToRay)
+	a := ray2.Direction.Dot(ray2.Direction)
+	b := 2 * ray2.Direction.Dot(sphereToRay)
 	c := sphereToRay.Dot(sphereToRay) - 1
 
 	discriminant := math.Pow(b, 2) - 4*a*c
@@ -33,4 +37,10 @@ func (s Sphere) Intersect(ray Ray) []Intersection {
 	intersections = append(intersections, i2)
 
 	return intersections
+}
+
+func (s *Sphere) SetTransform(matrix *Matrix) *Sphere {
+	s.transform = matrix
+
+	return s
 }

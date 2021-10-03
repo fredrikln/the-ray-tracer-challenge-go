@@ -1,8 +1,6 @@
 package main
 
 import (
-	"math"
-
 	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/render"
 )
@@ -26,18 +24,36 @@ func tick(p Projectile, e Environment) Projectile {
 
 func main() {
 	// Set up canvas
-	canvas := r.NewCanvas(500, 500)
+	pixels := 500
+	canvas := r.NewCanvas(pixels, pixels)
 	c := r.NewColor(1.0, 0.0, 0.0)
 
-	point := g.NewVec(0, 1, 0)
-	rotation := g.NewRotationZ(2 * math.Pi / 60)
+	rayOrigin := g.NewPoint(0, 0, -5)
 
-	for i := 0; i < 60; i += 1 {
-		point = point.MulMat(rotation)
+	wallZ := 10.0
+	wallSize := 7.0
 
-		x := int(point.X*200) + 250
-		y := int(point.Y*200) + 250
-		canvas.SetPixel(x, y, c)
+	pixelSize := wallSize / float64(pixels)
+
+	half := wallSize / 2
+
+	shape := g.NewSphere()
+
+	for y := 0; y < pixels; y += 1 {
+		worldY := half - pixelSize*float64(y)
+
+		for x := 0; x < pixels; x += 1 {
+			worldX := -half + pixelSize*float64(x)
+
+			position := g.NewPoint(worldX, worldY, wallZ)
+
+			r := g.NewRay(rayOrigin, position.Sub(rayOrigin).Norm())
+			xs := shape.Intersect(r)
+
+			if _, hit := g.GetHit(xs); hit {
+				canvas.SetPixel(x, y, c)
+			}
+		}
 	}
 
 	canvas.SavePNG("test.png")
