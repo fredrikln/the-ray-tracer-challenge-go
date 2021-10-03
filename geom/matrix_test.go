@@ -1,6 +1,7 @@
 package geom
 
 import (
+	"math"
 	"testing"
 )
 
@@ -504,7 +505,7 @@ func TestInverse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got, _ := tt.a.Inverse(); !got.Eq(tt.want) {
+			if got := tt.a.Inverse(); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -537,10 +538,172 @@ func TestInverseMul(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := tt.a.Mul(tt.b)
-			bInv, _ := tt.b.Inverse()
+			bInv := tt.b.Inverse()
 
 			if !c.Mul(bInv).Eq(tt.a) {
 				t.Error("Inverse of a times c does not equal a")
+			}
+		})
+	}
+}
+
+func TestMulTranslation(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Vec
+		b    *Matrix
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewVec(-3, 4, 5),
+			NewTranslation(5, -3, 2),
+			NewVec(2, 1, 7),
+		},
+		{
+			"Test 2",
+			NewVec(-3, 4, 5),
+			NewTranslation(5, -3, 2).Inverse(),
+			NewVec(-8, 7, 3),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMulScaling(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Vec
+		b    *Matrix
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewVec(-4, 6, 8),
+			NewScaling(2, 3, 4),
+			NewVec(-8, 18, 32),
+		},
+		{
+			"Test 2",
+			NewVec(-4, 6, 8),
+			NewScaling(2, 3, 4).Inverse(),
+			NewVec(-2, 2, 2),
+		},
+		{
+			"Test 3",
+			NewVec(2, 3, 4),
+			NewScaling(-1, 1, 1).Inverse(),
+			NewVec(-2, 3, 4),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewRotationX(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Vec
+		b    *Matrix
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewVec(0, 1, 0),
+			NewRotationX(math.Pi / 4),
+			NewVec(0, math.Sqrt(2)/2, math.Sqrt(2)/2),
+		},
+		{
+			"Test 2",
+			NewVec(0, 1, 0),
+			NewRotationX(math.Pi / 2),
+			NewVec(0, 0, 1),
+		},
+		{
+			"Test 3",
+			NewVec(0, 1, 0),
+			NewRotationX(math.Pi / 4).Inverse(),
+			NewVec(0, math.Sqrt(2)/2, -math.Sqrt(2)/2),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewRotationY(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Vec
+		b    *Matrix
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewVec(0, 0, 1),
+			NewRotationY(math.Pi / 4),
+			NewVec(math.Sqrt(2)/2, 0, math.Sqrt(2)/2),
+		},
+		{
+			"Test 2",
+			NewVec(0, 0, 1),
+			NewRotationY(math.Pi / 2),
+			NewVec(1, 0, 0),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewRotationZ(t *testing.T) {
+	tests := []struct {
+		name string
+		a    Vec
+		b    *Matrix
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewVec(0, 1, 0),
+			NewRotationZ(math.Pi / 4),
+			NewVec(-math.Sqrt(2)/2, math.Sqrt(2)/2, 0),
+		},
+		{
+			"Test 2",
+			NewVec(0, 1, 0),
+			NewRotationZ(math.Pi / 2),
+			NewVec(-1, 0, 0),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.a.MulMat(tt.b); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
 	}

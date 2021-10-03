@@ -1,7 +1,6 @@
 package geom
 
 import (
-	"errors"
 	"math"
 
 	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
@@ -27,6 +26,51 @@ func NewIdentityMatrix() *Matrix {
 	return NewMatrix(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	)
+}
+
+func NewTranslation(x, y, z float64) *Matrix {
+	return NewMatrix(
+		1, 0, 0, x,
+		0, 1, 0, y,
+		0, 0, 1, z,
+		0, 0, 0, 1,
+	)
+}
+
+func NewScaling(x, y, z float64) *Matrix {
+	return NewMatrix(
+		x, 0, 0, 0,
+		0, y, 0, 0,
+		0, 0, z, 0,
+		0, 0, 0, 1,
+	)
+}
+
+func NewRotationX(radians float64) *Matrix {
+	return NewMatrix(
+		1, 0, 0, 0,
+		0, math.Cos(radians), -math.Sin(radians), 0,
+		0, math.Sin(radians), math.Cos(radians), 0,
+		0, 0, 0, 1,
+	)
+}
+
+func NewRotationY(radians float64) *Matrix {
+	return NewMatrix(
+		math.Cos(radians), 0, math.Sin(radians), 0,
+		0, 1, 0, 0,
+		-math.Sin(radians), 0, math.Cos(radians), 0,
+		0, 0, 0, 1,
+	)
+}
+
+func NewRotationZ(radians float64) *Matrix {
+	return NewMatrix(
+		math.Cos(radians), -math.Sin(radians), 0, 0,
+		math.Sin(radians), math.Cos(radians), 0, 0,
 		0, 0, 1, 0,
 		0, 0, 0, 1,
 	)
@@ -87,13 +131,13 @@ func (a *Matrix) Invertible() bool {
 	return a.Determinant() != 0.0
 }
 
-func (a *Matrix) Inverse() (*Matrix, error) {
+func (a *Matrix) Inverse() *Matrix {
 	if a.inv != nil {
-		return a.inv, nil
+		return a.inv
 	}
 
 	if !a.Invertible() {
-		return &Matrix{}, errors.New("Matrix is not invertible")
+		panic("Matrix not invertible")
 	}
 
 	i := &Matrix{}
@@ -110,7 +154,7 @@ func (a *Matrix) Inverse() (*Matrix, error) {
 
 	a.inv, i.inv = i, a
 
-	return i, nil
+	return i
 }
 
 func determinant2(matrix [2][2]float64) float64 {
