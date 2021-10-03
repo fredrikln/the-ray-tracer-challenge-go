@@ -65,7 +65,7 @@ func TestRayTranslate(t *testing.T) {
 	r2 := r.Mul(m)
 
 	if !r2.Origin.Eq(NewPoint(4, 6, 8)) || !r2.Direction.Eq(NewVec(0, 1, 0)) {
-		t.Error("Invalid ray translation", r2.Origin, r2.Direction)
+		t.Errorf("Invalid ray translation, got %v %v, want %v, %v", r2.Origin, r2.Direction, NewPoint(4, 6, 8), NewVec(0, 1, 0))
 	}
 }
 
