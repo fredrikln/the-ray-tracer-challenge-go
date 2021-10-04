@@ -101,3 +101,7 @@ func (a Vec) Cross(b Vec) Vec {
 		a.X*b.Y - a.Y*b.X,
 	}
 }
+
+func (a Vec) Reflect(n Vec) Vec {
+	return a.Sub(n.Mul(2).Mul(a.Dot(n)))
+}

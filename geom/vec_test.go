@@ -241,3 +241,33 @@ func TestCross(t *testing.T) {
 		})
 	}
 }
+
+func TestReflect(t *testing.T) {
+	tests := []struct {
+		name string
+		v    Vec
+		n    Vec
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewVec(1, -1, 0),
+			NewVec(0, 1, 0),
+			NewVec(1, 1, 0),
+		},
+		{
+			"Test 2",
+			NewVec(0, -1, 0),
+			NewVec(math.Sqrt(2)/2, math.Sqrt(2)/2, 0),
+			NewVec(1, 0, 0),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.v.Reflect(tt.n); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

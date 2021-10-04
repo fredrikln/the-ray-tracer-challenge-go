@@ -1,6 +1,9 @@
 package geom
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestSphereIntersectTwoPoints(t *testing.T) {
 	ray := NewRay(NewPoint(0, 0, -5), NewVec(0, 0, 1))
@@ -123,5 +126,82 @@ func TestIntersectTranslated(t *testing.T) {
 	if len(xs) != 0 {
 		t.Error("Got too many intersections", xs)
 		return
+	}
+}
+
+func TestSphereNormalAt(t *testing.T) {
+	sphere := NewSphere()
+
+	tests := []struct {
+		name string
+		p    Point
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewPoint(1, 0, 0),
+			NewVec(1, 0, 0),
+		},
+		{
+			"Test 2",
+			NewPoint(0, 1, 0),
+			NewVec(0, 1, 0),
+		},
+		{
+			"Test 3",
+			NewPoint(0, 0, 1),
+			NewVec(0, 0, 1),
+		},
+		{
+			"Test 4",
+			NewPoint(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3),
+			NewVec(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3),
+		},
+		{
+			"Test 5",
+			NewPoint(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3),
+			NewVec(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3).Norm(),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := sphere.NormalAt(tt.p); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSphereNormalAtTransformed(t *testing.T) {
+	tests := []struct {
+		name string
+		m    *Matrix
+		p    Point
+		want Vec
+	}{
+		{
+			"Test 1",
+			NewTranslation(0, 1, 0),
+			NewPoint(0, 1.70711, -0.70711),
+			NewVec(0, 0.70711, -0.70711),
+		},
+		{
+			"Test 2",
+			NewScaling(1, 0.5, 1).Mul(NewRotationZ(math.Pi / 5)),
+			NewPoint(0, math.Sqrt(2)/2, -math.Sqrt(2)/2),
+			NewVec(0, 0.97014, -0.24254),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := NewSphere()
+			s.SetTransform(tt.m)
+
+			if got := s.NormalAt(tt.p); !got.Eq(tt.want) {
+				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
