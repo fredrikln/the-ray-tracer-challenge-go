@@ -2,7 +2,9 @@ package main
 
 import (
 	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
+	m "github.com/fredrikln/the-ray-tracer-challenge-go/material"
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/render"
+	s "github.com/fredrikln/the-ray-tracer-challenge-go/surface"
 )
 
 type Projectile struct {
@@ -26,7 +28,6 @@ func main() {
 	// Set up canvas
 	pixels := 500
 	canvas := r.NewCanvas(pixels, pixels)
-	c := r.NewColor(1.0, 0.0, 0.0)
 
 	// Ray starting at Z -5
 	rayOrigin := g.NewPoint(0, 0, -5)
@@ -42,7 +43,12 @@ func main() {
 	half := wallSize / 2
 
 	// Shape is at Z 0
-	shape := g.NewSphere()
+	shape := s.NewSphere()
+	mat := m.NewMaterial()
+	mat.Color = m.NewColor(1, 0.2, 1)
+	shape.Material = mat
+
+	light := m.NewPointLight(g.NewPoint(-10, 10, -10), m.NewColor(1, 1, 1))
 
 	for y := 0; y < pixels; y += 1 {
 		// 3.5 - (0.014 * 0) to 3.5 - (0.014 * 500) = 3.5 to 3.5-7 = 3.5 to -3.5
@@ -61,9 +67,15 @@ func main() {
 			xs := shape.Intersect(r)
 
 			// check if we have a hit
-			if _, hit := g.GetHit(xs); hit {
+			if hit, didHit := g.GetHit(xs); didHit {
+				point := r.Position(hit.Time)
+				normal := hit.Object.NormalAt(point)
+				eyev := r.Direction.Mul(-1)
+
+				color := shape.Material.Lighting(light, point, eyev, normal)
+
 				// draw hit to canvas at x, y with color
-				canvas.SetPixel(x, y, c)
+				canvas.SetPixel(x, y, color)
 			}
 		}
 	}

@@ -6,27 +6,29 @@ import (
 	"image/png"
 	"math"
 	"os"
+
+	m "github.com/fredrikln/the-ray-tracer-challenge-go/material"
 )
 
 type Canvas struct {
 	Width  int
 	Height int
-	Pixels []Color
+	Pixels []m.Color
 }
 
 func NewCanvas(width, height int) Canvas {
-	pixels := make([]Color, width*height)
+	pixels := make([]m.Color, width*height)
 
 	return Canvas{
 		width, height, pixels,
 	}
 }
 
-func (c *Canvas) GetPixel(x, y int) Color {
+func (c *Canvas) GetPixel(x, y int) m.Color {
 	return c.Pixels[y*c.Width+x]
 }
 
-func (c *Canvas) SetPixel(x, y int, color Color) {
+func (c *Canvas) SetPixel(x, y int, color m.Color) {
 	c.Pixels[y*c.Width+x] = color
 }
 

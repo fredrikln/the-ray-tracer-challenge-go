@@ -3,6 +3,8 @@ package render
 import (
 	"strings"
 	"testing"
+
+	m "github.com/fredrikln/the-ray-tracer-challenge-go/material"
 )
 
 func TestNewCanvas(t *testing.T) {
@@ -24,8 +26,8 @@ func TestNewCanvas(t *testing.T) {
 func TestSetPixel(t *testing.T) {
 	t.Run("Test", func(t *testing.T) {
 		canvas := NewCanvas(10, 20)
-		red := NewColor(1.0, 0.0, 0.0)
-		want := NewColor(1.0, 0.0, 0.0)
+		red := m.NewColor(1.0, 0.0, 0.0)
+		want := m.NewColor(1.0, 0.0, 0.0)
 
 		canvas.SetPixel(2, 3, red)
 
@@ -48,9 +50,9 @@ func TestSetPixel(t *testing.T) {
 
 func TestSavePPM(t *testing.T) {
 	canvas := NewCanvas(5, 3)
-	c1 := NewColor(1.5, 0.0, 0.0)
-	c2 := NewColor(0.0, 0.5, 0.0)
-	c3 := NewColor(-0.5, 0.0, 1.0)
+	c1 := m.NewColor(1.5, 0.0, 0.0)
+	c2 := m.NewColor(0.0, 0.5, 0.0)
+	c3 := m.NewColor(-0.5, 0.0, 1.0)
 
 	canvas.SetPixel(0, 0, c1)
 	canvas.SetPixel(2, 1, c2)
@@ -85,7 +87,7 @@ func TestSavePPM(t *testing.T) {
 
 func TestSavePPM2(t *testing.T) {
 	canvas := NewCanvas(10, 2)
-	c := NewColor(1.0, 0.8, 0.6)
+	c := m.NewColor(1.0, 0.8, 0.6)
 
 	for y := 0; y < canvas.Height; y += 1 {
 		for x := 0; x < canvas.Width; x += 1 {

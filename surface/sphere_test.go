@@ -1,12 +1,15 @@
-package geom
+package surface
 
 import (
 	"math"
 	"testing"
+
+	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
+	m "github.com/fredrikln/the-ray-tracer-challenge-go/material"
 )
 
 func TestSphereIntersectTwoPoints(t *testing.T) {
-	ray := NewRay(NewPoint(0, 0, -5), NewVec(0, 0, 1))
+	ray := g.NewRay(g.NewPoint(0, 0, -5), g.NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)
@@ -22,7 +25,7 @@ func TestSphereIntersectTwoPoints(t *testing.T) {
 }
 
 func TestSphereIntersectTangent(t *testing.T) {
-	ray := NewRay(NewPoint(0, 1, -5), NewVec(0, 0, 1))
+	ray := g.NewRay(g.NewPoint(0, 1, -5), g.NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)
@@ -38,7 +41,7 @@ func TestSphereIntersectTangent(t *testing.T) {
 }
 
 func TestSphereIntersectMisses(t *testing.T) {
-	ray := NewRay(NewPoint(0, 2, -5), NewVec(0, 0, 1))
+	ray := g.NewRay(g.NewPoint(0, 2, -5), g.NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)
@@ -50,7 +53,7 @@ func TestSphereIntersectMisses(t *testing.T) {
 }
 
 func TestSphereIntersectOriginInside(t *testing.T) {
-	ray := NewRay(NewPoint(0, 0, 0), NewVec(0, 0, 1))
+	ray := g.NewRay(g.NewPoint(0, 0, 0), g.NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)
@@ -66,7 +69,7 @@ func TestSphereIntersectOriginInside(t *testing.T) {
 }
 
 func TestSphereIntersectBehind(t *testing.T) {
-	ray := NewRay(NewPoint(0, 0, 5), NewVec(0, 0, 1))
+	ray := g.NewRay(g.NewPoint(0, 0, 5), g.NewVec(0, 0, 1))
 	sphere := NewSphere()
 
 	xs := sphere.Intersect(ray)
@@ -84,25 +87,25 @@ func TestSphereIntersectBehind(t *testing.T) {
 func TestSphereDefaultTransform(t *testing.T) {
 	s := NewSphere()
 
-	if !s.transform.Eq(NewIdentityMatrix()) {
-		t.Errorf("Sphere default transform is wrong, got %v", s.transform)
+	if !s.Transform.Eq(g.NewIdentityMatrix()) {
+		t.Errorf("Sphere default transform is wrong, got %v", s.Transform)
 	}
 }
 
 func TestSetTransform(t *testing.T) {
 	s := NewSphere()
-	tf := NewTranslation(2, 3, 4)
+	tf := g.NewTranslation(2, 3, 4)
 	s.SetTransform(tf)
 
-	if !s.transform.Eq(tf) {
-		t.Errorf("Sphere set transform got wrong, got %v", s.transform)
+	if !s.Transform.Eq(tf) {
+		t.Errorf("Sphere set transform got wrong, got %v", s.Transform)
 	}
 }
 
 func TestIntersectScaled(t *testing.T) {
-	r := NewRay(NewPoint(0, 0, -5), NewVec(0, 0, 1))
+	r := g.NewRay(g.NewPoint(0, 0, -5), g.NewVec(0, 0, 1))
 	s := NewSphere()
-	s.SetTransform(NewScaling(2, 2, 2))
+	s.SetTransform(g.NewScaling(2, 2, 2))
 
 	xs := s.Intersect(r)
 
@@ -117,9 +120,9 @@ func TestIntersectScaled(t *testing.T) {
 }
 
 func TestIntersectTranslated(t *testing.T) {
-	r := NewRay(NewPoint(0, 0, -5), NewVec(0, 0, 1))
+	r := g.NewRay(g.NewPoint(0, 0, -5), g.NewVec(0, 0, 1))
 	s := NewSphere()
-	s.SetTransform(NewTranslation(5, 0, 0))
+	s.SetTransform(g.NewTranslation(5, 0, 0))
 
 	xs := s.Intersect(r)
 
@@ -134,33 +137,33 @@ func TestSphereNormalAt(t *testing.T) {
 
 	tests := []struct {
 		name string
-		p    Point
-		want Vec
+		p    g.Point
+		want g.Vec
 	}{
 		{
 			"Test 1",
-			NewPoint(1, 0, 0),
-			NewVec(1, 0, 0),
+			g.NewPoint(1, 0, 0),
+			g.NewVec(1, 0, 0),
 		},
 		{
 			"Test 2",
-			NewPoint(0, 1, 0),
-			NewVec(0, 1, 0),
+			g.NewPoint(0, 1, 0),
+			g.NewVec(0, 1, 0),
 		},
 		{
 			"Test 3",
-			NewPoint(0, 0, 1),
-			NewVec(0, 0, 1),
+			g.NewPoint(0, 0, 1),
+			g.NewVec(0, 0, 1),
 		},
 		{
 			"Test 4",
-			NewPoint(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3),
-			NewVec(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3),
+			g.NewPoint(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3),
+			g.NewVec(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3),
 		},
 		{
 			"Test 5",
-			NewPoint(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3),
-			NewVec(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3).Norm(),
+			g.NewPoint(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3),
+			g.NewVec(math.Sqrt(3)/3, math.Sqrt(3)/3, math.Sqrt(3)/3).Norm(),
 		},
 	}
 
@@ -176,21 +179,21 @@ func TestSphereNormalAt(t *testing.T) {
 func TestSphereNormalAtTransformed(t *testing.T) {
 	tests := []struct {
 		name string
-		m    *Matrix
-		p    Point
-		want Vec
+		m    *g.Matrix
+		p    g.Point
+		want g.Vec
 	}{
 		{
 			"Test 1",
-			NewTranslation(0, 1, 0),
-			NewPoint(0, 1.70711, -0.70711),
-			NewVec(0, 0.70711, -0.70711),
+			g.NewTranslation(0, 1, 0),
+			g.NewPoint(0, 1.70711, -0.70711),
+			g.NewVec(0, 0.70711, -0.70711),
 		},
 		{
 			"Test 2",
-			NewScaling(1, 0.5, 1).Mul(NewRotationZ(math.Pi / 5)),
-			NewPoint(0, math.Sqrt(2)/2, -math.Sqrt(2)/2),
-			NewVec(0, 0.97014, -0.24254),
+			g.NewScaling(1, 0.5, 1).Mul(g.NewRotationZ(math.Pi / 5)),
+			g.NewPoint(0, math.Sqrt(2)/2, -math.Sqrt(2)/2),
+			g.NewVec(0, 0.97014, -0.24254),
 		},
 	}
 
@@ -203,5 +206,26 @@ func TestSphereNormalAtTransformed(t *testing.T) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestSphereDefaultMaterial(t *testing.T) {
+	s := NewSphere()
+
+	if s.Material != m.NewMaterial() {
+		t.Error("Invalid sphere default material")
+	}
+}
+
+func TestSphereSetMaterial(t *testing.T) {
+	s := NewSphere()
+
+	mat := m.NewMaterial()
+	mat.Ambient = 1
+
+	s.Material = mat
+
+	if s.Material != mat {
+		t.Error("Invalid sphere material")
 	}
 }
