@@ -36,7 +36,7 @@ func getColorValue(c float64) int {
 	return int(math.Min(math.Max(math.Round(c*255), 0), 255))
 }
 
-func (c *Canvas) getPPMString() string {
+func (c *Canvas) GetPPMString() string {
 	data := "P3\n"
 	data += fmt.Sprintf("%d %d\n", c.Width, c.Height)
 	data += "255\n"
@@ -84,7 +84,7 @@ func (c *Canvas) SavePPM(filename string) {
 		return
 	}
 
-	data := c.getPPMString()
+	data := c.GetPPMString()
 
 	bytes, err := f.Write([]byte(data))
 	if err != nil {

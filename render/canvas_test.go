@@ -1,15 +1,16 @@
-package render
+package render_test
 
 import (
 	"strings"
 	"testing"
 
 	m "github.com/fredrikln/the-ray-tracer-challenge-go/material"
+	r "github.com/fredrikln/the-ray-tracer-challenge-go/render"
 )
 
 func TestNewCanvas(t *testing.T) {
 	t.Run("Test", func(t *testing.T) {
-		canvas := NewCanvas(10, 20)
+		canvas := r.NewCanvas(10, 20)
 
 		if canvas.Width != 10 || canvas.Height != 20 {
 			t.Error("Canvas width and height wrong")
@@ -25,7 +26,7 @@ func TestNewCanvas(t *testing.T) {
 
 func TestSetPixel(t *testing.T) {
 	t.Run("Test", func(t *testing.T) {
-		canvas := NewCanvas(10, 20)
+		canvas := r.NewCanvas(10, 20)
 		red := m.NewColor(1.0, 0.0, 0.0)
 		want := m.NewColor(1.0, 0.0, 0.0)
 
@@ -49,7 +50,7 @@ func TestSetPixel(t *testing.T) {
 }
 
 func TestSavePPM(t *testing.T) {
-	canvas := NewCanvas(5, 3)
+	canvas := r.NewCanvas(5, 3)
 	c1 := m.NewColor(1.5, 0.0, 0.0)
 	c2 := m.NewColor(0.0, 0.5, 0.0)
 	c3 := m.NewColor(-0.5, 0.0, 1.0)
@@ -58,7 +59,7 @@ func TestSavePPM(t *testing.T) {
 	canvas.SetPixel(2, 1, c2)
 	canvas.SetPixel(4, 2, c3)
 
-	ppm := canvas.getPPMString()
+	ppm := canvas.GetPPMString()
 	lines := strings.Split(ppm, "\n")
 
 	tests := []struct {
@@ -86,7 +87,7 @@ func TestSavePPM(t *testing.T) {
 }
 
 func TestSavePPM2(t *testing.T) {
-	canvas := NewCanvas(10, 2)
+	canvas := r.NewCanvas(10, 2)
 	c := m.NewColor(1.0, 0.8, 0.6)
 
 	for y := 0; y < canvas.Height; y += 1 {
@@ -95,7 +96,7 @@ func TestSavePPM2(t *testing.T) {
 		}
 	}
 
-	ppm := canvas.getPPMString()
+	ppm := canvas.GetPPMString()
 	lines := strings.Split(ppm, "\n")
 
 	tests := []struct {

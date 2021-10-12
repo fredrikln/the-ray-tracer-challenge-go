@@ -1,12 +1,16 @@
-package geom
+package geom_test
 
-import "testing"
+import (
+	"testing"
+
+	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
+)
 
 func TestNewRay(t *testing.T) {
 	t.Run("Test", func(t *testing.T) {
-		origin := NewPoint(1.0, 2.0, 3.0)
-		direction := NewVec(4, 5, 6)
-		ray := NewRay(origin, direction)
+		origin := g.NewPoint(1.0, 2.0, 3.0)
+		direction := g.NewVec(4, 5, 6)
+		ray := g.NewRay(origin, direction)
 
 		if !ray.Origin.Eq(origin) || !ray.Direction.Eq(direction) {
 			t.Error("Ray initialized incorrectly")
@@ -18,33 +22,33 @@ func TestRayPosition(t *testing.T) {
 	t.Run("Test", func(t *testing.T) {
 		tests := []struct {
 			name string
-			a    Ray
+			a    g.Ray
 			time float64
-			want Point
+			want g.Point
 		}{
 			{
 				"Test 1",
-				NewRay(NewPoint(2, 3, 4), NewVec(1, 0, 0)),
+				g.NewRay(g.NewPoint(2, 3, 4), g.NewVec(1, 0, 0)),
 				0,
-				NewPoint(2, 3, 4),
+				g.NewPoint(2, 3, 4),
 			},
 			{
 				"Test 2",
-				NewRay(NewPoint(2, 3, 4), NewVec(1, 0, 0)),
+				g.NewRay(g.NewPoint(2, 3, 4), g.NewVec(1, 0, 0)),
 				1,
-				NewPoint(3, 3, 4),
+				g.NewPoint(3, 3, 4),
 			},
 			{
 				"Test 3",
-				NewRay(NewPoint(2, 3, 4), NewVec(1, 0, 0)),
+				g.NewRay(g.NewPoint(2, 3, 4), g.NewVec(1, 0, 0)),
 				-1,
-				NewPoint(1, 3, 4),
+				g.NewPoint(1, 3, 4),
 			},
 			{
 				"Test 4",
-				NewRay(NewPoint(2, 3, 4), NewVec(1, 0, 0)),
+				g.NewRay(g.NewPoint(2, 3, 4), g.NewVec(1, 0, 0)),
 				2.5,
-				NewPoint(4.5, 3, 4),
+				g.NewPoint(4.5, 3, 4),
 			},
 		}
 
@@ -59,23 +63,23 @@ func TestRayPosition(t *testing.T) {
 }
 
 func TestRayTranslate(t *testing.T) {
-	r := NewRay(NewPoint(1, 2, 3), NewVec(0, 1, 0))
-	m := NewTranslation(3, 4, 5)
+	r := g.NewRay(g.NewPoint(1, 2, 3), g.NewVec(0, 1, 0))
+	m := g.NewTranslation(3, 4, 5)
 
 	r2 := r.Mul(m)
 
-	if !r2.Origin.Eq(NewPoint(4, 6, 8)) || !r2.Direction.Eq(NewVec(0, 1, 0)) {
-		t.Errorf("Invalid ray translation, got %v %v, want %v, %v", r2.Origin, r2.Direction, NewPoint(4, 6, 8), NewVec(0, 1, 0))
+	if !r2.Origin.Eq(g.NewPoint(4, 6, 8)) || !r2.Direction.Eq(g.NewVec(0, 1, 0)) {
+		t.Errorf("Invalid ray translation, got %v %v, want %v, %v", r2.Origin, r2.Direction, g.NewPoint(4, 6, 8), g.NewVec(0, 1, 0))
 	}
 }
 
 func TestRayScale(t *testing.T) {
-	r := NewRay(NewPoint(1, 2, 3), NewVec(0, 1, 0))
-	m := NewScaling(2, 3, 4)
+	r := g.NewRay(g.NewPoint(1, 2, 3), g.NewVec(0, 1, 0))
+	m := g.NewScaling(2, 3, 4)
 
 	r2 := r.Mul(m)
 
-	if !r2.Origin.Eq(NewPoint(2, 6, 12)) || !r2.Direction.Eq(NewVec(0, 3, 0)) {
-		t.Errorf("Invalid ray scaling, Got %v %v, Want %v %v", r2.Origin, r2.Direction, NewPoint(2, 6, 12), NewVec(0, 3, 0))
+	if !r2.Origin.Eq(g.NewPoint(2, 6, 12)) || !r2.Direction.Eq(g.NewVec(0, 3, 0)) {
+		t.Errorf("Invalid ray scaling, Got %v %v, Want %v %v", r2.Origin, r2.Direction, g.NewPoint(2, 6, 12), g.NewVec(0, 3, 0))
 	}
 }

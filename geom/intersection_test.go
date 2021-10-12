@@ -1,4 +1,4 @@
-package tests
+package geom_test
 
 import (
 	"testing"

@@ -1,4 +1,4 @@
-package tests
+package material_test
 
 import (
 	"math"
