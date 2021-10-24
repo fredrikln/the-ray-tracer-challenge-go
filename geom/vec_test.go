@@ -1,15 +1,13 @@
-package geom_test
+package geom
 
 import (
 	"math"
 	"testing"
-
-	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
 )
 
 func TestNewVec(t *testing.T) {
 	t.Run("Test", func(t *testing.T) {
-		vector := g.NewVec(1.0, 2.0, 3.0)
+		vector := NewVec(1.0, 2.0, 3.0)
 
 		if vector.X != 1.0 || vector.Y != 2.0 || vector.Z != 3.0 {
 			t.Error("Vector coordinates not correct")
@@ -20,11 +18,11 @@ func TestNewVec(t *testing.T) {
 func TestAdd(t *testing.T) {
 	tests := []struct {
 		name string
-		a    g.Vec
-		b    g.Vec
-		want g.Vec
+		a    Vec
+		b    Vec
+		want Vec
 	}{
-		{"Test", g.NewVec(3.0, -2.0, 5.0), g.NewVec(-2.0, 3.0, 1.0), g.NewVec(1.0, 1.0, 6.0)},
+		{"Test", NewVec(3.0, -2.0, 5.0), NewVec(-2.0, 3.0, 1.0), NewVec(1.0, 1.0, 6.0)},
 	}
 
 	for _, tt := range tests {
@@ -40,12 +38,12 @@ func TestAdd(t *testing.T) {
 func TestSub(t *testing.T) {
 	tests := []struct {
 		name string
-		a    g.Vec
-		b    g.Vec
-		want g.Vec
+		a    Vec
+		b    Vec
+		want Vec
 	}{
-		{"Test 1", g.NewVec(3.0, 2.0, 1.0), g.NewVec(5.0, 6.0, 7.0), g.NewVec(-2.0, -4.0, -6.0)},
-		{"Test 2", g.NewVec(0.0, 0.0, 0.0), g.NewVec(1.0, -2.0, 3.0), g.NewVec(-1.0, 2.0, -3.0)},
+		{"Test 1", NewVec(3.0, 2.0, 1.0), NewVec(5.0, 6.0, 7.0), NewVec(-2.0, -4.0, -6.0)},
+		{"Test 2", NewVec(0.0, 0.0, 0.0), NewVec(1.0, -2.0, 3.0), NewVec(-1.0, 2.0, -3.0)},
 	}
 
 	for _, tt := range tests {
@@ -61,10 +59,10 @@ func TestSub(t *testing.T) {
 func TestNeg(t *testing.T) {
 	tests := []struct {
 		name string
-		a    g.Vec
-		want g.Vec
+		a    Vec
+		want Vec
 	}{
-		{"Test", g.NewVec(1.0, -2.0, 3.0), g.NewVec(-1.0, 2.0, -3.0)},
+		{"Test", NewVec(1.0, -2.0, 3.0), NewVec(-1.0, 2.0, -3.0)},
 	}
 
 	for _, tt := range tests {
@@ -80,12 +78,12 @@ func TestNeg(t *testing.T) {
 func TestMul(t *testing.T) {
 	tests := []struct {
 		name string
-		a    g.Vec
+		a    Vec
 		b    float64
-		want g.Vec
+		want Vec
 	}{
-		{"Test 1", g.NewVec(1.0, -2.0, 3.0), 3.5, g.NewVec(3.5, -7.0, 10.5)},
-		{"Test 2", g.NewVec(1.0, -2.0, 3.0), 0.5, g.NewVec(0.5, -1.0, 1.5)},
+		{"Test 1", NewVec(1.0, -2.0, 3.0), 3.5, NewVec(3.5, -7.0, 10.5)},
+		{"Test 2", NewVec(1.0, -2.0, 3.0), 0.5, NewVec(0.5, -1.0, 1.5)},
 	}
 
 	for _, tt := range tests {
@@ -134,11 +132,11 @@ func TestMul(t *testing.T) {
 func TestDiv(t *testing.T) {
 	tests := []struct {
 		name string
-		a    g.Vec
+		a    Vec
 		b    float64
-		want g.Vec
+		want Vec
 	}{
-		{"Test", g.NewVec(1.0, -2.0, 3.0), 2.0, g.NewVec(0.5, -1.0, 1.5)},
+		{"Test", NewVec(1.0, -2.0, 3.0), 2.0, NewVec(0.5, -1.0, 1.5)},
 	}
 
 	for _, tt := range tests {
@@ -154,14 +152,14 @@ func TestDiv(t *testing.T) {
 func TestMag(t *testing.T) {
 	tests := []struct {
 		name string
-		a    g.Vec
+		a    Vec
 		want float64
 	}{
-		{"Test 1", g.NewVec(1.0, 0.0, 0.0), 1.0},
-		{"Test 2", g.NewVec(0.0, 1.0, 0.0), 1.0},
-		{"Test 3", g.NewVec(0.0, 0.0, 1.0), 1.0},
-		{"Test 4", g.NewVec(1.0, 2.0, 3.0), math.Sqrt(14.0)},
-		{"Test 5", g.NewVec(-1.0, -2.0, -3.0), math.Sqrt(14.0)},
+		{"Test 1", NewVec(1.0, 0.0, 0.0), 1.0},
+		{"Test 2", NewVec(0.0, 1.0, 0.0), 1.0},
+		{"Test 3", NewVec(0.0, 0.0, 1.0), 1.0},
+		{"Test 4", NewVec(1.0, 2.0, 3.0), math.Sqrt(14.0)},
+		{"Test 5", NewVec(-1.0, -2.0, -3.0), math.Sqrt(14.0)},
 	}
 
 	for _, tt := range tests {
@@ -177,11 +175,11 @@ func TestMag(t *testing.T) {
 func TestNorm(t *testing.T) {
 	tests := []struct {
 		name string
-		a    g.Vec
-		want g.Vec
+		a    Vec
+		want Vec
 	}{
-		{"Test 1", g.NewVec(1.0, 0.0, 0.0), g.NewVec(1.0, 0.0, 0.0)},
-		{"Test 2", g.NewVec(1.0, 2.0, 3.0), g.NewVec(1/math.Sqrt(14.0), 2/math.Sqrt(14.0), 3/math.Sqrt(14.0))},
+		{"Test 1", NewVec(1.0, 0.0, 0.0), NewVec(1.0, 0.0, 0.0)},
+		{"Test 2", NewVec(1.0, 2.0, 3.0), NewVec(1/math.Sqrt(14.0), 2/math.Sqrt(14.0), 3/math.Sqrt(14.0))},
 	}
 
 	for _, tt := range tests {
@@ -194,7 +192,7 @@ func TestNorm(t *testing.T) {
 	}
 
 	t.Run("Test 3", func(t *testing.T) {
-		vec := g.NewVec(1.0, 2.0, 3.0)
+		vec := NewVec(1.0, 2.0, 3.0)
 		mag := vec.Norm().Mag()
 
 		if mag != 1 {
@@ -206,11 +204,11 @@ func TestNorm(t *testing.T) {
 func TestDot(t *testing.T) {
 	tests := []struct {
 		name string
-		a    g.Vec
-		b    g.Vec
+		a    Vec
+		b    Vec
 		want float64
 	}{
-		{"Test 1", g.NewVec(1.0, 2.0, 3.0), g.NewVec(2.0, 3.0, 4.0), 20},
+		{"Test 1", NewVec(1.0, 2.0, 3.0), NewVec(2.0, 3.0, 4.0), 20},
 	}
 
 	for _, tt := range tests {
@@ -226,12 +224,12 @@ func TestDot(t *testing.T) {
 func TestCross(t *testing.T) {
 	tests := []struct {
 		name string
-		a    g.Vec
-		b    g.Vec
-		want g.Vec
+		a    Vec
+		b    Vec
+		want Vec
 	}{
-		{"Test 1", g.NewVec(1.0, 2.0, 3.0), g.NewVec(2.0, 3.0, 4.0), g.NewVec(-1, 2, -1)},
-		{"Test 2", g.NewVec(2.0, 3.0, 4.0), g.NewVec(1.0, 2.0, 3.0), g.NewVec(1, -2, 1)},
+		{"Test 1", NewVec(1.0, 2.0, 3.0), NewVec(2.0, 3.0, 4.0), NewVec(-1, 2, -1)},
+		{"Test 2", NewVec(2.0, 3.0, 4.0), NewVec(1.0, 2.0, 3.0), NewVec(1, -2, 1)},
 	}
 
 	for _, tt := range tests {
@@ -247,21 +245,21 @@ func TestCross(t *testing.T) {
 func TestReflect(t *testing.T) {
 	tests := []struct {
 		name string
-		v    g.Vec
-		n    g.Vec
-		want g.Vec
+		v    Vec
+		n    Vec
+		want Vec
 	}{
 		{
 			"Test 1",
-			g.NewVec(1, -1, 0),
-			g.NewVec(0, 1, 0),
-			g.NewVec(1, 1, 0),
+			NewVec(1, -1, 0),
+			NewVec(0, 1, 0),
+			NewVec(1, 1, 0),
 		},
 		{
 			"Test 2",
-			g.NewVec(0, -1, 0),
-			g.NewVec(math.Sqrt(2)/2, math.Sqrt(2)/2, 0),
-			g.NewVec(1, 0, 0),
+			NewVec(0, -1, 0),
+			NewVec(math.Sqrt(2)/2, math.Sqrt(2)/2, 0),
+			NewVec(1, 0, 0),
 		},
 	}
 

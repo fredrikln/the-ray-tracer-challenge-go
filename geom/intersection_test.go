@@ -2,26 +2,32 @@ package geom
 
 import (
 	"testing"
-
-	s "github.com/fredrikln/the-ray-tracer-challenge-go/surface"
 )
 
+type MockSurface struct{}
+
+func (MockSurface) Intersect(ray Ray) []Intersection {
+	return []Intersection{}
+}
+func (MockSurface) NormalAt(point Point) Vec {
+	return Vec{}
+}
+
 func TestIntersection(t *testing.T) {
-	var sphere s.Sphere
-	sphere = s.Sphere{}
+	element := MockSurface{}
 	time := 3.5
 
-	intersection := NewIntersection(time, sphere)
+	intersection := NewIntersection(time, element)
 
-	if intersection.Time != 3.5 || intersection.Object != sphere {
+	if intersection.Time != 3.5 || intersection.Object != element {
 		t.Error("Invalid intersection created")
 	}
 }
 
 func TestGetHitAllPositive(t *testing.T) {
-	s := s.NewSphere()
-	i1 := NewIntersection(1, s)
-	i2 := NewIntersection(2, s)
+	m := MockSurface{}
+	i1 := NewIntersection(1, m)
+	i2 := NewIntersection(2, m)
 	xs := []Intersection{i1, i2}
 
 	i, hit := GetHit(xs)
@@ -32,9 +38,9 @@ func TestGetHitAllPositive(t *testing.T) {
 }
 
 func TestGetHitSomeNegative(t *testing.T) {
-	s := s.NewSphere()
-	i1 := NewIntersection(-1, s)
-	i2 := NewIntersection(1, s)
+	m := MockSurface{}
+	i1 := NewIntersection(-1, m)
+	i2 := NewIntersection(1, m)
 	xs := []Intersection{i1, i2}
 
 	i, hit := GetHit(xs)
@@ -45,9 +51,9 @@ func TestGetHitSomeNegative(t *testing.T) {
 }
 
 func TestGetHitAllNegative(t *testing.T) {
-	s := s.NewSphere()
-	i1 := NewIntersection(-2, s)
-	i2 := NewIntersection(-1, s)
+	m := MockSurface{}
+	i1 := NewIntersection(-2, m)
+	i2 := NewIntersection(-1, m)
 	xs := []Intersection{i1, i2}
 
 	_, hit := GetHit(xs)
@@ -58,7 +64,7 @@ func TestGetHitAllNegative(t *testing.T) {
 }
 
 func TestGetHitGetLowestNonNegative(t *testing.T) {
-	s := s.NewSphere()
+	s := MockSurface{}
 	i1 := NewIntersection(5, s)
 	i2 := NewIntersection(7, s)
 	i3 := NewIntersection(-3, s)
