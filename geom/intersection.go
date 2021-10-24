@@ -5,8 +5,8 @@ import (
 )
 
 type Intersectable interface {
-	Intersect(r Ray) []Intersection
-	NormalAt(p Point) Vec
+	Intersect(ray Ray) []Intersection
+	NormalAt(point Point) Vec
 }
 
 type Intersection struct {

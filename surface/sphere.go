@@ -53,8 +53,8 @@ func (s *Sphere) SetTransform(matrix *g.Matrix) *Sphere {
 	return s
 }
 
-func (s Sphere) NormalAt(p g.Point) g.Vec {
-	objectPoint := p.MulMat(s.Transform.Inverse())
+func (s Sphere) NormalAt(point g.Point) g.Vec {
+	objectPoint := point.MulMat(s.Transform.Inverse())
 
 	objectNormal := objectPoint.Sub(g.NewPoint(0, 0, 0))
 	worldNormal := objectNormal.MulMat(s.Transform.Inverse().Transpose())

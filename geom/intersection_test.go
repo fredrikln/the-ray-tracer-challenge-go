@@ -1,17 +1,17 @@
-package geom_test
+package geom
 
 import (
 	"testing"
 
-	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
 	s "github.com/fredrikln/the-ray-tracer-challenge-go/surface"
 )
 
 func TestIntersection(t *testing.T) {
-	sphere := s.Sphere{}
+	var sphere s.Sphere
+	sphere = s.Sphere{}
 	time := 3.5
 
-	intersection := g.NewIntersection(time, sphere)
+	intersection := NewIntersection(time, sphere)
 
 	if intersection.Time != 3.5 || intersection.Object != sphere {
 		t.Error("Invalid intersection created")
@@ -20,11 +20,11 @@ func TestIntersection(t *testing.T) {
 
 func TestGetHitAllPositive(t *testing.T) {
 	s := s.NewSphere()
-	i1 := g.NewIntersection(1, s)
-	i2 := g.NewIntersection(2, s)
-	xs := []g.Intersection{i1, i2}
+	i1 := NewIntersection(1, s)
+	i2 := NewIntersection(2, s)
+	xs := []Intersection{i1, i2}
 
-	i, hit := g.GetHit(xs)
+	i, hit := GetHit(xs)
 
 	if i != i1 || !hit {
 		t.Error("Received wrong hit")
@@ -33,11 +33,11 @@ func TestGetHitAllPositive(t *testing.T) {
 
 func TestGetHitSomeNegative(t *testing.T) {
 	s := s.NewSphere()
-	i1 := g.NewIntersection(-1, s)
-	i2 := g.NewIntersection(1, s)
-	xs := []g.Intersection{i1, i2}
+	i1 := NewIntersection(-1, s)
+	i2 := NewIntersection(1, s)
+	xs := []Intersection{i1, i2}
 
-	i, hit := g.GetHit(xs)
+	i, hit := GetHit(xs)
 
 	if i != i2 || !hit {
 		t.Error("Received wrong hit")
@@ -46,11 +46,11 @@ func TestGetHitSomeNegative(t *testing.T) {
 
 func TestGetHitAllNegative(t *testing.T) {
 	s := s.NewSphere()
-	i1 := g.NewIntersection(-2, s)
-	i2 := g.NewIntersection(-1, s)
-	xs := []g.Intersection{i1, i2}
+	i1 := NewIntersection(-2, s)
+	i2 := NewIntersection(-1, s)
+	xs := []Intersection{i1, i2}
 
-	_, hit := g.GetHit(xs)
+	_, hit := GetHit(xs)
 
 	if hit != false {
 		t.Error("Received hit when should not")
@@ -59,13 +59,13 @@ func TestGetHitAllNegative(t *testing.T) {
 
 func TestGetHitGetLowestNonNegative(t *testing.T) {
 	s := s.NewSphere()
-	i1 := g.NewIntersection(5, s)
-	i2 := g.NewIntersection(7, s)
-	i3 := g.NewIntersection(-3, s)
-	i4 := g.NewIntersection(2, s)
-	xs := []g.Intersection{i1, i2, i3, i4}
+	i1 := NewIntersection(5, s)
+	i2 := NewIntersection(7, s)
+	i3 := NewIntersection(-3, s)
+	i4 := NewIntersection(2, s)
+	xs := []Intersection{i1, i2, i3, i4}
 
-	i, hit := g.GetHit(xs)
+	i, hit := GetHit(xs)
 
 	if i != i4 || !hit {
 		t.Error("Received wrong hit")
