@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"time"
+
 	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
 	m "github.com/fredrikln/the-ray-tracer-challenge-go/material"
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/render"
@@ -50,6 +53,8 @@ func main() {
 
 	light := m.NewPointLight(g.NewPoint(-10, 10, -10), m.NewColor(1, 1, 1))
 
+	timeBefore := time.Now()
+
 	for y := 0; y < pixels; y += 1 {
 		// 3.5 - (0.014 * 0) to 3.5 - (0.014 * 500) = 3.5 to 3.5-7 = 3.5 to -3.5
 		worldY := half - pixelSize*float64(y)
@@ -79,6 +84,12 @@ func main() {
 			}
 		}
 	}
+
+	timeAfter := time.Now()
+
+	diff := timeAfter.Sub(timeBefore)
+
+	fmt.Println("Render time:", diff)
 
 	canvas.SavePNG("test.png")
 }
