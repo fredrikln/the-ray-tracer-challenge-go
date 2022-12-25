@@ -23,7 +23,7 @@ func TestLighting(t *testing.T) {
 		name    string
 		eyev    g.Vec
 		normalv g.Vec
-		light   PointLight
+		light   *PointLight
 		want    Color
 	}{
 		{

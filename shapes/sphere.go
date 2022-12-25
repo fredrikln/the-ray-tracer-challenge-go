@@ -10,17 +10,29 @@ import (
 type Sphere struct {
 	Transform *g.Matrix
 
-	Material m.Material
+	Material *m.Material
 }
 
-func NewSphere() Sphere {
-	return Sphere{
+func NewSphere() *Sphere {
+	return &Sphere{
 		g.NewIdentityMatrix(),
 		m.NewMaterial(),
 	}
 }
 
-func (s Sphere) Intersect(ray g.Ray) []g.Intersection {
+func (s *Sphere) SetMaterial(m *m.Material) *Sphere {
+	s.Material = m
+
+	return s
+}
+
+func (s *Sphere) SetTransform(m *g.Matrix) *Sphere {
+	s.Transform = m
+
+	return s
+}
+
+func (s *Sphere) Intersect(ray g.Ray) []g.Intersection {
 	ray2 := ray.Mul(s.Transform.Inverse())
 
 	intersections := make([]g.Intersection, 0)
@@ -47,13 +59,7 @@ func (s Sphere) Intersect(ray g.Ray) []g.Intersection {
 	return intersections
 }
 
-func (s *Sphere) SetTransform(matrix *g.Matrix) *Sphere {
-	s.Transform = matrix
-
-	return s
-}
-
-func (s Sphere) NormalAt(point g.Point) g.Vec {
+func (s *Sphere) NormalAt(point g.Point) g.Vec {
 	objectPoint := point.MulMat(s.Transform.Inverse())
 
 	objectNormal := objectPoint.Sub(g.NewPoint(0, 0, 0))

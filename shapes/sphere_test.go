@@ -212,7 +212,7 @@ func TestSphereNormalAtTransformed(t *testing.T) {
 func TestSphereDefaultMaterial(t *testing.T) {
 	s := NewSphere()
 
-	if s.Material != m.NewMaterial() {
+	if *s.Material != *m.NewMaterial() {
 		t.Error("Invalid sphere default material")
 	}
 }

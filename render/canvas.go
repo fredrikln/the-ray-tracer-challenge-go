@@ -16,10 +16,10 @@ type Canvas struct {
 	Pixels []m.Color
 }
 
-func NewCanvas(width, height int) Canvas {
+func NewCanvas(width, height int) *Canvas {
 	pixels := make([]m.Color, width*height)
 
-	return Canvas{
+	return &Canvas{
 		width, height, pixels,
 	}
 }

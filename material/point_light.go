@@ -9,8 +9,8 @@ type PointLight struct {
 	Position  g.Point
 }
 
-func NewPointLight(position g.Point, intensity Color) PointLight {
-	return PointLight{
+func NewPointLight(position g.Point, intensity Color) *PointLight {
+	return &PointLight{
 		intensity,
 		position,
 	}

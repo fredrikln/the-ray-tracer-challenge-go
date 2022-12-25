@@ -14,8 +14,8 @@ type Material struct {
 	Shininess float64
 }
 
-func NewMaterial() Material {
-	return Material{
+func NewMaterial() *Material {
+	return &Material{
 		NewColor(1, 1, 1),
 		0.1,
 		0.9,
@@ -24,7 +24,13 @@ func NewMaterial() Material {
 	}
 }
 
-func (m Material) Lighting(light PointLight, point g.Point, eyev g.Vec, normalv g.Vec) Color {
+func (m *Material) SetColor(c Color) *Material {
+	m.Color = c
+
+	return m
+}
+
+func (m *Material) Lighting(light *PointLight, point g.Point, eyev g.Vec, normalv g.Vec) Color {
 	effectiveColor := m.Color.Mul(light.Intensity)
 
 	lightv := light.Position.Sub(point).Norm()

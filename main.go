@@ -7,7 +7,7 @@ import (
 	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
 	m "github.com/fredrikln/the-ray-tracer-challenge-go/material"
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/render"
-	s "github.com/fredrikln/the-ray-tracer-challenge-go/surface"
+	s "github.com/fredrikln/the-ray-tracer-challenge-go/shapes"
 )
 
 func main() {
@@ -31,8 +31,8 @@ func main() {
 	// Shape is at Z 0
 	shape := s.NewSphere()
 	mat := m.NewMaterial()
-	mat.Color = m.NewColor(1, 0.2, 1)
-	shape.Material = mat
+	mat.SetColor(m.NewColor(1, 0.2, 1))
+	shape.SetMaterial(mat)
 
 	light := m.NewPointLight(g.NewPoint(-10, 10, -10), m.NewColor(1, 1, 1))
 
@@ -57,7 +57,7 @@ func main() {
 			// check if we have a hit
 			if hit, didHit := g.GetHit(xs); didHit {
 				point := r.Position(hit.Time)
-				normal := hit.Object.NormalAt(point)
+				normal := (*hit.Object).NormalAt(point)
 				eyev := r.Direction.Mul(-1)
 
 				color := shape.Material.Lighting(light, point, eyev, normal)

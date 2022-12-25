@@ -1,8 +1,6 @@
 package geom
 
-import (
-	"sort"
-)
+import "sort"
 
 type Intersectable interface {
 	Intersect(ray Ray) []Intersection
@@ -11,13 +9,13 @@ type Intersectable interface {
 
 type Intersection struct {
 	Time   float64
-	Object Intersectable
+	Object *Intersectable
 }
 
 func NewIntersection(time float64, object Intersectable) Intersection {
 	return Intersection{
 		time,
-		object,
+		&object,
 	}
 }
 

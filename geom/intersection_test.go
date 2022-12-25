@@ -19,7 +19,7 @@ func TestIntersection(t *testing.T) {
 
 	intersection := NewIntersection(time, element)
 
-	if intersection.Time != 3.5 || intersection.Object != element {
+	if intersection.Time != 3.5 || *intersection.Object != element {
 		t.Error("Invalid intersection created")
 	}
 }
