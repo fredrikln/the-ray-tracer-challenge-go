@@ -1,6 +1,8 @@
 package common
 
-import "math"
+import (
+	"math"
+)
 
 func WithinTolerance(a, b, e float64) bool {
 	if a == b {

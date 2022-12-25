@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	g "github.com/fredrikln/the-ray-tracer-challenge-go/geom"
-	m "github.com/fredrikln/the-ray-tracer-challenge-go/material"
-	r "github.com/fredrikln/the-ray-tracer-challenge-go/render"
-	s "github.com/fredrikln/the-ray-tracer-challenge-go/shapes"
+	r "github.com/fredrikln/the-ray-tracer-challenge-go/pkg/raytracer"
 )
 
 func main() {
@@ -16,7 +13,7 @@ func main() {
 	canvas := r.NewCanvas(pixels, pixels)
 
 	// Ray starting at Z -5
-	rayOrigin := g.NewPoint(0, 0, -5)
+	rayOrigin := r.NewPoint(0, 0, -5)
 
 	// Wall at Z 10
 	wallZ := 10.0
@@ -29,12 +26,12 @@ func main() {
 	half := wallSize / 2
 
 	// Shape is at Z 0
-	shape := s.NewSphere()
-	mat := m.NewMaterial()
-	mat.SetColor(m.NewColor(1, 0.2, 1))
+	shape := r.NewSphere()
+	mat := r.NewMaterial()
+	mat.SetColor(r.NewColor(1, 0.2, 1))
 	shape.SetMaterial(mat)
 
-	light := m.NewPointLight(g.NewPoint(-10, 10, -10), m.NewColor(1, 1, 1))
+	light := r.NewPointLight(r.NewPoint(-10, 10, -10), r.NewColor(1, 1, 1))
 
 	timeBefore := time.Now()
 
@@ -47,18 +44,18 @@ func main() {
 			worldX := -half + pixelSize*float64(x)
 
 			// (-3.5 to 3.5), (3.5 to -3.5), 10
-			position := g.NewPoint(worldX, worldY, wallZ)
+			position := r.NewPoint(worldX, worldY, wallZ)
 
 			// a ray pointing from 0,0,0 to a point at (-3.5 to 3.5), (3.5 to -3.5), 10
-			r := g.NewRay(rayOrigin, position.Sub(rayOrigin).Norm())
+			ray := r.NewRay(rayOrigin, position.Sub(rayOrigin).Norm())
 			// get intersections for ray and sphere
-			xs := shape.Intersect(r)
+			xs := shape.Intersect(ray)
 
 			// check if we have a hit
-			if hit, didHit := g.GetHit(xs); didHit {
-				point := r.Position(hit.Time)
+			if hit, didHit := r.GetHit(xs); didHit {
+				point := ray.Position(hit.Time)
 				normal := (*hit.Object).NormalAt(point)
-				eyev := r.Direction.Mul(-1)
+				eyev := ray.Direction.Mul(-1)
 
 				color := shape.Material.Lighting(light, point, eyev, normal)
 
