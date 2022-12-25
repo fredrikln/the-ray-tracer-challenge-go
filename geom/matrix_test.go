@@ -414,10 +414,9 @@ func TestDeterminant4(t *testing.T) {
 
 func TestInvertible(t *testing.T) {
 	tests := []struct {
-		name        string
-		a           *Matrix
-		determinant float64
-		want        bool
+		name string
+		a    *Matrix
+		want bool
 	}{
 		{
 			"Test 1",
@@ -427,7 +426,6 @@ func TestInvertible(t *testing.T) {
 				4, -9, 3, -7,
 				9, 1, 7, -6,
 			),
-			-2120,
 			true,
 		},
 		{
@@ -438,7 +436,6 @@ func TestInvertible(t *testing.T) {
 				0, -5, 1, -5,
 				0, 0, 0, 0,
 			),
-			0,
 			false,
 		},
 	}
@@ -508,19 +505,22 @@ func TestInverse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.a.Inverse(); !got.Eq(tt.want) {
-				for i := 0; i < 4; i++ {
-					for j := 0; j < 4; j++ {
-						got := got.data[i][j]
-						want := tt.want.data[i][j]
-
-						if !c.WithinTolerance(got, want, 1e-5) {
-							t.Errorf("[%v][%v] Got %v, want %v, ", i, j, got, want)
-						}
-					}
-				}
-				// t.Errorf("Got %v, want %v", got, tt.want)
+				CompareMatrixForTest(got, tt.want, t)
 			}
 		})
+	}
+}
+
+func CompareMatrixForTest(got, want *Matrix, t *testing.T) {
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			got := got.data[i][j]
+			want := want.data[i][j]
+
+			if !c.WithinTolerance(got, want, 1e-5) {
+				t.Errorf("[%v][%v] Got %v, want %v, ", i, j, got, want)
+			}
+		}
 	}
 }
 
