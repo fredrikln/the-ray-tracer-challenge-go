@@ -18,13 +18,13 @@ func NewColor(r, g, b float64) Color {
 }
 
 func (a Color) Eq(b Color) bool {
-	if math.Abs(a.R-b.R) > c.EPSILON {
+	if !c.WithinTolerance(a.R, b.R, 1e-5) {
 		return false
 	}
-	if math.Abs(a.G-b.G) > c.EPSILON {
+	if !c.WithinTolerance(a.G, b.G, 1e-5) {
 		return false
 	}
-	if math.Abs(a.B-b.B) > c.EPSILON {
+	if !c.WithinTolerance(a.B, b.B, 1e-5) {
 		return false
 	}
 

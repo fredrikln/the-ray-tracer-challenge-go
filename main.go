@@ -10,23 +10,6 @@ import (
 	s "github.com/fredrikln/the-ray-tracer-challenge-go/surface"
 )
 
-type Projectile struct {
-	Position g.Vec
-	Velocity g.Vec
-}
-
-type Environment struct {
-	Gravity g.Vec
-	Wind    g.Vec
-}
-
-func tick(p Projectile, e Environment) Projectile {
-	return Projectile{
-		p.Position.Add(p.Velocity),
-		p.Velocity.Add(e.Gravity).Add(e.Wind),
-	}
-}
-
 func main() {
 	// Set up canvas
 	pixels := 500

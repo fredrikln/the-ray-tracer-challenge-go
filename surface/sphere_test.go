@@ -193,7 +193,7 @@ func TestSphereNormalAtTransformed(t *testing.T) {
 			"Test 2",
 			g.NewScaling(1, 0.5, 1).Mul(g.NewRotationZ(math.Pi / 5)),
 			g.NewPoint(0, math.Sqrt(2)/2, -math.Sqrt(2)/2),
-			g.NewVec(0, 0.97014, -0.24254),
+			g.NewVec(0, 0.970142, -0.242535),
 		},
 	}
 

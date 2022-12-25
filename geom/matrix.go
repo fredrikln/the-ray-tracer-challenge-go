@@ -88,7 +88,7 @@ func NewShearing(xy, xz, yx, yz, zx, zy float64) *Matrix {
 func (a *Matrix) Eq(b *Matrix) bool {
 	for i := range a.data {
 		for j := range b.data {
-			if math.Abs(a.data[i][j]-b.data[i][j]) > c.EPSILON {
+			if !c.WithinTolerance(a.data[i][j], b.data[i][j], 1e-5) {
 				return false
 			}
 		}

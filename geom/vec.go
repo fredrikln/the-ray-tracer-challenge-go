@@ -19,13 +19,13 @@ func NewVec(x, y, z float64) Vec {
 }
 
 func (a Vec) Eq(b Vec) bool {
-	if math.Abs(a.X-b.X) > c.EPSILON {
+	if !c.WithinTolerance(a.X, b.X, 1e-5) {
 		return false
 	}
-	if math.Abs(a.Y-b.Y) > c.EPSILON {
+	if !c.WithinTolerance(a.Y, b.Y, 1e-5) {
 		return false
 	}
-	if math.Abs(a.Z-b.Z) > c.EPSILON {
+	if !c.WithinTolerance(a.Z, b.Z, 1e-5) {
 		return false
 	}
 
