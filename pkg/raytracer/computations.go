@@ -1,13 +1,14 @@
 package raytracer
 
 type Computations struct {
-	Time      float64
-	Object    *Intersectable
-	Point     Point
-	Eyev      Vec
-	Normalv   Vec
-	Inside    bool
-	OverPoint Point
+	Time       float64
+	Object     *Intersectable
+	Point      Point
+	Eyev       Vec
+	Normalv    Vec
+	Inside     bool
+	OverPoint  Point
+	UnderPoint Point
 }
 
 func PrepareComputations(i Intersection, r Ray) Computations {
@@ -22,13 +23,14 @@ func PrepareComputations(i Intersection, r Ray) Computations {
 	}
 
 	c := Computations{
-		Time:      i.Time,
-		Object:    i.Object,
-		Point:     p,
-		Eyev:      eyev,
-		Normalv:   normalv,
-		Inside:    inside,
-		OverPoint: p.AddVec(normalv.Mul((1e-5) / 2)),
+		Time:       i.Time,
+		Object:     i.Object,
+		Point:      p,
+		Eyev:       eyev,
+		Normalv:    normalv,
+		Inside:     inside,
+		OverPoint:  p.AddVec(normalv.Mul((1e-5) / 2)),
+		UnderPoint: p.AddVec(normalv.Mul(-(1e-5) / 2)),
 	}
 
 	return c

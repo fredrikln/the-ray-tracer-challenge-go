@@ -20,7 +20,7 @@ func (s *Sphere) GetMaterial() *Material {
 	return s.Material
 }
 
-func (s *Sphere) SetMaterial(m *Material) *Sphere {
+func (s *Sphere) SetMaterial(m *Material) Intersectable {
 	s.Material = m
 
 	return s
@@ -29,7 +29,7 @@ func (s *Sphere) SetMaterial(m *Material) *Sphere {
 func (s *Sphere) GetTransform() *Matrix {
 	return s.Transform
 }
-func (s *Sphere) SetTransform(m *Matrix) *Sphere {
+func (s *Sphere) SetTransform(m *Matrix) Intersectable {
 	s.Transform = m
 
 	return s

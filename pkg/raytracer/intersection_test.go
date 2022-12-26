@@ -15,10 +15,13 @@ func (MockShape) NormalAt(point Point) Vec {
 func (MockShape) GetMaterial() *Material {
 	return NewMaterial()
 }
+func (MockShape) SetMaterial(*Material) Intersectable {
+	return &MockShape{}
+}
 func (MockShape) GetTransform() *Matrix {
 	return NewIdentityMatrix()
 }
-func (ms MockShape) SetTransform(m Matrix) *MockShape {
+func (ms MockShape) SetTransform(*Matrix) Intersectable {
 	return &MockShape{}
 }
 

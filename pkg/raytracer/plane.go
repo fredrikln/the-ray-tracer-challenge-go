@@ -22,7 +22,7 @@ func (p *Plane) GetMaterial() *Material {
 	return p.Material
 }
 
-func (p *Plane) SetMaterial(m *Material) *Plane {
+func (p *Plane) SetMaterial(m *Material) Intersectable {
 	p.Material = m
 
 	return p
@@ -30,7 +30,7 @@ func (p *Plane) SetMaterial(m *Material) *Plane {
 func (p *Plane) GetTransform() *Matrix {
 	return p.Transform
 }
-func (p *Plane) SetTransform(m *Matrix) *Plane {
+func (p *Plane) SetTransform(m *Matrix) Intersectable {
 	p.Transform = m
 
 	return p

@@ -5,7 +5,9 @@ import "sort"
 type Intersectable interface {
 	Intersect(Ray) []Intersection
 	NormalAt(Point) Vec
+	SetMaterial(*Material) Intersectable
 	GetMaterial() *Material
+	SetTransform(*Matrix) Intersectable
 	GetTransform() *Matrix
 }
 

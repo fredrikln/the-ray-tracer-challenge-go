@@ -18,11 +18,11 @@ func main() {
 	w.AddObject(floor)
 
 	t1 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY(-(math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2))
-	leftWall := r.NewPlane().SetTransform(t1).SetMaterial(floor.Material)
+	leftWall := r.NewPlane().SetTransform(t1).SetMaterial(floor.GetMaterial())
 	w.AddObject(leftWall)
 
 	t2 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY((math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2))
-	rightWall := r.NewPlane().SetTransform(t2).SetMaterial(floor.Material)
+	rightWall := r.NewPlane().SetTransform(t2).SetMaterial(floor.GetMaterial())
 	w.AddObject(rightWall)
 
 	p1 := r.NewStripePattern(r.NewColor(0.25, 0.5, 0.25), r.NewColor(1, 1, 1)).SetTransform(r.NewRotationY(math.Pi / 4).Mul(r.NewScaling(0.35, 0.35, 0.35)))
