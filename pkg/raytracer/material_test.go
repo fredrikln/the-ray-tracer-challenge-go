@@ -63,10 +63,70 @@ func TestLighting(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := mat.Lighting(tt.light, p, tt.eyev, tt.normalv)
+			got := mat.Lighting(tt.light, p, tt.eyev, tt.normalv, false)
 
 			if !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLightingInShadow(t *testing.T) {
+	eyev := NewVec(0, 0, -1)
+	normalv := NewVec(0, 0, -1)
+	light := NewPointLight(NewPoint(0, 0, -10), NewColor(1, 1, 1))
+	inShadow := true
+
+	m := NewMaterial()
+	position := NewPoint(0, 0, 0)
+	got := m.Lighting(light, position, eyev, normalv, inShadow)
+	want := NewColor(0.1, 0.1, 0.1)
+
+	if got != want {
+		t.Errorf("Got %v, want %v", got, want)
+	}
+}
+
+func TestIsShadowed(t *testing.T) {
+	testCases := []struct {
+		desc  string
+		world *World
+		point Point
+		want  bool
+	}{
+		{
+			desc:  "Nothing collinear",
+			world: NewDefaultWorld(),
+			point: NewPoint(0, 10, 0),
+			want:  false,
+		},
+		{
+			desc:  "Object between",
+			world: NewDefaultWorld(),
+			point: NewPoint(10, -10, 10),
+			want:  true,
+		},
+		{
+			desc:  "Object behind light",
+			world: NewDefaultWorld(),
+			point: NewPoint(-20, 20, -20),
+			want:  false,
+		},
+		{
+			desc:  "Point between light and object",
+			world: NewDefaultWorld(),
+			point: NewPoint(-2, 2, -2),
+			want:  false,
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			got := tC.world.IsShadowed(*tC.world.Lights[0], tC.point)
+			want := tC.want
+
+			if got != want {
+				t.Errorf("Got %v, want %v", got, want)
 			}
 		})
 	}

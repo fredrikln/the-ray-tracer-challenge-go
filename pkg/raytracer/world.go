@@ -62,7 +62,9 @@ func (w *World) ShadeHit(comps Computations) Color {
 	color := NewColor(0, 0, 0)
 
 	for _, light := range w.Lights {
-		c2 := (*comps.Object).GetMaterial().Lighting(*light, comps.Point, comps.Eyev, comps.Normalv)
+		inShadow := w.IsShadowed(*light, comps.OverPoint)
+
+		c2 := (*comps.Object).GetMaterial().Lighting(*light, comps.Point, comps.Eyev, comps.Normalv, inShadow)
 		color = color.Add(c2)
 	}
 
@@ -80,4 +82,23 @@ func (w *World) ColorAt(r Ray) Color {
 	comps := PrepareComputations(hit, r)
 
 	return w.ShadeHit(comps)
+}
+
+func (w *World) IsShadowed(l Light, p Point) bool {
+	v := l.GetPosition().Sub(p)
+	distance := v.Mag()
+	direction := v.Norm()
+
+	r := NewRay(p, direction)
+	xs := w.Intersect(r)
+
+	hit, didHit := GetHit(xs)
+
+	if didHit && hit.Time < distance {
+		return true
+	}
+
+	return false
+
+	return false
 }

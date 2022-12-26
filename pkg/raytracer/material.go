@@ -43,7 +43,7 @@ func (m *Material) SetAmbient(a float64) *Material {
 	return m
 }
 
-func (m *Material) Lighting(light Light, point Point, eyev Vec, normalv Vec) Color {
+func (m *Material) Lighting(light Light, point Point, eyev Vec, normalv Vec, inShadow bool) Color {
 	effectiveColor := m.Color.Mul(light.GetIntensity())
 
 	lightv := light.GetPosition().Sub(point).Norm()
@@ -67,6 +67,11 @@ func (m *Material) Lighting(light Light, point Point, eyev Vec, normalv Vec) Col
 			factor := math.Pow(reflectDotEye, m.Shininess)
 			specular = light.GetIntensity().MulFloat(m.Specular).MulFloat(factor)
 		}
+	}
+
+	if inShadow {
+		diffuse = diffuse.MulFloat(0)
+		specular = specular.MulFloat(0)
 	}
 
 	return ambient.Add(diffuse).Add(specular)

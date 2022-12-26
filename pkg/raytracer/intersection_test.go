@@ -80,3 +80,17 @@ func TestGetHitGetLowestNonNegative(t *testing.T) {
 		t.Error("Received wrong hit")
 	}
 }
+
+func TestHitShouldOffsetPoint(t *testing.T) {
+	r := NewRay(NewPoint(0, 0, -5), NewVec(0, 0, 1))
+
+	s := NewSphere().SetTransform(NewTranslation(0, 0, 1))
+
+	i := NewIntersection(5, s)
+
+	comps := PrepareComputations(i, r)
+
+	if !(comps.OverPoint.Z < (1e-5)/2 && comps.Point.Z > comps.OverPoint.Z) {
+		t.Error("OverPoint not correct value", comps.OverPoint)
+	}
+}

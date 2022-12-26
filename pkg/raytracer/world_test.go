@@ -132,3 +132,26 @@ func TestUsesHitToComputeColor(t *testing.T) {
 		t.Errorf("Did not get correct color, got: %v, want %v", got, want)
 	}
 }
+
+func TestShadeInShadow(t *testing.T) {
+	w := NewWorld()
+	w.AddLight(NewPointLight(NewPoint(0, 0, -10), NewColor(1, 1, 1)))
+
+	s1 := NewSphere()
+	w.AddObject(s1)
+
+	s2 := NewSphere().SetTransform(NewTranslation(0, 0, 10))
+	w.AddObject(s1)
+
+	r := NewRay(NewPoint(0, 0, 5), NewVec(0, 0, 1))
+	i := NewIntersection(4, s2)
+
+	comps := PrepareComputations(i, r)
+
+	got := w.ShadeHit(comps)
+	want := NewColor(0.1, 0.1, 0.1)
+
+	if !got.Eq(want) {
+		t.Errorf("Got %v, want %v", got, want)
+	}
+}
