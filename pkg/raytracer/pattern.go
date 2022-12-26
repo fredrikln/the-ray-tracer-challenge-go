@@ -145,3 +145,31 @@ func (cp *CheckerPattern) ColorAtObject(object Intersectable, worldPoint Point) 
 
 	return cp.ColorAt(patternPoint)
 }
+
+// TestPattern
+
+type TestPattern struct {
+	Transform *Matrix
+}
+
+func NewTestPattern() *TestPattern {
+	return &TestPattern{NewIdentityMatrix()}
+}
+
+func (cp *TestPattern) GetTransform() *Matrix {
+	return cp.Transform
+}
+func (cp *TestPattern) SetTransform(m *Matrix) Pattern {
+	cp.Transform = m
+
+	return cp
+}
+func (cp *TestPattern) ColorAt(p Point) Color {
+	return NewColor(p.X, p.Y, p.Z)
+}
+func (cp *TestPattern) ColorAtObject(object Intersectable, worldPoint Point) Color {
+	objectPoint := object.GetTransform().Inverse().MulPoint(worldPoint)
+	patternPoint := cp.GetTransform().Inverse().MulPoint(objectPoint)
+
+	return cp.ColorAt(patternPoint)
+}

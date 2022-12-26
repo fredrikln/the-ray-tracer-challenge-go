@@ -3,6 +3,8 @@ package raytracer
 import (
 	"math"
 	"testing"
+
+	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 func TestPrepareComputations(t *testing.T) {
@@ -68,5 +70,74 @@ func TestPrecomputeReflectionVector(t *testing.T) {
 
 	if !got.Eq(want) {
 		t.Errorf("Got %v, want %v", got, want)
+	}
+}
+
+func TestCalculateUnderPoint(t *testing.T) {
+	r := NewRay(NewPoint(0, 0, -0.5), NewVec(0, 0, 1))
+
+	s := NewGlassSphere().SetTransform(NewTranslation(0, 0, 1))
+
+	i := NewIntersection(5, s)
+	xs := []Intersection{i}
+
+	comps := PrepareComputationsWithHit(i, r, xs)
+
+	if comps.UnderPoint.Z < float64(1e-5)/2.0 {
+		t.Error("UnderPoint is not correct")
+	}
+	if comps.Point.Z > comps.UnderPoint.Z {
+		t.Error("Point larger than Underpoint")
+	}
+}
+
+func TestDetermineReflectanceUnderTotalInternalReflection(t *testing.T) {
+	s := NewGlassSphere()
+	r := NewRay(NewPoint(0, 0, math.Sqrt(2)/2), NewVec(0, 1, 0))
+
+	xs := []Intersection{
+		NewIntersection(-math.Sqrt(2)/2, s),
+		NewIntersection(math.Sqrt(2)/2, s),
+	}
+
+	comps := PrepareComputationsWithHit(xs[1], r, xs)
+
+	reflectance := Schlick(comps)
+
+	if reflectance != 1.0 {
+		t.Errorf("Got %v, want %v", reflectance, 1.0)
+	}
+}
+
+func TestDetermineReflectanceOfAPerpendicularRay(t *testing.T) {
+	s := NewGlassSphere()
+	r := NewRay(NewPoint(0, 0, 0), NewVec(0, 1, 0))
+	xs := []Intersection{
+		NewIntersection(-1, s),
+		NewIntersection(1, s),
+	}
+
+	comps := PrepareComputationsWithHit(xs[1], r, xs)
+
+	reflectance := Schlick(comps)
+
+	if !c.WithinTolerance(reflectance, 0.04, 1e-5) {
+		t.Errorf("Got %v, want %v", reflectance, 0.04)
+	}
+}
+
+func TestSchlickWithSmallAngleAndN2LargerThanN1(t *testing.T) {
+	s := NewGlassSphere()
+	r := NewRay(NewPoint(0, 0.99, -2), NewVec(0, 0, 1))
+	xs := []Intersection{
+		NewIntersection(1.8589, s),
+	}
+
+	comps := PrepareComputationsWithHit(xs[0], r, xs)
+
+	reflectance := Schlick(comps)
+
+	if !c.WithinTolerance(reflectance, 0.4887308, 1e-5) {
+		t.Errorf("Got %v, want %v", reflectance, 0.48873)
 	}
 }

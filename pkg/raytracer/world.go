@@ -1,6 +1,7 @@
 package raytracer
 
 import (
+	"math"
 	"sort"
 )
 
@@ -69,8 +70,17 @@ func (w *World) ShadeHit(comps Computations, remaining int) Color {
 	}
 
 	reflected := w.ReflectedColor(comps, remaining)
+	refracted := w.RefractedColor(comps, remaining)
 
-	return color.Add(reflected)
+	material := (*comps.Object).GetMaterial()
+
+	if material.Reflectivity > 0 && material.Transparency > 0 {
+		reflectance := Schlick(comps)
+
+		return color.Add(reflected.MulFloat(reflectance)).Add(refracted.MulFloat(1 - reflectance))
+	}
+
+	return color.Add(reflected).Add(refracted)
 }
 
 func (w *World) ColorAt(r Ray, remaining int) Color {
@@ -81,7 +91,7 @@ func (w *World) ColorAt(r Ray, remaining int) Color {
 		return NewColor(0, 0, 0)
 	}
 
-	comps := PrepareComputations(hit, r)
+	comps := PrepareComputationsWithHit(hit, r, xs)
 
 	return w.ShadeHit(comps, remaining)
 }
@@ -116,4 +126,32 @@ func (w *World) ReflectedColor(comps Computations, remaining int) Color {
 	color := w.ColorAt(reflectRay, remaining-1)
 
 	return color.MulFloat((*comps.Object).GetMaterial().Reflectivity)
+}
+
+func (w *World) RefractedColor(comps Computations, remaining int) Color {
+	if remaining <= 0 {
+		return NewColor(0, 0, 0)
+	}
+
+	if (*comps.Object).GetMaterial().Transparency == 0 {
+		return NewColor(0, 0, 0)
+	}
+
+	nRatio := comps.N1 / comps.N2
+	cosI := comps.Eyev.Dot(comps.Normalv)
+	sin2T := math.Pow(nRatio, 2) * (1 - math.Pow(cosI, 2))
+
+	if sin2T > 1 {
+		return NewColor(0, 0, 0)
+	}
+
+	cosT := math.Sqrt(1.0 - sin2T)
+
+	direction := comps.Normalv.Mul(nRatio*cosI - cosT).Sub(comps.Eyev.Mul(nRatio))
+
+	refractRay := NewRay(comps.UnderPoint, direction)
+
+	color := w.ColorAt(refractRay, remaining-1).MulFloat((*comps.Object).GetMaterial().Transparency)
+
+	return color
 }

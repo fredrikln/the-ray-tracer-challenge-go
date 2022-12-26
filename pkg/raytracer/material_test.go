@@ -2,6 +2,7 @@ package raytracer
 
 import (
 	"math"
+	"strconv"
 	"testing"
 )
 
@@ -156,5 +157,107 @@ func TestDefaultMaterialReflectivity(t *testing.T) {
 
 	if m.Reflectivity != 0.0 {
 		t.Error("Invalid reflectivity in default material")
+	}
+}
+
+func TestTransparencyAndRefractiveIndex(t *testing.T) {
+	m := NewMaterial()
+
+	if m.Transparency != 0.0 {
+		t.Error("Invalid transparency")
+	}
+
+	if m.RefractiveIndex != 1 {
+		t.Error("Invalid refractive index")
+	}
+}
+
+func TestNewGlassSphere(t *testing.T) {
+	s := NewGlassSphere()
+
+	if !s.Transform.Eq(NewIdentityMatrix()) {
+		t.Error("Invalid default transform")
+	}
+
+	if s.Material.Transparency != 1.0 {
+		t.Error("Invalid transparency")
+	}
+
+	if s.Material.RefractiveIndex != 1.5 {
+		t.Error("Invalid refractive index")
+	}
+}
+
+func TestFindingN1AndN2(t *testing.T) {
+	a := NewGlassSphere().SetTransform(NewScaling(2, 2, 2))
+	a.GetMaterial().SetRefractiveIndex(1.5)
+
+	b := NewGlassSphere().SetTransform(NewTranslation(0, 0, -0.25))
+	b.GetMaterial().SetRefractiveIndex(2.0)
+
+	c := NewGlassSphere().SetTransform(NewTranslation(0, 0, 0.25))
+	c.GetMaterial().SetRefractiveIndex(2.5)
+
+	r := NewRay(NewPoint(0, 0, -4), NewVec(0, 0, 1))
+
+	testCases := []struct {
+		desc         string
+		intersection Intersection
+		n1           float64
+		n2           float64
+	}{
+		{
+			desc: "0",
+			n1:   1.0,
+			n2:   1.5,
+		},
+		{
+			desc: "1",
+			n1:   1.5,
+			n2:   2.0,
+		},
+		{
+			desc: "2",
+			n1:   2.0,
+			n2:   2.5,
+		},
+		{
+			desc: "3",
+			n1:   2.5,
+			n2:   2.5,
+		},
+		{
+			desc: "4",
+			n1:   2.5,
+			n2:   1.5,
+		},
+		{
+			desc: "5",
+			n1:   1.5,
+			n2:   1.0,
+		},
+	}
+
+	xs := []Intersection{
+		NewIntersection(2, a),
+		NewIntersection(2.75, b),
+		NewIntersection(3.25, c),
+		NewIntersection(4.75, b),
+		NewIntersection(5.25, c),
+		NewIntersection(6, a),
+	}
+
+	for _, tC := range testCases {
+		t.Run(tC.desc, func(t *testing.T) {
+			index, _ := strconv.Atoi(tC.desc)
+			comps := PrepareComputationsWithHit(xs[index], r, xs)
+
+			if comps.N1 != tC.n1 {
+				t.Errorf("Invalid n1, got %v, want %v", comps.N1, tC.n1)
+			}
+			if comps.N2 != tC.n2 {
+				t.Errorf("Invalid n2, got %v, want %v", comps.N2, tC.n2)
+			}
+		})
 	}
 }

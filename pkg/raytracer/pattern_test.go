@@ -201,3 +201,39 @@ func TestCheckerPatternRepeatZ(t *testing.T) {
 		t.Errorf("Wrong color at c3, got %v, want %v", c3, black)
 	}
 }
+
+func TestTestPatternWithObjectTransformation(t *testing.T) {
+	s := NewSphere().SetTransform(NewScaling(2, 2, 2))
+	p := NewTestPattern()
+	s.GetMaterial().SetPattern(p)
+
+	c := p.ColorAtObject(s, NewPoint(2, 3, 4))
+
+	if !c.Eq(NewColor(1, 1.5, 2)) {
+		t.Errorf("Got %v, want %v", c, NewColor(1, 1.5, 2))
+	}
+}
+
+func TestTestPatternWithPatternTransformation(t *testing.T) {
+	s := NewSphere()
+	p := NewTestPattern().SetTransform(NewScaling(2, 2, 2))
+	s.GetMaterial().SetPattern(p)
+
+	c := p.ColorAtObject(s, NewPoint(2, 3, 4))
+
+	if !c.Eq(NewColor(1, 1.5, 2)) {
+		t.Errorf("Got %v, want %v", c, NewColor(1, 1.5, 2))
+	}
+}
+
+func TestTestPatternWithObjectAndPatternTransformation(t *testing.T) {
+	s := NewSphere().SetTransform(NewScaling(2, 2, 2))
+	p := NewTestPattern().SetTransform(NewTranslation(0.5, 1, 1.5))
+	s.GetMaterial().SetPattern(p)
+
+	c := p.ColorAtObject(s, NewPoint(2.5, 3, 3.5))
+
+	if !c.Eq(NewColor(0.75, 0.5, 0.25)) {
+		t.Errorf("Got %v, want %v", c, NewColor(0.75, 0.5, 0.25))
+	}
+}

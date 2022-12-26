@@ -224,5 +224,148 @@ func TestReflectedColorAtMaximumRecursiveDepth(t *testing.T) {
 	if !color.Eq(NewColor(0, 0, 0)) {
 		t.Errorf("Got %v, want %v", color, NewColor(0, 0, 0))
 	}
+}
 
+func TestFindRefractedColorOfOpaqueObject(t *testing.T) {
+	w := NewDefaultWorld()
+
+	s := w.Objects[0]
+
+	r := NewRay(NewPoint(0, 0, -5), NewVec(0, 0, 1))
+
+	xs := []Intersection{
+		NewIntersection(4, *s),
+		NewIntersection(6, *s),
+	}
+
+	comps := PrepareComputationsWithHit(xs[0], r, xs)
+
+	c := w.RefractedColor(comps, 5)
+
+	if !c.Eq(NewColor(0, 0, 0)) {
+		t.Errorf("Got %v, want %v", c, NewColor(0, 0, 0))
+	}
+}
+
+func TestFindRefractedColorAtMaxRecursiveDepth(t *testing.T) {
+	w := NewDefaultWorld()
+
+	s := w.Objects[0]
+	(*s).GetMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5)
+
+	r := NewRay(NewPoint(0, 0, -5), NewVec(0, 0, 1))
+
+	xs := []Intersection{
+		NewIntersection(4, *s),
+		NewIntersection(6, *s),
+	}
+
+	comps := PrepareComputationsWithHit(xs[0], r, xs)
+
+	c := w.RefractedColor(comps, 0)
+
+	if !c.Eq(NewColor(0, 0, 0)) {
+		t.Errorf("Got %v, want %v", c, NewColor(0, 0, 0))
+	}
+}
+
+func TestFindRefractedColorUnderTotalInternalReflection(t *testing.T) {
+	w := NewDefaultWorld()
+	s := w.Objects[0]
+
+	(*s).GetMaterial().SetTransparency(1).SetRefractiveIndex(1.5)
+
+	r := NewRay(NewPoint(0, 0, math.Sqrt(2)/2), NewVec(0, 1, 0))
+
+	xs := []Intersection{
+		NewIntersection(-math.Sqrt(2)/2, *s),
+		NewIntersection(math.Sqrt(2)/2, *s),
+	}
+
+	comps := PrepareComputationsWithHit(xs[1], r, xs)
+
+	c := w.RefractedColor(comps, 5)
+
+	if !c.Eq(NewColor(0, 0, 0)) {
+		t.Errorf("Got %v, want %v", c, NewColor(0, 0, 0))
+	}
+}
+
+func TestFindRefractedColor(t *testing.T) {
+	w := NewDefaultWorld()
+	a := w.Objects[0]
+	(*a).GetMaterial().SetPattern(NewTestPattern())
+
+	b := w.Objects[1]
+	(*b).GetMaterial().SetTransparency(1).SetRefractiveIndex(1.5)
+
+	r := NewRay(NewPoint(0, 0, 0.1), NewVec(0, 1, 0))
+
+	xs := []Intersection{
+		NewIntersection(-0.9899, *a),
+		NewIntersection(-0.4899, *b),
+		NewIntersection(0.4899, *b),
+		NewIntersection(0.9899, *a),
+	}
+
+	comps := PrepareComputationsWithHit(xs[2], r, xs)
+
+	c := w.RefractedColor(comps, 5)
+
+	if !c.Eq(NewColor(0, 0.998879, 0.047217)) {
+		t.Errorf("Got %v, want %v", c, NewColor(0, 0.998879, 0.047217))
+	}
+}
+
+func TestShadeHitWithATransparentMaterial(t *testing.T) {
+	w := NewDefaultWorld()
+
+	floor := NewPlane().SetTransform(NewTranslation(0, -1, 0))
+	floor.GetMaterial().SetTransparency(0.5).SetRefractiveIndex(1.5)
+
+	w.AddObject(floor)
+
+	ball := NewSphere().SetTransform(NewTranslation(0, -3.5, -0.5))
+	ball.GetMaterial().SetColor(NewColor(1, 0, 0)).SetAmbient(0.5)
+
+	w.AddObject(ball)
+
+	r := NewRay(NewPoint(0, 0, -3), NewVec(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	xs := []Intersection{NewIntersection(math.Sqrt(2), floor)}
+
+	comps := PrepareComputationsWithHit(xs[0], r, xs)
+
+	color := w.ShadeHit(comps, 5)
+
+	if !color.Eq(NewColor(0.93642, 0.68642, 0.68642)) {
+		t.Errorf("Got %v, want %v", color, NewColor(0.93642, 0.68642, 0.68642))
+	}
+}
+
+func TestShadeHitWithAReflectiveAndTransparentMaterial(t *testing.T) {
+	w := NewDefaultWorld()
+
+	r := NewRay(NewPoint(0, 0, -3), NewVec(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+
+	floor := NewPlane().SetTransform(NewTranslation(0, -1, 0))
+	floor.GetMaterial().SetReflective(0.5).SetTransparency(0.5).SetRefractiveIndex(1.5)
+
+	w.AddObject(floor)
+
+	ball := NewSphere().SetTransform(NewTranslation(0, -3.5, -0.5))
+	ball.GetMaterial().SetColor(NewColor(1, 0, 0)).SetAmbient(0.5)
+
+	w.AddObject(ball)
+
+	xs := []Intersection{
+		NewIntersection(math.Sqrt(2), floor),
+	}
+
+	comps := PrepareComputationsWithHit(xs[0], r, xs)
+
+	color := w.ShadeHit(comps, 5)
+
+	if !color.Eq(NewColor(0.93391, 0.69643, 0.69243)) {
+		t.Errorf("Got %v, want %v", color, NewColor(0.93391, 0.69643, 0.69243))
+	}
 }

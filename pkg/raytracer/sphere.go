@@ -16,6 +16,13 @@ func NewSphere() *Sphere {
 	}
 }
 
+func NewGlassSphere() *Sphere {
+	return &Sphere{
+		NewIdentityMatrix(),
+		NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
+	}
+}
+
 func (s *Sphere) GetMaterial() *Material {
 	return s.Material
 }

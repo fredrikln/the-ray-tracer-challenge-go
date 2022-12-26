@@ -5,24 +5,28 @@ import (
 )
 
 type Material struct {
-	Color        Color
-	Ambient      float64
-	Diffuse      float64
-	Specular     float64
-	Shininess    float64
-	Reflectivity float64
-	Pattern      *Pattern
+	Color           Color
+	Ambient         float64
+	Diffuse         float64
+	Specular        float64
+	Shininess       float64
+	Reflectivity    float64
+	Transparency    float64
+	RefractiveIndex float64
+	Pattern         *Pattern
 }
 
 func NewMaterial() *Material {
 	return &Material{
-		Color:        NewColor(1, 1, 1),
-		Ambient:      0.1,
-		Diffuse:      0.9,
-		Specular:     0.9,
-		Shininess:    200,
-		Reflectivity: 0.0,
-		Pattern:      nil,
+		Color:           NewColor(1, 1, 1),
+		Ambient:         0.1,
+		Diffuse:         0.9,
+		Specular:        0.9,
+		Shininess:       200,
+		Reflectivity:    0.0,
+		Transparency:    0.0,
+		RefractiveIndex: 1.0,
+		Pattern:         nil,
 	}
 }
 
@@ -41,6 +45,11 @@ func (m *Material) SetSpecular(s float64) *Material {
 
 	return m
 }
+func (m *Material) SetShininess(s float64) *Material {
+	m.Shininess = s
+
+	return m
+}
 func (m *Material) SetAmbient(a float64) *Material {
 	m.Ambient = a
 
@@ -48,6 +57,16 @@ func (m *Material) SetAmbient(a float64) *Material {
 }
 func (m *Material) SetReflective(r float64) *Material {
 	m.Reflectivity = r
+
+	return m
+}
+func (m *Material) SetTransparency(t float64) *Material {
+	m.Transparency = t
+
+	return m
+}
+func (m *Material) SetRefractiveIndex(ri float64) *Material {
+	m.RefractiveIndex = ri
 
 	return m
 }

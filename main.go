@@ -13,16 +13,19 @@ func main() {
 	// Set up canvas
 	w := r.NewWorld()
 
-	whiteMaterial := r.NewMaterial().SetColor(r.NewColor(1, 1, 1)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
-	blueMaterial := r.NewMaterial().SetColor(r.NewColor(0.537, 0.831, 0.914)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
+	whiteMaterial := r.NewMaterial().SetColor(r.NewColor(1, 1, 1)).SetDiffuse(0.7).SetSpecular(0.0).SetAmbient(0.1).SetReflective(0.1)
+	// blueMaterial := r.NewMaterial().SetColor(r.NewColor(0.537, 0.831, 0.914)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
 	redMaterial := r.NewMaterial().SetColor(r.NewColor(0.941, 0.322, 0.388)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
 	purpleMaterial := r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
+
+	mirror := r.NewMaterial().SetColor(r.NewColor(0, 0.1, 0)).SetReflective(0.75).SetDiffuse(0.05).SetAmbient(0.05).SetSpecular(1).SetShininess(300)
+	glass := r.NewMaterial().SetColor(r.NewColor(0, 0.1, 0)).SetTransparency(0.9).SetReflective(0.9).SetRefractiveIndex(1.5).SetReflective(0.9).SetDiffuse(0.05).SetAmbient(0.05).SetSpecular(1).SetShininess(300)
 
 	floor := r.NewPlane().SetMaterial(whiteMaterial)
 	w.AddObject(floor)
 
 	t1 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY(-(math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2))
-	leftWall := r.NewPlane().SetTransform(t1).SetMaterial(whiteMaterial)
+	leftWall := r.NewPlane().SetTransform(t1).SetMaterial(mirror)
 	w.AddObject(leftWall)
 
 	t2 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY((math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2))
@@ -30,7 +33,7 @@ func main() {
 	w.AddObject(rightWall)
 
 	t3 := r.NewTranslation(-0.5, 1, 0.5)
-	middle := r.NewSphere().SetTransform(t3).SetMaterial(blueMaterial)
+	middle := r.NewSphere().SetTransform(t3).SetMaterial(glass)
 	w.AddObject(middle)
 
 	t4 := r.NewTranslation(1.5, 0.5, -0.5).Mul(r.NewScaling(0.5, 0.5, 0.5))
@@ -48,8 +51,8 @@ func main() {
 	ratio := 16.0 / 9.0
 
 	camera := r.NewCamera(width, int(float64(width)/ratio), math.Pi/3).SetTransform(ct)
-	//camera.Bounces = 10
-	//camera.Antialiasing = true
+	// camera.Bounces = 4
+	// camera.Antialiasing = true
 
 	timeBefore := time.Now()
 
