@@ -3,9 +3,10 @@ package raytracer
 import "sort"
 
 type Intersectable interface {
-	Intersect(ray Ray) []Intersection
-	NormalAt(point Point) Vec
+	Intersect(Ray) []Intersection
+	NormalAt(Point) Vec
 	GetMaterial() *Material
+	GetTransform() *Matrix
 }
 
 type Intersection struct {

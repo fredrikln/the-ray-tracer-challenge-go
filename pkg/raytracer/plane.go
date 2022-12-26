@@ -27,26 +27,28 @@ func (p *Plane) SetMaterial(m *Material) *Plane {
 
 	return p
 }
-
+func (p *Plane) GetTransform() *Matrix {
+	return p.Transform
+}
 func (p *Plane) SetTransform(m *Matrix) *Plane {
 	p.Transform = m
 
 	return p
 }
 
-func (p *Plane) Intersect(r Ray) []Intersection {
-	r2 := r.Mul(p.Transform.Inverse())
+func (p *Plane) Intersect(worldRay Ray) []Intersection {
+	localRay := worldRay.Mul(p.Transform.Inverse())
 
-	if c.WithinTolerance(0, math.Abs(r2.Direction.Y), 1e-5) {
+	if c.WithinTolerance(0, math.Abs(localRay.Direction.Y), 1e-5) {
 		return []Intersection{}
 	}
 
-	t := (-r2.Origin.Y) / r2.Direction.Y
+	t := (-localRay.Origin.Y) / localRay.Direction.Y
 
 	return []Intersection{NewIntersection(t, p)}
 }
 
-func (p *Plane) NormalAt(point Point) Vec {
+func (p *Plane) NormalAt(worldPoint Point) Vec {
 	objectNormal := NewVec(0, 1, 0)
 	worldNormal := objectNormal.MulMat(p.Transform.Inverse().Transpose())
 

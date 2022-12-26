@@ -15,6 +15,12 @@ func (MockShape) NormalAt(point Point) Vec {
 func (MockShape) GetMaterial() *Material {
 	return NewMaterial()
 }
+func (MockShape) GetTransform() *Matrix {
+	return NewIdentityMatrix()
+}
+func (ms MockShape) SetTransform(m Matrix) *MockShape {
+	return &MockShape{}
+}
 
 func TestIntersection(t *testing.T) {
 	element := MockShape{}

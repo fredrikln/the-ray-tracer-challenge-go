@@ -63,7 +63,7 @@ func TestLighting(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := mat.Lighting(tt.light, p, tt.eyev, tt.normalv, false)
+			got := mat.Lighting(NewSphere(), tt.light, p, tt.eyev, tt.normalv, false)
 
 			if !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
@@ -80,7 +80,7 @@ func TestLightingInShadow(t *testing.T) {
 
 	m := NewMaterial()
 	position := NewPoint(0, 0, 0)
-	got := m.Lighting(light, position, eyev, normalv, inShadow)
+	got := m.Lighting(NewSphere(), light, position, eyev, normalv, inShadow)
 	want := NewColor(0.1, 0.1, 0.1)
 
 	if got != want {
@@ -129,5 +129,24 @@ func TestIsShadowed(t *testing.T) {
 				t.Errorf("Got %v, want %v", got, want)
 			}
 		})
+	}
+}
+
+func TestLightingWithPatternApplied(t *testing.T) {
+	p := NewStripePattern(white, black)
+	m := NewMaterial().SetAmbient(1).SetDiffuse(0).SetSpecular(0).SetPattern(p)
+	eyev := NewVec(0, 0, -1)
+	normalv := NewVec(0, 0, -1)
+	light := NewPointLight(NewPoint(0, 0, -10), NewColor(1, 1, 1))
+
+	c1 := m.Lighting(NewSphere(), light, NewPoint(0.9, 0, 0), eyev, normalv, false)
+	c2 := m.Lighting(NewSphere(), light, NewPoint(1.1, 0, 0), eyev, normalv, false)
+
+	if !c1.Eq(NewColor(1, 1, 1)) {
+		t.Errorf("Invalid c1, got %v, want %v", c1, NewColor(1, 1, 1))
+	}
+
+	if !c2.Eq(NewColor(0, 0, 0)) {
+		t.Errorf("Invalid c1 got %v, want %v", c2, NewColor(0, 0, 0))
 	}
 }

@@ -1,6 +1,7 @@
 main.exe
 main
-./raytracer.exe
-./raytracer
+raytracer.exe
+raytracer
 *.ppm
 *.png
+!pkg/raytracer

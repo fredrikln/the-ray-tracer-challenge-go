@@ -10,6 +10,7 @@ type Material struct {
 	Diffuse   float64
 	Specular  float64
 	Shininess float64
+	Pattern   *Pattern
 }
 
 func NewMaterial() *Material {
@@ -19,6 +20,7 @@ func NewMaterial() *Material {
 		0.9,
 		0.9,
 		200,
+		nil,
 	}
 }
 
@@ -42,9 +44,22 @@ func (m *Material) SetAmbient(a float64) *Material {
 
 	return m
 }
+func (m *Material) SetPattern(p Pattern) *Material {
+	m.Pattern = &p
 
-func (m *Material) Lighting(light Light, point Point, eyev Vec, normalv Vec, inShadow bool) Color {
-	effectiveColor := m.Color.Mul(light.GetIntensity())
+	return m
+}
+
+func (m *Material) Lighting(object Intersectable, light Light, point Point, eyev Vec, normalv Vec, inShadow bool) Color {
+	var color Color
+
+	if m.Pattern != nil {
+		color = (*m.Pattern).ColorAtObject(object, point)
+	} else {
+		color = m.Color
+	}
+
+	effectiveColor := color.Mul(light.GetIntensity())
 
 	lightv := light.GetPosition().Sub(point).Norm()
 

@@ -26,21 +26,24 @@ func (s *Sphere) SetMaterial(m *Material) *Sphere {
 	return s
 }
 
+func (s *Sphere) GetTransform() *Matrix {
+	return s.Transform
+}
 func (s *Sphere) SetTransform(m *Matrix) *Sphere {
 	s.Transform = m
 
 	return s
 }
 
-func (s *Sphere) Intersect(r Ray) []Intersection {
-	r2 := r.Mul(s.Transform.Inverse())
+func (s *Sphere) Intersect(worldRay Ray) []Intersection {
+	localRay := worldRay.Mul(s.Transform.Inverse())
 
 	intersections := make([]Intersection, 0)
 
-	sphereToRay := r2.Origin.Sub(NewPoint(0, 0, 0))
+	sphereToRay := localRay.Origin.Sub(NewPoint(0, 0, 0))
 
-	a := r2.Direction.Dot(r2.Direction)
-	b := 2 * r2.Direction.Dot(sphereToRay)
+	a := localRay.Direction.Dot(localRay.Direction)
+	b := 2 * localRay.Direction.Dot(sphereToRay)
 	c := sphereToRay.Dot(sphereToRay) - 1
 
 	discriminant := math.Pow(b, 2) - 4*a*c
@@ -59,8 +62,8 @@ func (s *Sphere) Intersect(r Ray) []Intersection {
 	return intersections
 }
 
-func (s *Sphere) NormalAt(point Point) Vec {
-	objectPoint := point.MulMat(s.Transform.Inverse())
+func (s *Sphere) NormalAt(worldPoint Point) Vec {
+	objectPoint := worldPoint.MulMat(s.Transform.Inverse())
 
 	objectNormal := objectPoint.Sub(NewPoint(0, 0, 0))
 	worldNormal := objectNormal.MulMat(s.Transform.Inverse().Transpose())
