@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/pkg/raytracer"
@@ -9,61 +10,43 @@ import (
 
 func main() {
 	// Set up canvas
-	pixels := 500
-	canvas := r.NewCanvas(pixels, pixels)
+	w := r.NewWorld()
 
-	// Ray starting at Z -5
-	rayOrigin := r.NewPoint(0, 0, -5)
+	m1 := r.NewMaterial().SetColor(r.NewColor(1, 0.9, 0.9)).SetSpecular(0)
+	floor := r.NewSphere().SetTransform(r.NewScaling(10, 0.01, 10)).SetMaterial(m1)
+	w.AddObject(floor)
 
-	// Wall at Z 10
-	wallZ := 10.0
-	wallSize := 7.0
+	t1 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY(-(math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2)).Mul(r.NewScaling(10, 0.01, 10))
+	leftWall := r.NewSphere().SetTransform(t1).SetMaterial(floor.Material)
+	w.AddObject(leftWall)
 
-	// 7/500 = 0.014
-	pixelSize := wallSize / float64(pixels)
+	t2 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY((math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2)).Mul(r.NewScaling(10, 0.01, 10))
+	rightWall := r.NewSphere().SetTransform(t2).SetMaterial(floor.Material)
+	w.AddObject(rightWall)
 
-	// 3.5
-	half := wallSize / 2
+	t3 := r.NewTranslation(-0.5, 1, 0.5)
+	m2 := r.NewMaterial().SetColor(r.NewColor(0.1, 1, 0.5)).SetDiffuse(0.7).SetSpecular(0.3)
+	middle := r.NewSphere().SetTransform(t3).SetMaterial(m2)
+	w.AddObject(middle)
 
-	// Shape is at Z 0
-	shape := r.NewSphere()
-	mat := r.NewMaterial()
-	mat.SetColor(r.NewColor(1, 0.2, 1))
-	shape.SetMaterial(mat)
+	t4 := r.NewTranslation(1.5, 0.5, -0.5).Mul(r.NewScaling(0.5, 0.5, 0.5))
+	m3 := r.NewMaterial().SetColor(r.NewColor(0.5, 1, 0.1)).SetDiffuse(0.7).SetSpecular(0.3)
+	right := r.NewSphere().SetTransform(t4).SetMaterial(m3)
+	w.AddObject(right)
 
-	light := r.NewPointLight(r.NewPoint(-10, 10, -10), r.NewColor(1, 1, 1))
+	t5 := r.NewTranslation(-1.5, 0.33, -0.75).Mul(r.NewScaling(0.33, 0.33, 0.33))
+	m4 := r.NewMaterial().SetColor(r.NewColor(1, 0.8, 0.1)).SetDiffuse(0.7).SetSpecular(0.3)
+	left := r.NewSphere().SetTransform(t5).SetMaterial(m4)
+	w.AddObject(left)
+
+	w.AddLight(r.NewPointLight(r.NewPoint(-10, 10, -10), r.NewColor(1, 1, 1)))
+
+	ct := r.ViewTransform(r.NewPoint(0, 1.5, -5), r.NewPoint(0, 1, 0), r.NewVec(0, 1, 0))
+	camera := r.NewCamera(2048, 2048, math.Pi/3).SetTransform(ct)
 
 	timeBefore := time.Now()
 
-	for y := 0; y < pixels; y += 1 {
-		// 3.5 - (0.014 * 0) to 3.5 - (0.014 * 500) = 3.5 to 3.5-7 = 3.5 to -3.5
-		worldY := half - pixelSize*float64(y)
-
-		for x := 0; x < pixels; x += 1 {
-			// -3.5 + (0.014 * 0) to -3.5 + (0.014 * 500) = -3.5 to -3.5+7 = -3.5 to 3.5
-			worldX := -half + pixelSize*float64(x)
-
-			// (-3.5 to 3.5), (3.5 to -3.5), 10
-			position := r.NewPoint(worldX, worldY, wallZ)
-
-			// a ray pointing from 0,0,0 to a point at (-3.5 to 3.5), (3.5 to -3.5), 10
-			ray := r.NewRay(rayOrigin, position.Sub(rayOrigin).Norm())
-			// get intersections for ray and sphere
-			xs := shape.Intersect(ray)
-
-			// check if we have a hit
-			if hit, didHit := r.GetHit(xs); didHit {
-				point := ray.Position(hit.Time)
-				normal := (*hit.Object).NormalAt(point)
-				eyev := ray.Direction.Mul(-1)
-
-				color := shape.Material.Lighting(light, point, eyev, normal)
-
-				// draw hit to canvas at x, y with color
-				canvas.SetPixel(x, y, color)
-			}
-		}
-	}
+	canvas := camera.Render(w)
 
 	timeAfter := time.Now()
 
