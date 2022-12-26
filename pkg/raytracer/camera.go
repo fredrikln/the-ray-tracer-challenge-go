@@ -2,6 +2,7 @@ package raytracer
 
 import (
 	"math"
+	"sync"
 )
 
 type Camera struct {
@@ -71,6 +72,69 @@ func (c *Camera) Render(w *World) *Canvas {
 			canvas.SetPixel(x, y, color)
 		}
 	}
+
+	return canvas
+}
+
+type response struct {
+	Y    int
+	line []Color
+}
+
+type job struct {
+	Y      int
+	Camera *Camera
+	World  *World
+}
+
+func worker(jobChan chan job, responseChan chan response, wg *sync.WaitGroup) {
+	for job := range jobChan {
+		y := job.Y
+		line := make([]Color, 0, job.Camera.Hsize)
+
+		for x := 0; x < job.Camera.Hsize; x++ {
+			ray := job.Camera.RayForPixel(x, y)
+			color := job.World.ColorAt(ray)
+
+			line = append(line, color)
+		}
+		responseChan <- response{y, line}
+
+		wg.Done()
+	}
+}
+
+func (c *Camera) RenderMultiThreaded(w *World, cores int) *Canvas {
+	canvas := NewCanvas(c.Hsize, c.Vsize)
+
+	jobChan := make(chan job)
+	responseChan := make(chan response)
+
+	wg := sync.WaitGroup{}
+	wg.Add(c.Vsize)
+
+	// Handle responses
+	go func() {
+		for response := range responseChan {
+			for x := 0; x < c.Hsize; x++ {
+				canvas.SetPixel(x, response.Y, response.line[x])
+			}
+		}
+	}()
+
+	// Start workers
+	for i := 0; i < cores; i++ {
+		go worker(jobChan, responseChan, &wg)
+	}
+
+	// Send jobs
+	go func() {
+		for y := 0; y < c.Vsize; y++ {
+			jobChan <- job{y, c, w}
+		}
+	}()
+
+	wg.Wait()
 
 	return canvas
 }

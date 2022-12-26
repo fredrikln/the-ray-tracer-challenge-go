@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"runtime"
 	"time"
 
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/pkg/raytracer"
@@ -47,11 +48,14 @@ func main() {
 	w.AddLight(r.NewPointLight(r.NewPoint(-10, 10, -10), r.NewColor(1, 1, 1)))
 
 	ct := r.ViewTransform(r.NewPoint(0, 1.5, -5), r.NewPoint(0, 1, 0), r.NewVec(0, 1, 0))
-	camera := r.NewCamera(500, 500, math.Pi/3).SetTransform(ct)
+	width := 640
+	ratio := 16.0 / 9.0
+
+	camera := r.NewCamera(width, int(float64(width)/ratio), math.Pi/3).SetTransform(ct)
 
 	timeBefore := time.Now()
 
-	canvas := camera.Render(w)
+	canvas := camera.RenderMultiThreaded(w, runtime.NumCPU())
 
 	timeAfter := time.Now()
 
