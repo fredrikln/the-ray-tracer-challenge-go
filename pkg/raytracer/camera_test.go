@@ -43,8 +43,8 @@ func TestRayThroughCanvas(t *testing.T) {
 	testCases := []struct {
 		desc   string
 		camera *Camera
-		x      int
-		y      int
+		x      float64
+		y      float64
 		want   Ray
 	}{
 		{
@@ -71,7 +71,7 @@ func TestRayThroughCanvas(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			ray := (*tC.camera).RayForPixel(tC.x, tC.y)
+			ray := (*tC.camera).RayForPixel(tC.x, tC.y, 0.5, 0.5)
 
 			if !ray.Direction.Eq(tC.want.Direction) || !ray.Origin.Eq(tC.want.Origin) {
 				t.Errorf("Got %v, want %v", ray, tC.want)

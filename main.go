@@ -48,10 +48,11 @@ func main() {
 	w.AddLight(r.NewPointLight(r.NewPoint(-10, 10, -10), r.NewColor(1, 1, 1)))
 
 	ct := r.ViewTransform(r.NewPoint(0, 1.5, -5), r.NewPoint(0, 1, 0), r.NewVec(0, 1, 0))
-	width := 640
+	width := 1920
 	ratio := 16.0 / 9.0
 
 	camera := r.NewCamera(width, int(float64(width)/ratio), math.Pi/3).SetTransform(ct)
+	// camera.Antialiasing = true
 
 	timeBefore := time.Now()
 

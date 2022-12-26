@@ -6,13 +6,14 @@ import (
 )
 
 type Camera struct {
-	Hsize      int
-	Vsize      int
-	Fov        float64
-	Transform  *Matrix
-	PixelSize  float64
-	HalfWidth  float64
-	HalfHeight float64
+	Hsize        int
+	Vsize        int
+	Fov          float64
+	Transform    *Matrix
+	PixelSize    float64
+	HalfWidth    float64
+	HalfHeight   float64
+	Antialiasing bool
 }
 
 func NewCamera(hsize, vsize int, fov float64) *Camera {
@@ -30,19 +31,20 @@ func NewCamera(hsize, vsize int, fov float64) *Camera {
 	}
 
 	return &Camera{
-		Hsize:      hsize,
-		Vsize:      vsize,
-		Fov:        fov,
-		Transform:  NewIdentityMatrix(),
-		PixelSize:  (halfWidth * 2) / float64(hsize),
-		HalfWidth:  halfWidth,
-		HalfHeight: halfHeight,
+		Hsize:        hsize,
+		Vsize:        vsize,
+		Fov:          fov,
+		Transform:    NewIdentityMatrix(),
+		PixelSize:    (halfWidth * 2) / float64(hsize),
+		HalfWidth:    halfWidth,
+		HalfHeight:   halfHeight,
+		Antialiasing: false,
 	}
 }
 
-func (c *Camera) RayForPixel(x, y int) Ray {
-	xOffset := (float64(x) + 0.5) * c.PixelSize
-	yOffset := (float64(y) + 0.5) * c.PixelSize
+func (c *Camera) RayForPixel(x, y, offsetX, offsetY float64) Ray {
+	xOffset := (x + offsetX) * c.PixelSize
+	yOffset := (y + offsetY) * c.PixelSize
 
 	worldX := c.HalfWidth - xOffset
 	worldY := c.HalfHeight - yOffset
@@ -66,14 +68,39 @@ func (c *Camera) Render(w *World) *Canvas {
 
 	for y := 0; y < c.Vsize; y++ {
 		for x := 0; x < c.Hsize; x++ {
-			ray := c.RayForPixel(x, y)
-			color := w.ColorAt(ray)
+			color := c.getColorForPixels(float64(x), float64(y), w)
 
 			canvas.SetPixel(x, y, color)
 		}
 	}
 
 	return canvas
+}
+
+func (c *Camera) getColorForPixels(x, y float64, w *World) Color {
+	if !c.Antialiasing {
+		ray := c.RayForPixel(float64(x), float64(y), 0.5, 0.5)
+		color := w.ColorAt(ray)
+
+		return color
+	}
+
+	var outColor Color
+
+	for i := 0; i < 2; i++ {
+		for j := 0; j < 2; j++ {
+			offsetX := 0.25 + float64(i)*0.5
+			offsetY := 0.25 + float64(j)*0.5
+			ray := c.RayForPixel(float64(x), float64(y), offsetX, offsetY)
+			color := w.ColorAt(ray)
+
+			outColor = outColor.Add(color)
+		}
+	}
+
+	outColor = outColor.MulFloat(0.25)
+
+	return outColor
 }
 
 type response struct {
@@ -93,8 +120,7 @@ func worker(jobChan chan job, responseChan chan response, wg *sync.WaitGroup) {
 		line := make([]Color, 0, job.Camera.Hsize)
 
 		for x := 0; x < job.Camera.Hsize; x++ {
-			ray := job.Camera.RayForPixel(x, y)
-			color := job.World.ColorAt(ray)
+			color := job.Camera.getColorForPixels(float64(x), float64(y), job.World)
 
 			line = append(line, color)
 		}
@@ -112,6 +138,9 @@ func (c *Camera) RenderMultiThreaded(w *World, cores int) *Canvas {
 
 	wg := sync.WaitGroup{}
 	wg.Add(c.Vsize)
+
+	defer close(jobChan)
+	defer close(responseChan)
 
 	// Handle responses
 	go func() {
