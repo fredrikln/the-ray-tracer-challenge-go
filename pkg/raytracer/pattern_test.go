@@ -103,3 +103,101 @@ func TestStripesWithBothObjectAndPatternTransformation(t *testing.T) {
 		t.Errorf("Invalid color, got %v, want %v", c, white)
 	}
 }
+
+func TestGradientPattern(t *testing.T) {
+	p := NewGradientPattern(white, black)
+
+	c1 := p.ColorAt(NewPoint(0, 0, 0))
+	c2 := p.ColorAt(NewPoint(0.25, 0, 0))
+	c3 := p.ColorAt(NewPoint(0.5, 0, 0))
+	c4 := p.ColorAt(NewPoint(0.75, 0, 0))
+
+	if !c1.Eq(white) {
+		t.Errorf("Invalid color c1, got %v want %v", c1, white)
+	}
+	if !c2.Eq(NewColor(0.75, 0.75, 0.75)) {
+		t.Errorf("Invalid color c2, got %v want %v", c2, NewColor(0.75, 0.75, 0.75))
+	}
+	if !c3.Eq(NewColor(0.5, 0.5, 0.5)) {
+		t.Errorf("Invalid color c3, got %v want %v", c3, NewColor(0.5, 0.5, 0.5))
+	}
+	if !c4.Eq(NewColor(0.25, 0.25, 0.25)) {
+		t.Errorf("Invalid color c4, got %v want %v", c4, NewColor(0.25, 0.25, 0.25))
+	}
+}
+
+func TestRingPattern(t *testing.T) {
+	p := NewRingPattern(white, black)
+
+	c1 := p.ColorAt(NewPoint(0, 0, 0))
+	c2 := p.ColorAt(NewPoint(1, 0, 0))
+	c3 := p.ColorAt(NewPoint(0, 0, 1))
+	c4 := p.ColorAt(NewPoint(0.708, 0, 0.708))
+
+	if !c1.Eq(white) {
+		t.Errorf("Wrong color at c1, got %v, want %v", c1, white)
+	}
+	if !c2.Eq(black) {
+		t.Errorf("Wrong color at c2, got %v, want %v", c2, black)
+	}
+	if !c3.Eq(black) {
+		t.Errorf("Wrong color at c3, got %v, want %v", c3, black)
+	}
+	if !c4.Eq(black) {
+		t.Errorf("Wrong color at c4, got %v, want %v", c4, black)
+	}
+}
+
+func TestCheckerPatternRepeatX(t *testing.T) {
+	p := NewCheckerPattern(white, black)
+
+	c1 := p.ColorAt(NewPoint(0, 0, 0))
+	c2 := p.ColorAt(NewPoint(0.99, 0, 0))
+	c3 := p.ColorAt(NewPoint(1.01, 0, 0))
+
+	if !c1.Eq(white) {
+		t.Errorf("Wrong color at c1, got %v, want %v", c1, white)
+	}
+	if !c2.Eq(white) {
+		t.Errorf("Wrong color at c2, got %v, want %v", c2, white)
+	}
+	if !c3.Eq(black) {
+		t.Errorf("Wrong color at c3, got %v, want %v", c3, black)
+	}
+}
+
+func TestCheckerPatternRepeatY(t *testing.T) {
+	p := NewCheckerPattern(white, black)
+
+	c1 := p.ColorAt(NewPoint(0, 0, 0))
+	c2 := p.ColorAt(NewPoint(0, 0.99, 0))
+	c3 := p.ColorAt(NewPoint(0, 1.01, 0))
+
+	if !c1.Eq(white) {
+		t.Errorf("Wrong color at c1, got %v, want %v", c1, white)
+	}
+	if !c2.Eq(white) {
+		t.Errorf("Wrong color at c2, got %v, want %v", c2, white)
+	}
+	if !c3.Eq(black) {
+		t.Errorf("Wrong color at c3, got %v, want %v", c3, black)
+	}
+}
+
+func TestCheckerPatternRepeatZ(t *testing.T) {
+	p := NewCheckerPattern(white, black)
+
+	c1 := p.ColorAt(NewPoint(0, 0, 0))
+	c2 := p.ColorAt(NewPoint(0, 0, 0.99))
+	c3 := p.ColorAt(NewPoint(0, 0, 1.01))
+
+	if !c1.Eq(white) {
+		t.Errorf("Wrong color at c1, got %v, want %v", c1, white)
+	}
+	if !c2.Eq(white) {
+		t.Errorf("Wrong color at c2, got %v, want %v", c2, white)
+	}
+	if !c3.Eq(black) {
+		t.Errorf("Wrong color at c3, got %v, want %v", c3, black)
+	}
+}
