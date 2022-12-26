@@ -13,15 +13,15 @@ func main() {
 	w := r.NewWorld()
 
 	m1 := r.NewMaterial().SetColor(r.NewColor(1, 0.9, 0.9)).SetSpecular(0)
-	floor := r.NewSphere().SetTransform(r.NewScaling(10, 0.01, 10)).SetMaterial(m1)
+	floor := r.NewPlane().SetMaterial(m1)
 	w.AddObject(floor)
 
-	t1 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY(-(math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2)).Mul(r.NewScaling(10, 0.01, 10))
-	leftWall := r.NewSphere().SetTransform(t1).SetMaterial(floor.Material)
+	t1 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY(-(math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2))
+	leftWall := r.NewPlane().SetTransform(t1).SetMaterial(floor.Material)
 	w.AddObject(leftWall)
 
-	t2 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY((math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2)).Mul(r.NewScaling(10, 0.01, 10))
-	rightWall := r.NewSphere().SetTransform(t2).SetMaterial(floor.Material)
+	t2 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY((math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2))
+	rightWall := r.NewPlane().SetTransform(t2).SetMaterial(floor.Material)
 	w.AddObject(rightWall)
 
 	t3 := r.NewTranslation(-0.5, 1, 0.5)
@@ -42,7 +42,7 @@ func main() {
 	w.AddLight(r.NewPointLight(r.NewPoint(-10, 10, -10), r.NewColor(1, 1, 1)))
 
 	ct := r.ViewTransform(r.NewPoint(0, 1.5, -5), r.NewPoint(0, 1, 0), r.NewVec(0, 1, 0))
-	camera := r.NewCamera(2048, 2048, math.Pi/3).SetTransform(ct)
+	camera := r.NewCamera(500, 500, math.Pi/3).SetTransform(ct)
 
 	timeBefore := time.Now()
 

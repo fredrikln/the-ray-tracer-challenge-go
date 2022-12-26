@@ -6,8 +6,7 @@ import (
 
 type Sphere struct {
 	Transform *Matrix
-
-	Material *Material
+	Material  *Material
 }
 
 func NewSphere() *Sphere {

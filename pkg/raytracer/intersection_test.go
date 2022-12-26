@@ -4,20 +4,20 @@ import (
 	"testing"
 )
 
-type MockSurface struct{}
+type MockShape struct{}
 
-func (MockSurface) Intersect(ray Ray) []Intersection {
+func (MockShape) Intersect(ray Ray) []Intersection {
 	return []Intersection{}
 }
-func (MockSurface) NormalAt(point Point) Vec {
+func (MockShape) NormalAt(point Point) Vec {
 	return Vec{}
 }
-func (MockSurface) GetMaterial() *Material {
+func (MockShape) GetMaterial() *Material {
 	return NewMaterial()
 }
 
 func TestIntersection(t *testing.T) {
-	element := MockSurface{}
+	element := MockShape{}
 	time := 3.5
 
 	intersection := NewIntersection(time, element)
@@ -28,7 +28,7 @@ func TestIntersection(t *testing.T) {
 }
 
 func TestGetHitAllPositive(t *testing.T) {
-	m := MockSurface{}
+	m := MockShape{}
 	i1 := NewIntersection(1, m)
 	i2 := NewIntersection(2, m)
 	xs := []Intersection{i1, i2}
@@ -41,7 +41,7 @@ func TestGetHitAllPositive(t *testing.T) {
 }
 
 func TestGetHitSomeNegative(t *testing.T) {
-	m := MockSurface{}
+	m := MockShape{}
 	i1 := NewIntersection(-1, m)
 	i2 := NewIntersection(1, m)
 	xs := []Intersection{i1, i2}
@@ -54,7 +54,7 @@ func TestGetHitSomeNegative(t *testing.T) {
 }
 
 func TestGetHitAllNegative(t *testing.T) {
-	m := MockSurface{}
+	m := MockShape{}
 	i1 := NewIntersection(-2, m)
 	i2 := NewIntersection(-1, m)
 	xs := []Intersection{i1, i2}
@@ -67,7 +67,7 @@ func TestGetHitAllNegative(t *testing.T) {
 }
 
 func TestGetHitGetLowestNonNegative(t *testing.T) {
-	s := MockSurface{}
+	s := MockShape{}
 	i1 := NewIntersection(5, s)
 	i2 := NewIntersection(7, s)
 	i3 := NewIntersection(-3, s)
