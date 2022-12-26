@@ -25,8 +25,7 @@ func main() {
 	rightWall := r.NewPlane().SetTransform(t2).SetMaterial(floor.Material)
 	w.AddObject(rightWall)
 
-	p1 := r.NewStripePattern(r.NewColor(0.25, 0.5, 0.25), r.NewColor(1, 1, 1))
-	p1.SetTransform(r.NewRotationY(math.Pi / 4).Mul(r.NewScaling(0.35, 0.35, 0.35)))
+	p1 := r.NewStripePattern(r.NewColor(0.25, 0.5, 0.25), r.NewColor(1, 1, 1)).SetTransform(r.NewRotationY(math.Pi / 4).Mul(r.NewScaling(0.35, 0.35, 0.35)))
 	t3 := r.NewTranslation(-0.5, 1, 0.5)
 	m2 := r.NewMaterial().SetColor(r.NewColor(0.1, 1, 0.5)).SetDiffuse(0.7).SetSpecular(0.3).SetPattern(p1)
 	middle := r.NewSphere().SetTransform(t3).SetMaterial(m2)
@@ -39,8 +38,7 @@ func main() {
 	right := r.NewSphere().SetTransform(t4).SetMaterial(m3)
 	w.AddObject(right)
 
-	p3 := r.NewCheckerPattern(r.NewColor(0.25, 0.25, 0.5), r.NewColor(1, 1, 1))
-	p3.SetTransform(r.NewRotationZ(-math.Pi / 4).Mul(r.NewScaling(0.5, 0.15, 0.15)))
+	p3 := r.NewCheckerPattern(r.NewColor(0.25, 0.25, 0.5), r.NewColor(1, 1, 1)).SetTransform(r.NewRotationZ(-math.Pi / 4).Mul(r.NewScaling(0.5, 0.15, 0.15)))
 	t5 := r.NewTranslation(-1.5, 0.33, -0.75).Mul(r.NewScaling(0.33, 0.33, 0.33))
 	m4 := r.NewMaterial().SetColor(r.NewColor(1, 0.8, 0.1)).SetDiffuse(0.7).SetSpecular(0.3).SetPattern(p3)
 	left := r.NewSphere().SetTransform(t5).SetMaterial(m4)
