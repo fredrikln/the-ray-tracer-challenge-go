@@ -14,6 +14,7 @@ type Camera struct {
 	HalfWidth    float64
 	HalfHeight   float64
 	Antialiasing bool
+	Bounces      int
 }
 
 func NewCamera(hsize, vsize int, fov float64) *Camera {
@@ -39,6 +40,7 @@ func NewCamera(hsize, vsize int, fov float64) *Camera {
 		HalfWidth:    halfWidth,
 		HalfHeight:   halfHeight,
 		Antialiasing: false,
+		Bounces:      4,
 	}
 }
 
@@ -80,7 +82,7 @@ func (c *Camera) Render(w *World) *Canvas {
 func (c *Camera) getColorForPixels(x, y float64, w *World) Color {
 	if !c.Antialiasing {
 		ray := c.RayForPixel(float64(x), float64(y), 0.5, 0.5)
-		color := w.ColorAt(ray)
+		color := w.ColorAt(ray, c.Bounces)
 
 		return color
 	}
@@ -92,7 +94,7 @@ func (c *Camera) getColorForPixels(x, y float64, w *World) Color {
 			offsetX := 0.25 + float64(i)*0.5
 			offsetY := 0.25 + float64(j)*0.5
 			ray := c.RayForPixel(float64(x), float64(y), offsetX, offsetY)
-			color := w.ColorAt(ray)
+			color := w.ColorAt(ray, c.Bounces)
 
 			outColor = outColor.Add(color)
 		}

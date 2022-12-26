@@ -58,7 +58,7 @@ func (w *World) Intersect(r Ray) []Intersection {
 	return xs
 }
 
-func (w *World) ShadeHit(comps Computations) Color {
+func (w *World) ShadeHit(comps Computations, remaining int) Color {
 	color := NewColor(0, 0, 0)
 
 	for _, light := range w.Lights {
@@ -68,10 +68,12 @@ func (w *World) ShadeHit(comps Computations) Color {
 		color = color.Add(c2)
 	}
 
-	return color
+	reflected := w.ReflectedColor(comps, remaining)
+
+	return color.Add(reflected)
 }
 
-func (w *World) ColorAt(r Ray) Color {
+func (w *World) ColorAt(r Ray, remaining int) Color {
 	xs := w.Intersect(r)
 	hit, didHit := GetHit(xs)
 
@@ -81,7 +83,7 @@ func (w *World) ColorAt(r Ray) Color {
 
 	comps := PrepareComputations(hit, r)
 
-	return w.ShadeHit(comps)
+	return w.ShadeHit(comps, remaining)
 }
 
 func (w *World) IsShadowed(l Light, p Point) bool {
@@ -99,4 +101,19 @@ func (w *World) IsShadowed(l Light, p Point) bool {
 	}
 
 	return false
+}
+
+func (w *World) ReflectedColor(comps Computations, remaining int) Color {
+	if remaining <= 0 {
+		return NewColor(0, 0, 0)
+	}
+
+	if (*comps.Object).GetMaterial().Reflectivity == 0 {
+		return Color{0, 0, 0}
+	}
+
+	reflectRay := NewRay(comps.OverPoint, comps.Reflectv)
+	color := w.ColorAt(reflectRay, remaining-1)
+
+	return color.MulFloat((*comps.Object).GetMaterial().Reflectivity)
 }

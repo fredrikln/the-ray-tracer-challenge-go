@@ -6,6 +6,7 @@ type Computations struct {
 	Point      Point
 	Eyev       Vec
 	Normalv    Vec
+	Reflectv   Vec
 	Inside     bool
 	OverPoint  Point
 	UnderPoint Point
@@ -22,12 +23,15 @@ func PrepareComputations(i Intersection, r Ray) Computations {
 		normalv = normalv.Neg()
 	}
 
+	reflectv := r.Direction.Reflect(normalv)
+
 	c := Computations{
 		Time:       i.Time,
 		Object:     i.Object,
 		Point:      p,
 		Eyev:       eyev,
 		Normalv:    normalv,
+		Reflectv:   reflectv,
 		Inside:     inside,
 		OverPoint:  p.AddVec(normalv.Mul((1e-5) / 2)),
 		UnderPoint: p.AddVec(normalv.Mul(-(1e-5) / 2)),

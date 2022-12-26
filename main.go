@@ -13,46 +13,43 @@ func main() {
 	// Set up canvas
 	w := r.NewWorld()
 
-	p0 := r.NewRingPattern(r.NewColor(1, 0.9, 0.9), r.NewColor(1, 1, 1))
-	m1 := r.NewMaterial().SetColor(r.NewColor(1, 0.9, 0.9)).SetSpecular(0).SetPattern(p0)
-	floor := r.NewPlane().SetMaterial(m1)
+	whiteMaterial := r.NewMaterial().SetColor(r.NewColor(1, 1, 1)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
+	blueMaterial := r.NewMaterial().SetColor(r.NewColor(0.537, 0.831, 0.914)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
+	redMaterial := r.NewMaterial().SetColor(r.NewColor(0.941, 0.322, 0.388)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
+	purpleMaterial := r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
+
+	floor := r.NewPlane().SetMaterial(whiteMaterial)
 	w.AddObject(floor)
 
 	t1 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY(-(math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2))
-	leftWall := r.NewPlane().SetTransform(t1).SetMaterial(floor.GetMaterial())
+	leftWall := r.NewPlane().SetTransform(t1).SetMaterial(whiteMaterial)
 	w.AddObject(leftWall)
 
 	t2 := r.NewTranslation(0, 0, 5).Mul(r.NewRotationY((math.Pi / 4))).Mul(r.NewRotationX(math.Pi / 2))
-	rightWall := r.NewPlane().SetTransform(t2).SetMaterial(floor.GetMaterial())
+	rightWall := r.NewPlane().SetTransform(t2).SetMaterial(whiteMaterial)
 	w.AddObject(rightWall)
 
-	p1 := r.NewStripePattern(r.NewColor(0.25, 0.5, 0.25), r.NewColor(1, 1, 1)).SetTransform(r.NewRotationY(math.Pi / 4).Mul(r.NewScaling(0.35, 0.35, 0.35)))
 	t3 := r.NewTranslation(-0.5, 1, 0.5)
-	m2 := r.NewMaterial().SetColor(r.NewColor(0.1, 1, 0.5)).SetDiffuse(0.7).SetSpecular(0.3).SetPattern(p1)
-	middle := r.NewSphere().SetTransform(t3).SetMaterial(m2)
+	middle := r.NewSphere().SetTransform(t3).SetMaterial(blueMaterial)
 	w.AddObject(middle)
 
-	p2 := r.NewGradientPattern(r.NewColor(0.5, 0.25, 0.25), r.NewColor(1, 1, 1))
-	p2.SetTransform(r.NewTranslation(1, 0, 0).Mul(r.NewScaling(2, 2, 2)))
 	t4 := r.NewTranslation(1.5, 0.5, -0.5).Mul(r.NewScaling(0.5, 0.5, 0.5))
-	m3 := r.NewMaterial().SetColor(r.NewColor(0.5, 1, 0.1)).SetDiffuse(0.7).SetSpecular(0.3).SetPattern(p2)
-	right := r.NewSphere().SetTransform(t4).SetMaterial(m3)
+	right := r.NewSphere().SetTransform(t4).SetMaterial(redMaterial)
 	w.AddObject(right)
 
-	p3 := r.NewCheckerPattern(r.NewColor(0.25, 0.25, 0.5), r.NewColor(1, 1, 1)).SetTransform(r.NewRotationZ(-math.Pi / 4).Mul(r.NewScaling(0.5, 0.15, 0.15)))
 	t5 := r.NewTranslation(-1.5, 0.33, -0.75).Mul(r.NewScaling(0.33, 0.33, 0.33))
-	m4 := r.NewMaterial().SetColor(r.NewColor(1, 0.8, 0.1)).SetDiffuse(0.7).SetSpecular(0.3).SetPattern(p3)
-	left := r.NewSphere().SetTransform(t5).SetMaterial(m4)
+	left := r.NewSphere().SetTransform(t5).SetMaterial(purpleMaterial)
 	w.AddObject(left)
 
 	w.AddLight(r.NewPointLight(r.NewPoint(-10, 10, -10), r.NewColor(1, 1, 1)))
 
 	ct := r.ViewTransform(r.NewPoint(0, 1.5, -5), r.NewPoint(0, 1, 0), r.NewVec(0, 1, 0))
-	width := 1920
+	width := 640
 	ratio := 16.0 / 9.0
 
 	camera := r.NewCamera(width, int(float64(width)/ratio), math.Pi/3).SetTransform(ct)
-	// camera.Antialiasing = true
+	//camera.Bounces = 10
+	//camera.Antialiasing = true
 
 	timeBefore := time.Now()
 

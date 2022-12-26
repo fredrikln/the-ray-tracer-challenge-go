@@ -1,6 +1,7 @@
 package raytracer
 
 import (
+	"math"
 	"testing"
 )
 
@@ -61,7 +62,7 @@ func TestShadeIntersection(t *testing.T) {
 
 	comps := PrepareComputations(i, r)
 
-	c := w.ShadeHit(comps)
+	c := w.ShadeHit(comps, 4)
 
 	want := NewColor(0.380661, 0.475826, 0.285495)
 
@@ -83,7 +84,7 @@ func TestShadeIntersectionFromInside(t *testing.T) {
 
 	comps := PrepareComputations(i, r)
 
-	c := w.ShadeHit(comps)
+	c := w.ShadeHit(comps, 4)
 
 	want := NewColor(0.90498, 0.90498, 0.90498)
 
@@ -97,7 +98,7 @@ func TestWhenRayMisses(t *testing.T) {
 	r := NewRay(NewPoint(0, 0, -5), NewVec(0, 1, 0))
 
 	want := NewColor(0, 0, 0)
-	got := w.ColorAt(r)
+	got := w.ColorAt(r, 4)
 
 	if !got.Eq(want) {
 		t.Errorf("Did not get black, got: %v", got)
@@ -109,7 +110,7 @@ func TestWhenRayHits(t *testing.T) {
 	r := NewRay(NewPoint(0, 0, -5), NewVec(0, 0, 1))
 
 	want := NewColor(0.380661, 0.475826, 0.285495)
-	got := w.ColorAt(r)
+	got := w.ColorAt(r, 4)
 
 	if !got.Eq(want) {
 		t.Errorf("Did not get correct color, got: %v, want %v", got, want)
@@ -126,7 +127,7 @@ func TestUsesHitToComputeColor(t *testing.T) {
 	r := NewRay(NewPoint(0, 0, 0.75), NewVec(0, 0, -1))
 
 	want := inner.GetMaterial().Color
-	got := w.ColorAt(r)
+	got := w.ColorAt(r, 4)
 
 	if !got.Eq(want) {
 		t.Errorf("Did not get correct color, got: %v, want %v", got, want)
@@ -148,10 +149,80 @@ func TestShadeInShadow(t *testing.T) {
 
 	comps := PrepareComputations(i, r)
 
-	got := w.ShadeHit(comps)
+	got := w.ShadeHit(comps, 4)
 	want := NewColor(0.1, 0.1, 0.1)
 
 	if !got.Eq(want) {
 		t.Errorf("Got %v, want %v", got, want)
 	}
+}
+
+func TestReflectedColor(t *testing.T) {
+	w := NewDefaultWorld()
+	r := NewRay(NewPoint(0, 0, 0), NewVec(0, 0, 1))
+	s := *w.Objects[1]
+	s.GetMaterial().SetAmbient(1)
+	i := NewIntersection(1, s)
+
+	comps := PrepareComputations(i, r)
+	color := w.ReflectedColor(comps, 4)
+
+	if !color.Eq(NewColor(0, 0, 0)) {
+		t.Errorf("Invalid color, got %v, want %v", color, NewColor(0, 0, 0))
+	}
+}
+
+func TestReflectedColorForAReflectiveMaterial(t *testing.T) {
+	w := NewDefaultWorld()
+	s := NewPlane().SetMaterial(NewMaterial().SetReflective(0.5)).SetTransform(NewTranslation(0, -1, 0))
+	w.AddObject(s)
+
+	r := NewRay(NewPoint(0, 0, -3), NewVec(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	i := NewIntersection(math.Sqrt(2), s)
+
+	comps := PrepareComputations(i, r)
+	color := w.ShadeHit(comps, 4)
+
+	want := NewColor(0.876756, 0.924339, 0.829173)
+
+	if !color.Eq(want) {
+		t.Errorf("Invalid color, got %v, want %v", color, want)
+	}
+}
+
+func TestMutuallyReflectiveSurfaces(t *testing.T) {
+	w := NewWorld()
+	w.AddLight(NewPointLight(NewPoint(0, 0, 0), NewColor(1, 1, 1)))
+
+	lower := NewPlane().SetMaterial(NewMaterial().SetReflective(1)).SetTransform(NewTranslation(0, -1, 0))
+	upper := NewPlane().SetMaterial(NewMaterial().SetReflective(1)).SetTransform(NewTranslation(0, 1, 0))
+	w.AddObject(lower)
+	w.AddObject(upper)
+
+	r := NewRay(NewPoint(0, 0, 0), NewVec(0, 1, 0))
+
+	color := w.ColorAt(r, 4)
+
+	if !color.Eq(NewColor(9.5, 9.5, 9.5)) {
+		t.Errorf("Got %v, want %v", color, NewColor(9.5, 9.5, 9.5))
+	}
+}
+
+func TestReflectedColorAtMaximumRecursiveDepth(t *testing.T) {
+	w := NewDefaultWorld()
+
+	s := NewPlane().SetMaterial(NewMaterial().SetReflective(0.5)).SetTransform(NewTranslation(0, -1, 0))
+	w.AddObject(s)
+
+	r := NewRay(NewPoint(0, 0, -3), NewVec(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	i := NewIntersection(math.Sqrt(2), s)
+
+	comps := PrepareComputations(i, r)
+
+	color := w.ReflectedColor(comps, 0)
+
+	if !color.Eq(NewColor(0, 0, 0)) {
+		t.Errorf("Got %v, want %v", color, NewColor(0, 0, 0))
+	}
+
 }

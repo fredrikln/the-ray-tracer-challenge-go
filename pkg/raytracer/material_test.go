@@ -150,3 +150,11 @@ func TestLightingWithPatternApplied(t *testing.T) {
 		t.Errorf("Invalid c1 got %v, want %v", c2, NewColor(0, 0, 0))
 	}
 }
+
+func TestDefaultMaterialReflectivity(t *testing.T) {
+	m := NewMaterial()
+
+	if m.Reflectivity != 0.0 {
+		t.Error("Invalid reflectivity in default material")
+	}
+}

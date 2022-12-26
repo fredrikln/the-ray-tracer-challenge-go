@@ -1,6 +1,7 @@
 package raytracer
 
 import (
+	"math"
 	"testing"
 )
 
@@ -52,5 +53,20 @@ func TestIntersectiononInside(t *testing.T) {
 
 	if comps.Inside != true {
 		t.Errorf("Got %v, want %v", comps.Inside, true)
+	}
+}
+
+func TestPrecomputeReflectionVector(t *testing.T) {
+	s := NewPlane()
+	r := NewRay(NewPoint(0, 1, -1), NewVec(0, -math.Sqrt(2)/2, math.Sqrt(2)/2))
+	i := NewIntersection(math.Sqrt(2), s)
+
+	comps := PrepareComputations(i, r)
+
+	got := comps.Reflectv
+	want := NewVec(0, math.Sqrt(2)/2, math.Sqrt(2)/2)
+
+	if !got.Eq(want) {
+		t.Errorf("Got %v, want %v", got, want)
 	}
 }
