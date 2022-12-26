@@ -44,7 +44,7 @@ func (w *World) AddObject(i Intersectable) *World {
 }
 
 func (w *World) Intersect(r Ray) []Intersection {
-	xs := make([]Intersection, 0)
+	xs := make([]Intersection, 0, len(w.Objects)*2)
 
 	for _, object := range w.Objects {
 		objectXs := (*object).Intersect(r)

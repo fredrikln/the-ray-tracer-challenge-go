@@ -32,15 +32,15 @@ func (s *Sphere) SetTransform(m *Matrix) *Sphere {
 	return s
 }
 
-func (s *Sphere) Intersect(ray Ray) []Intersection {
-	ray2 := ray.Mul(s.Transform.Inverse())
+func (s *Sphere) Intersect(r Ray) []Intersection {
+	r2 := r.Mul(s.Transform.Inverse())
 
 	intersections := make([]Intersection, 0)
 
-	sphereToRay := ray2.Origin.Sub(NewPoint(0, 0, 0))
+	sphereToRay := r2.Origin.Sub(NewPoint(0, 0, 0))
 
-	a := ray2.Direction.Dot(ray2.Direction)
-	b := 2 * ray2.Direction.Dot(sphereToRay)
+	a := r2.Direction.Dot(r2.Direction)
+	b := 2 * r2.Direction.Dot(sphereToRay)
 	c := sphereToRay.Dot(sphereToRay) - 1
 
 	discriminant := math.Pow(b, 2) - 4*a*c
