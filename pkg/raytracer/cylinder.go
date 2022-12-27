@@ -59,9 +59,7 @@ func (cy *Cylinder) Intersect(worldRay Ray) []Intersection {
 	localRay := worldRay.Mul(cy.Transform.Inverse())
 
 	a := math.Pow(localRay.Direction.X, 2) + math.Pow(localRay.Direction.Z, 2)
-
 	b := 2*localRay.Origin.X*localRay.Direction.X + 2*localRay.Origin.Z*localRay.Direction.Z
-
 	c := math.Pow(localRay.Origin.X, 2) + math.Pow(localRay.Origin.Z, 2) - 1
 
 	disc := math.Pow(b, 2) - 4*a*c

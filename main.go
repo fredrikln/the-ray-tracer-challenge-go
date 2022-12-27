@@ -76,14 +76,24 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 					cy.Maximum = 1
 					cy.Closed = true
 					object = cy
-				// case 3:
-				// 	object = r.NewCone()
+				case 3:
+					co := r.NewCone()
+					co.Minimum = -1
+					co.Maximum = 0
+					co.Closed = true
+					object = co
 				default:
 					object = r.NewSphere()
 				}
 
 				offset := 3
-				object.SetTransform(r.NewTranslation(float64(offset*x), float64(offset*y), float64(offset*z)))
+				objTransform := object.GetTransform().Mul(r.NewTranslation(float64(offset*x), float64(offset*y), float64(offset*z)))
+
+				if objectType == 3 {
+					objTransform = objTransform.Mul(r.NewScaling(1, 2, 1)).Mul(r.NewTranslation(0, 0.5, 0))
+				}
+
+				object.SetTransform(objTransform)
 
 				var material *r.Material
 

@@ -65,7 +65,7 @@ func PrepareComputations(i Intersection, r Ray) Computations {
 	p := r.Position(i.Time)
 
 	eyev := r.Direction.Neg()
-	normalv := (*i.Object).NormalAt(p)
+	normalv := (*i.Object).NormalAt(p).Norm()
 	inside := normalv.Dot(eyev) < 0
 
 	if inside {
