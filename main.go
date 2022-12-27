@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"runtime"
 	"time"
 
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/pkg/raytracer"
 )
 
-func main() {
-	// Set up canvas
+func GetTestScene() (*r.World, *r.Matrix) {
 	w := r.NewWorld()
 
 	whiteMaterial := r.NewMaterial().SetColor(r.NewColor(1, 1, 1)).SetDiffuse(0.7).SetSpecular(0.0).SetAmbient(0.1).SetReflective(0.1)
@@ -46,12 +46,68 @@ func main() {
 
 	w.AddLight(r.NewPointLight(r.NewPoint(-10, 10, -10), r.NewColor(1, 1, 1)))
 
-	ct := r.ViewTransform(r.NewPoint(0, 1.5, -5), r.NewPoint(0, 1, 0), r.NewVec(0, 1, 0))
+	return w, r.ViewTransform(r.NewPoint(0, 1.5, -5), r.NewPoint(0, 1, 0), r.NewVec(0, 1, 0))
+}
+
+func GetTestScene2() (*r.World, *r.Matrix) {
+	w := r.NewWorld()
+
+	t := r.NewTranslation(0, 0, 50000).Mul(r.NewRotationX(math.Pi / 2))
+	wall := r.NewPlane().SetTransform(t)
+	w.AddObject(wall)
+
+	rand.Seed(1339)
+
+	for x := -2; x <= 2; x++ {
+		for y := -2; y <= 2; y++ {
+			for z := -2; z <= 2; z++ {
+
+				var object r.Intersectable
+
+				objectType := rand.Intn(2)
+				if objectType == 0 {
+					object = r.NewSphere()
+				} else {
+					object = r.NewCube()
+				}
+				offset := 3
+				object.SetTransform(r.NewTranslation(float64(offset*x), float64(offset*y), float64(offset*z)))
+
+				var material *r.Material
+
+				materialType := rand.Intn(4)
+				if materialType == 0 {
+					material = r.NewMaterial().SetColor(r.NewColor(0.537, 0.831, 0.914)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
+				} else if materialType == 1 {
+					material = r.NewMaterial().SetColor(r.NewColor(0.941, 0.322, 0.388)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
+				} else if materialType == 2 {
+					material = r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
+				} else {
+					material = r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetTransparency(1).SetReflective(1).SetRefractiveIndex(1.5)
+				}
+
+				object.SetMaterial(material)
+
+				w.AddObject(object)
+			}
+		}
+	}
+
+	w.AddLight(r.NewPointLight(r.NewPoint(50, 100, -50), r.NewColor(1, 1, 1)))
+	w.AddLight(r.NewPointLight(r.NewPoint(-400, 50, -10), r.NewColor(0.2, 0.2, 0.2)))
+
+	return w, r.ViewTransform(r.NewPoint(-10, 10, -30), r.NewPoint(0, -1.5, 0), r.NewVec(0, 1, 0))
+}
+
+func main() {
+	// Set up canvas
+	w, ct := GetTestScene2()
+
 	width := 640
 	ratio := 16.0 / 9.0
 
 	camera := r.NewCamera(width, int(float64(width)/ratio), math.Pi/3).SetTransform(ct)
-	// camera.Bounces = 4
+	// camera.Bounces = 6
 	// camera.Antialiasing = true
 
 	timeBefore := time.Now()
