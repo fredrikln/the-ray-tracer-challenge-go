@@ -106,7 +106,7 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 				case 2:
 					material = r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
 				case 3:
-					material = r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetTransparency(1).SetReflective(1).SetRefractiveIndex(1.5)
+					material = r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetTransparency(1).SetReflective(1).SetRefractiveIndex(1.5).SetSpecular(1).SetShininess(300).SetDiffuse(0.05).SetAmbient(0.05)
 				default:
 					material = r.NewMaterial().SetColor(r.NewColor(1, 0, 0)).SetAmbient(1).SetDiffuse(0).SetShininess(0).SetSpecular(0)
 				}

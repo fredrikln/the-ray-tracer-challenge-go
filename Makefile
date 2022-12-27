@@ -1,7 +1,7 @@
 .PHONY: build run test clean
 
 build:
-	@go build -o raytracer .
+	@go build -ldflags "-s -w" -o raytracer .
 
 run: build
 	@./raytracer
