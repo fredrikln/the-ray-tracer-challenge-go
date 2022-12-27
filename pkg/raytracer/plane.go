@@ -27,9 +27,11 @@ func (p *Plane) SetMaterial(m *Material) Intersectable {
 
 	return p
 }
+
 func (p *Plane) GetTransform() *Matrix {
 	return p.Transform
 }
+
 func (p *Plane) SetTransform(m *Matrix) Intersectable {
 	p.Transform = m
 

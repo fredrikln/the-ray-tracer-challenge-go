@@ -36,6 +36,7 @@ func (s *Sphere) SetMaterial(m *Material) Intersectable {
 func (s *Sphere) GetTransform() *Matrix {
 	return s.Transform
 }
+
 func (s *Sphere) SetTransform(m *Matrix) Intersectable {
 	s.Transform = m
 

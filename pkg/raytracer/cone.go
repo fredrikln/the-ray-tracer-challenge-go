@@ -2,46 +2,46 @@ package raytracer
 
 import "math"
 
-type Cube struct {
+type Cone struct {
 	Transform *Matrix
 	Material  *Material
 }
 
-func NewCube() *Cube {
-	return &Cube{
+func NewCone() *Cone {
+	return &Cone{
 		NewIdentityMatrix(),
 		NewMaterial(),
 	}
 }
 
-func NewGlassCube() *Cube {
-	return &Cube{
+func NewGlassCone() *Cone {
+	return &Cone{
 		NewIdentityMatrix(),
 		NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
 	}
 }
 
-func (c *Cube) GetMaterial() *Material {
+func (c *Cone) GetMaterial() *Material {
 	return c.Material
 }
 
-func (c *Cube) SetMaterial(m *Material) Intersectable {
+func (c *Cone) SetMaterial(m *Material) Intersectable {
 	c.Material = m
 
 	return c
 }
 
-func (c *Cube) GetTransform() *Matrix {
+func (c *Cone) GetTransform() *Matrix {
 	return c.Transform
 }
 
-func (c *Cube) SetTransform(m *Matrix) Intersectable {
+func (c *Cone) SetTransform(m *Matrix) Intersectable {
 	c.Transform = m
 
 	return c
 }
 
-func (c *Cube) Intersect(worldRay Ray) []Intersection {
+func (c *Cone) Intersect(worldRay Ray) []Intersection {
 	localRay := worldRay.Mul(c.Transform.Inverse())
 
 	xtmin, xtmax := checkAxis(localRay.Origin.X, localRay.Direction.X)
@@ -61,7 +61,7 @@ func (c *Cube) Intersect(worldRay Ray) []Intersection {
 	}
 }
 
-func (c *Cube) NormalAt(worldPoint Point) Vec {
+func (c *Cone) NormalAt(worldPoint Point) Vec {
 	objectPoint := worldPoint.MulMat(c.Transform.Inverse())
 
 	maxC := math.Max(math.Max(math.Abs(objectPoint.X), math.Abs(objectPoint.Y)), math.Abs(objectPoint.Z))
@@ -81,23 +81,23 @@ func (c *Cube) NormalAt(worldPoint Point) Vec {
 	return worldNormal.Norm()
 }
 
-func checkAxis(origin, direction float64) (float64, float64) {
-	tmin_numerator := -1 - origin
-	tmax_numerator := 1 - origin
+// func checkAxis2(origin, direction float64) (float64, float64) {
+// 	tmin_numerator := -1 - origin
+// 	tmax_numerator := 1 - origin
 
-	var tmin, tmax float64
+// 	var tmin, tmax float64
 
-	if math.Abs(direction) > 1e-5 {
-		tmin = tmin_numerator / direction
-		tmax = tmax_numerator / direction
-	} else {
-		tmin = tmin_numerator * math.Inf(1)
-		tmax = tmax_numerator * math.Inf(1)
-	}
+// 	if math.Abs(direction) > 1e-5 {
+// 		tmin = tmin_numerator / direction
+// 		tmax = tmax_numerator / direction
+// 	} else {
+// 		tmin = tmin_numerator * math.Inf(1)
+// 		tmax = tmax_numerator * math.Inf(1)
+// 	}
 
-	if tmin > tmax {
-		tmin, tmax = tmax, tmin
-	}
+// 	if tmin > tmax {
+// 		tmin, tmax = tmax, tmin
+// 	}
 
-	return tmin, tmax
-}
+// 	return tmin, tmax
+// }

@@ -64,26 +64,41 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 
 				var object r.Intersectable
 
-				objectType := rand.Intn(2)
-				if objectType == 0 {
+				objectType := rand.Intn(4)
+				switch objectType {
+				case 0:
 					object = r.NewSphere()
-				} else {
+				case 1:
 					object = r.NewCube()
+				case 2:
+					cy := r.NewCylinder()
+					cy.Minimum = -1
+					cy.Maximum = 1
+					cy.Closed = true
+					object = cy
+				// case 3:
+				// 	object = r.NewCone()
+				default:
+					object = r.NewSphere()
 				}
+
 				offset := 3
 				object.SetTransform(r.NewTranslation(float64(offset*x), float64(offset*y), float64(offset*z)))
 
 				var material *r.Material
 
 				materialType := rand.Intn(4)
-				if materialType == 0 {
+				switch materialType {
+				case 0:
 					material = r.NewMaterial().SetColor(r.NewColor(0.537, 0.831, 0.914)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
-				} else if materialType == 1 {
+				case 1:
 					material = r.NewMaterial().SetColor(r.NewColor(0.941, 0.322, 0.388)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
-				} else if materialType == 2 {
+				case 2:
 					material = r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetDiffuse(0.7).SetSpecular(0.0).SetReflective(0.1).SetAmbient(0.1)
-				} else {
+				case 3:
 					material = r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetTransparency(1).SetReflective(1).SetRefractiveIndex(1.5)
+				default:
+					material = r.NewMaterial().SetColor(r.NewColor(1, 0, 0)).SetAmbient(1).SetDiffuse(0).SetShininess(0).SetSpecular(0)
 				}
 
 				object.SetMaterial(material)
