@@ -1,5 +1,7 @@
 package raytracer
 
+import "sort"
+
 type Intersectable interface {
 	Intersect(Ray) []Intersection
 	NormalAt(Point) Vec
@@ -7,6 +9,7 @@ type Intersectable interface {
 	GetMaterial() *Material
 	SetTransform(*Matrix) Intersectable
 	GetTransform() *Matrix
+	GetParent() *Group
 }
 
 type Intersection struct {
@@ -29,6 +32,8 @@ func GetHit(xs []Intersection) (Intersection, bool) {
 	if len(xs) == 0 {
 		return Intersection{}, false
 	}
+
+	sort.Sort(IntersectonSorter(xs))
 
 	// grab first non negative value
 	for _, i := range xs {

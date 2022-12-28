@@ -1,9 +1,5 @@
 package raytracer
 
-import (
-	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
-)
-
 type Point struct {
 	X, Y, Z float64
 }
@@ -45,13 +41,13 @@ func (a Point) MulMat(b *Matrix) Point {
 }
 
 func (a Point) Eq(b Point) bool {
-	if !c.WithinTolerance(a.X, b.X, 1e-5) {
+	if !WithinTolerance(a.X, b.X, 1e-5) {
 		return false
 	}
-	if !c.WithinTolerance(a.Y, b.Y, 1e-5) {
+	if !WithinTolerance(a.Y, b.Y, 1e-5) {
 		return false
 	}
-	if !c.WithinTolerance(a.Z, b.Z, 1e-5) {
+	if !WithinTolerance(a.Z, b.Z, 1e-5) {
 		return false
 	}
 

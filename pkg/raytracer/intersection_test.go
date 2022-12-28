@@ -24,6 +24,12 @@ func (MockShape) GetTransform() *Matrix {
 func (ms MockShape) SetTransform(*Matrix) Intersectable {
 	return &MockShape{}
 }
+func (ms MockShape) GetParent() *Group {
+	return nil
+}
+func (ms MockShape) SetParent(g *Group) Intersectable {
+	return nil
+}
 
 func TestIntersection(t *testing.T) {
 	element := MockShape{}

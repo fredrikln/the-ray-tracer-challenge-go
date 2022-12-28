@@ -7,26 +7,26 @@ import (
 type Sphere struct {
 	Transform *Matrix
 	Material  *Material
+	Parent    *Group
 }
 
 func NewSphere() *Sphere {
 	return &Sphere{
-		NewIdentityMatrix(),
-		NewMaterial(),
+		Transform: NewIdentityMatrix(),
+		Material:  NewMaterial(),
 	}
 }
 
 func NewGlassSphere() *Sphere {
 	return &Sphere{
-		NewIdentityMatrix(),
-		NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
+		Transform: NewIdentityMatrix(),
+		Material:  NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
 	}
 }
 
 func (s *Sphere) GetMaterial() *Material {
 	return s.Material
 }
-
 func (s *Sphere) SetMaterial(m *Material) Intersectable {
 	s.Material = m
 
@@ -36,9 +36,17 @@ func (s *Sphere) SetMaterial(m *Material) Intersectable {
 func (s *Sphere) GetTransform() *Matrix {
 	return s.Transform
 }
-
 func (s *Sphere) SetTransform(m *Matrix) Intersectable {
 	s.Transform = m
+
+	return s
+}
+
+func (s *Sphere) GetParent() *Group {
+	return s.Parent
+}
+func (s *Sphere) SetParent(g *Group) Intersectable {
+	s.Parent = g
 
 	return s
 }

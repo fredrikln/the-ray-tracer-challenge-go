@@ -2,8 +2,6 @@ package raytracer
 
 import (
 	"math"
-
-	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 type Direction Vec
@@ -19,13 +17,13 @@ func NewVec(x, y, z float64) Vec {
 }
 
 func (a Vec) Eq(b Vec) bool {
-	if !c.WithinTolerance(a.X, b.X, 1e-5) {
+	if !WithinTolerance(a.X, b.X, 1e-5) {
 		return false
 	}
-	if !c.WithinTolerance(a.Y, b.Y, 1e-5) {
+	if !WithinTolerance(a.Y, b.Y, 1e-5) {
 		return false
 	}
-	if !c.WithinTolerance(a.Z, b.Z, 1e-5) {
+	if !WithinTolerance(a.Z, b.Z, 1e-5) {
 		return false
 	}
 

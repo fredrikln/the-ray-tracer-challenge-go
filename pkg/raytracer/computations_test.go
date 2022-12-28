@@ -3,8 +3,6 @@ package raytracer
 import (
 	"math"
 	"testing"
-
-	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 func TestPrepareComputations(t *testing.T) {
@@ -121,7 +119,7 @@ func TestDetermineReflectanceOfAPerpendicularRay(t *testing.T) {
 
 	reflectance := Schlick(comps)
 
-	if !c.WithinTolerance(reflectance, 0.04, 1e-5) {
+	if !WithinTolerance(reflectance, 0.04, 1e-5) {
 		t.Errorf("Got %v, want %v", reflectance, 0.04)
 	}
 }
@@ -137,7 +135,7 @@ func TestSchlickWithSmallAngleAndN2LargerThanN1(t *testing.T) {
 
 	reflectance := Schlick(comps)
 
-	if !c.WithinTolerance(reflectance, 0.4887308, 1e-5) {
+	if !WithinTolerance(reflectance, 0.4887308, 1e-5) {
 		t.Errorf("Got %v, want %v", reflectance, 0.48873)
 	}
 }

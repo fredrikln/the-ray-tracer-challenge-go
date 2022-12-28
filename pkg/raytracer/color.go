@@ -3,8 +3,6 @@ package raytracer
 import (
 	"image/color"
 	"math"
-
-	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 type Color struct {
@@ -18,13 +16,13 @@ func NewColor(r, g, b float64) Color {
 }
 
 func (a Color) Eq(b Color) bool {
-	if !c.WithinTolerance(a.R, b.R, 1e-5) {
+	if !WithinTolerance(a.R, b.R, 1e-5) {
 		return false
 	}
-	if !c.WithinTolerance(a.G, b.G, 1e-5) {
+	if !WithinTolerance(a.G, b.G, 1e-5) {
 		return false
 	}
-	if !c.WithinTolerance(a.B, b.B, 1e-5) {
+	if !WithinTolerance(a.B, b.B, 1e-5) {
 		return false
 	}
 

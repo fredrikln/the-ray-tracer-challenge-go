@@ -2,8 +2,6 @@ package raytracer
 
 import (
 	"math"
-
-	common "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 type Cone struct {
@@ -12,32 +10,32 @@ type Cone struct {
 	Minimum   float64
 	Maximum   float64
 	Closed    bool
+	Parent    *Group
 }
 
 func NewCone() *Cone {
 	return &Cone{
-		NewIdentityMatrix(),
-		NewMaterial(),
-		math.Inf(-1),
-		math.Inf(1),
-		false,
+		Transform: NewIdentityMatrix(),
+		Material:  NewMaterial(),
+		Minimum:   math.Inf(-1),
+		Maximum:   math.Inf(1),
+		Closed:    false,
 	}
 }
 
 func NewGlassCone() *Cone {
 	return &Cone{
-		NewIdentityMatrix(),
-		NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
-		math.Inf(-1),
-		math.Inf(1),
-		false,
+		Transform: NewIdentityMatrix(),
+		Material:  NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
+		Minimum:   math.Inf(-1),
+		Maximum:   math.Inf(1),
+		Closed:    false,
 	}
 }
 
 func (co *Cone) GetMaterial() *Material {
 	return co.Material
 }
-
 func (co *Cone) SetMaterial(m *Material) Intersectable {
 	co.Material = m
 
@@ -47,9 +45,17 @@ func (co *Cone) SetMaterial(m *Material) Intersectable {
 func (co *Cone) GetTransform() *Matrix {
 	return co.Transform
 }
-
 func (co *Cone) SetTransform(m *Matrix) Intersectable {
 	co.Transform = m
+
+	return co
+}
+
+func (co *Cone) GetParent() *Group {
+	return co.Parent
+}
+func (co *Cone) SetParent(g *Group) Intersectable {
+	co.Parent = g
 
 	return co
 }
@@ -69,7 +75,7 @@ func (co *Cone) Intersect(worldRay Ray) []Intersection {
 
 	var xs []Intersection
 
-	if common.WithinTolerance(a, 0, 1e-5) && !common.WithinTolerance(b, 0, 1e-5) {
+	if WithinTolerance(a, 0, 1e-5) && !WithinTolerance(b, 0, 1e-5) {
 		t := -c / (2 * b)
 
 		xs = append(xs, NewIntersection(t, co))
@@ -134,7 +140,7 @@ func checkCap2(r Ray, t float64, radius float64) bool {
 func intersectCaps2(co *Cone, r Ray) []Intersection {
 	var xs []Intersection
 
-	if !co.Closed || common.WithinTolerance(r.Direction.Y, 0, 1e-5) {
+	if !co.Closed || WithinTolerance(r.Direction.Y, 0, 1e-5) {
 		return []Intersection{}
 	}
 

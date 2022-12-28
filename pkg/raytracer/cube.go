@@ -5,26 +5,26 @@ import "math"
 type Cube struct {
 	Transform *Matrix
 	Material  *Material
+	Parent    *Group
 }
 
 func NewCube() *Cube {
 	return &Cube{
-		NewIdentityMatrix(),
-		NewMaterial(),
+		Transform: NewIdentityMatrix(),
+		Material:  NewMaterial(),
 	}
 }
 
 func NewGlassCube() *Cube {
 	return &Cube{
-		NewIdentityMatrix(),
-		NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
+		Transform: NewIdentityMatrix(),
+		Material:  NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
 	}
 }
 
 func (c *Cube) GetMaterial() *Material {
 	return c.Material
 }
-
 func (c *Cube) SetMaterial(m *Material) Intersectable {
 	c.Material = m
 
@@ -34,9 +34,17 @@ func (c *Cube) SetMaterial(m *Material) Intersectable {
 func (c *Cube) GetTransform() *Matrix {
 	return c.Transform
 }
-
 func (c *Cube) SetTransform(m *Matrix) Intersectable {
 	c.Transform = m
+
+	return c
+}
+
+func (c *Cube) GetParent() *Group {
+	return c.Parent
+}
+func (c *Cube) SetParent(g *Group) Intersectable {
+	c.Parent = g
 
 	return c
 }

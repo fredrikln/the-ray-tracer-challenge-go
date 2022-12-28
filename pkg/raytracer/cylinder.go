@@ -2,8 +2,6 @@ package raytracer
 
 import (
 	"math"
-
-	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 type Cylinder struct {
@@ -12,32 +10,32 @@ type Cylinder struct {
 	Minimum   float64
 	Maximum   float64
 	Closed    bool
+	Parent    *Group
 }
 
 func NewCylinder() *Cylinder {
 	return &Cylinder{
-		NewIdentityMatrix(),
-		NewMaterial(),
-		math.Inf(-1),
-		math.Inf(1),
-		false,
+		Transform: NewIdentityMatrix(),
+		Material:  NewMaterial(),
+		Minimum:   math.Inf(-1),
+		Maximum:   math.Inf(1),
+		Closed:    false,
 	}
 }
 
 func NewGlassCylinder() *Cylinder {
 	return &Cylinder{
-		NewIdentityMatrix(),
-		NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
-		math.Inf(-1),
-		math.Inf(1),
-		false,
+		Transform: NewIdentityMatrix(),
+		Material:  NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
+		Minimum:   math.Inf(-1),
+		Maximum:   math.Inf(1),
+		Closed:    false,
 	}
 }
 
 func (c *Cylinder) GetMaterial() *Material {
 	return c.Material
 }
-
 func (c *Cylinder) SetMaterial(m *Material) Intersectable {
 	c.Material = m
 
@@ -47,9 +45,17 @@ func (c *Cylinder) SetMaterial(m *Material) Intersectable {
 func (c *Cylinder) GetTransform() *Matrix {
 	return c.Transform
 }
-
 func (c *Cylinder) SetTransform(m *Matrix) Intersectable {
 	c.Transform = m
+
+	return c
+}
+
+func (c *Cylinder) GetParent() *Group {
+	return c.Parent
+}
+func (c *Cylinder) SetParent(g *Group) Intersectable {
+	c.Parent = g
 
 	return c
 }
@@ -121,7 +127,7 @@ func checkCap(r Ray, t float64) bool {
 func intersectCaps(cy *Cylinder, r Ray) []Intersection {
 	var xs []Intersection
 
-	if !cy.Closed || c.WithinTolerance(r.Direction.Y, 0, 1e-5) {
+	if !cy.Closed || WithinTolerance(r.Direction.Y, 0, 1e-5) {
 		return xs
 	}
 

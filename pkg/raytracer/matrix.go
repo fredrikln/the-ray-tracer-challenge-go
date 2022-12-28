@@ -2,8 +2,6 @@ package raytracer
 
 import (
 	"math"
-
-	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 type Matrix struct {
@@ -105,7 +103,7 @@ func ViewTransform(from, to Point, up Vec) *Matrix {
 func (a *Matrix) Eq(b *Matrix) bool {
 	for i := range a.data {
 		for j := range b.data {
-			if !c.WithinTolerance(a.data[i][j], b.data[i][j], 1e-5) {
+			if !WithinTolerance(a.data[i][j], b.data[i][j], 1e-5) {
 				return false
 			}
 		}

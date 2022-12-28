@@ -3,8 +3,6 @@ package raytracer
 import (
 	"math"
 	"testing"
-
-	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 func TestMatrix4(t *testing.T) {
@@ -517,7 +515,7 @@ func CompareMatrixForTest(got, want *Matrix, t *testing.T) {
 			got := got.data[i][j]
 			want := want.data[i][j]
 
-			if !c.WithinTolerance(got, want, 1e-5) {
+			if !WithinTolerance(got, want, 1e-5) {
 				t.Errorf("[%v][%v] Got %v, want %v, ", i, j, got, want)
 			}
 		}

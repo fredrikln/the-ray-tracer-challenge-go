@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"math"
 	"testing"
-
-	co "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 func TestIntersecingAConeWithARay(t *testing.T) {
@@ -46,11 +44,11 @@ func TestIntersecingAConeWithARay(t *testing.T) {
 				t.Errorf("Invalid intersection count, got %v, want %v", len(xs), 2)
 			}
 
-			if !co.WithinTolerance(xs[0].Time, tC.t0, 1e-5) {
+			if !WithinTolerance(xs[0].Time, tC.t0, 1e-5) {
 				t.Errorf("t0 got %v, want %v", xs[0].Time, tC.t0)
 			}
 
-			if !co.WithinTolerance(xs[1].Time, tC.t1, 1e-5) {
+			if !WithinTolerance(xs[1].Time, tC.t1, 1e-5) {
 				t.Errorf("t1 got %v, want %v", xs[1].Time, tC.t1)
 			}
 		})
@@ -64,7 +62,7 @@ func TestIntersectingAConeWithRayParalellToOneHalf(t *testing.T) {
 
 	xs := c.Intersect(r)
 
-	if !co.WithinTolerance(xs[0].Time, 0.35355, 1e-5) {
+	if !WithinTolerance(xs[0].Time, 0.35355, 1e-5) {
 		t.Errorf("Invalid intersection got %v, want %v", xs[0].Time, 0.35355)
 	}
 }

@@ -312,8 +312,8 @@ func TestFindRefractedColor(t *testing.T) {
 
 	c := w.RefractedColor(comps, 5)
 
-	if !c.Eq(NewColor(0, 0.998879, 0.047217)) {
-		t.Errorf("Got %v, want %v", c, NewColor(0, 0.998879, 0.047217))
+	if !c.Eq(NewColor(0, 0.09988796, 0.00472177)) {
+		t.Errorf("Got %v, want %v", c, NewColor(0, 0.09988796, 0.00472177))
 	}
 }
 

@@ -2,19 +2,18 @@ package raytracer
 
 import (
 	"math"
-
-	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
 type Plane struct {
 	Transform *Matrix
 	Material  *Material
+	Parent    *Group
 }
 
 func NewPlane() *Plane {
 	return &Plane{
-		NewIdentityMatrix(),
-		NewMaterial(),
+		Transform: NewIdentityMatrix(),
+		Material:  NewMaterial(),
 	}
 }
 
@@ -38,10 +37,19 @@ func (p *Plane) SetTransform(m *Matrix) Intersectable {
 	return p
 }
 
+func (p *Plane) GetParent() *Group {
+	return p.Parent
+}
+func (p *Plane) SetParent(g *Group) Intersectable {
+	p.Parent = g
+
+	return p
+}
+
 func (p *Plane) Intersect(worldRay Ray) []Intersection {
 	localRay := worldRay.Mul(p.Transform.Inverse())
 
-	if c.WithinTolerance(0, math.Abs(localRay.Direction.Y), 1e-5) {
+	if WithinTolerance(0, math.Abs(localRay.Direction.Y), 1e-5) {
 		return []Intersection{}
 	}
 
