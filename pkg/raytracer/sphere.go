@@ -46,8 +46,6 @@ func (s *Sphere) SetTransform(m *Matrix) Intersectable {
 func (s *Sphere) Intersect(worldRay Ray) []Intersection {
 	localRay := worldRay.Mul(s.Transform.Inverse())
 
-	intersections := make([]Intersection, 0)
-
 	sphereToRay := localRay.Origin.Sub(NewPoint(0, 0, 0))
 
 	a := localRay.Direction.Dot(localRay.Direction)
@@ -57,8 +55,10 @@ func (s *Sphere) Intersect(worldRay Ray) []Intersection {
 	discriminant := b*b - 4*a*c
 
 	if discriminant < 0 {
-		return intersections
+		return []Intersection{}
 	}
+
+	intersections := make([]Intersection, 0)
 
 	t1 := (-b - math.Sqrt(discriminant)) / (2 * a)
 	i1 := NewIntersection(t1, s)

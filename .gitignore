@@ -5,3 +5,4 @@ raytracer
 *.ppm
 *.png
 !pkg/raytracer
+profile.pb.gz
