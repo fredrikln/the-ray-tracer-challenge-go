@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
+
 	"math"
 	"math/rand"
+
 	"runtime"
+
 	"time"
 
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/pkg/raytracer"
@@ -52,7 +55,7 @@ func GetTestScene() (*r.World, *r.Matrix) {
 func GetTestScene2() (*r.World, *r.Matrix) {
 	w := r.NewWorld()
 
-	t := r.NewTranslation(0, 0, 50000).Mul(r.NewRotationX(math.Pi / 2))
+	t := r.NewTranslation(0, 0, 500).Mul(r.NewRotationX(math.Pi / 2))
 	wall := r.NewPlane().SetTransform(t)
 	w.AddObject(wall)
 
@@ -122,6 +125,30 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 	w.AddLight(r.NewPointLight(r.NewPoint(-400, 50, -10), r.NewColor(0.2, 0.2, 0.2)))
 
 	return w, r.ViewTransform(r.NewPoint(-10, 10, -30), r.NewPoint(0, -1.5, 0), r.NewVec(0, 1, 0))
+}
+
+func GetTestScene3() (*r.World, *r.Matrix) {
+	w := r.NewWorld()
+
+	t := r.NewTranslation(0, 0, 10).Mul(r.NewRotationX(math.Pi / 2))
+	p := r.NewCheckerPattern(r.NewColor(0, 0, 0), r.NewColor(1, 1, 1))
+	m := r.NewMaterial().SetPattern(p)
+	wall := r.NewPlane().SetTransform(t).SetMaterial(m)
+
+	w.AddObject(wall)
+
+	glass := r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetTransparency(0.9).SetReflective(0.9).SetRefractiveIndex(1.5).SetSpecular(0.9).SetShininess(300).SetDiffuse(0.05).SetAmbient(0.05)
+	air := r.NewMaterial().SetTransparency(0.9).SetReflective(0.9).SetRefractiveIndex(1).SetSpecular(0.9).SetShininess(300).SetDiffuse(0.05).SetAmbient(0.05)
+
+	s1 := r.NewSphere().SetMaterial(air)
+	w.AddObject(s1)
+
+	s2 := r.NewSphere().SetMaterial(glass).SetTransform(r.NewScaling(2, 2, 2))
+	w.AddObject(s2)
+
+	w.AddLight(r.NewPointLight(r.NewPoint(0, 100, -100), r.NewColor(1, 1, 1)))
+
+	return w, r.ViewTransform(r.NewPoint(0, 0, -10), r.NewPoint(0, 0, 0), r.NewVec(0, 1, 0))
 }
 
 func main() {
