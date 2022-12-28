@@ -77,9 +77,7 @@ func (pl *Plane) WorldToObject(p Point) Point {
 }
 
 func (pl *Plane) NormalToWorld(n Vec) Vec {
-	inv := pl.GetTransform().Inverse()
-	trans := inv.Transpose()
-	normal := trans.MulVec(n).Norm()
+	normal := pl.GetTransform().Inverse().Transpose().MulVec(n).Norm()
 
 	parent := pl.GetParent()
 

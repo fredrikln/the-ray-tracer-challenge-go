@@ -16,7 +16,7 @@ type Intersectable interface {
 	SetParent(*Group) Intersectable
 
 	WorldToObject(Point) Point
-	NormalToWorld(n Vec) Vec
+	NormalToWorld(Vec) Vec
 }
 
 type Intersection struct {

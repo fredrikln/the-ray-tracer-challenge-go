@@ -155,9 +155,7 @@ func (cy *Cylinder) WorldToObject(p Point) Point {
 }
 
 func (cy *Cylinder) NormalToWorld(n Vec) Vec {
-	inv := cy.GetTransform().Inverse()
-	trans := inv.Transpose()
-	normal := trans.MulVec(n).Norm()
+	normal := cy.GetTransform().Inverse().Transpose().MulVec(n).Norm()
 
 	parent := cy.GetParent()
 

@@ -121,9 +121,7 @@ func (cu *Cube) WorldToObject(p Point) Point {
 }
 
 func (cu *Cube) NormalToWorld(n Vec) Vec {
-	inv := cu.GetTransform().Inverse()
-	trans := inv.Transpose()
-	normal := trans.MulVec(n).Norm()
+	normal := cu.GetTransform().Inverse().Transpose().MulVec(n).Norm()
 
 	parent := cu.GetParent()
 

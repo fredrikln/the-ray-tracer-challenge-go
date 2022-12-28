@@ -174,9 +174,7 @@ func (co *Cone) WorldToObject(p Point) Point {
 }
 
 func (co *Cone) NormalToWorld(n Vec) Vec {
-	inv := co.GetTransform().Inverse()
-	trans := inv.Transpose()
-	normal := trans.MulVec(n).Norm()
+	normal := co.GetTransform().Inverse().Transpose().MulVec(n).Norm()
 
 	parent := co.GetParent()
 

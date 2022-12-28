@@ -97,9 +97,7 @@ func (s *Sphere) WorldToObject(p Point) Point {
 }
 
 func (s *Sphere) NormalToWorld(n Vec) Vec {
-	inv := s.GetTransform().Inverse()
-	trans := inv.Transpose()
-	normal := trans.MulVec(n).Norm()
+	normal := s.GetTransform().Inverse().Transpose().MulVec(n).Norm()
 
 	parent := s.GetParent()
 
