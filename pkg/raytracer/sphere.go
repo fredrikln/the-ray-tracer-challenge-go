@@ -58,16 +58,16 @@ func (s *Sphere) Intersect(worldRay Ray) []Intersection {
 		return []Intersection{}
 	}
 
-	intersections := make([]Intersection, 0)
-
 	t1 := (-b - math.Sqrt(discriminant)) / (2 * a)
 	i1 := NewIntersection(t1, s)
-	intersections = append(intersections, i1)
+
 	t2 := (-b + math.Sqrt(discriminant)) / (2 * a)
 	i2 := NewIntersection(t2, s)
-	intersections = append(intersections, i2)
 
-	return intersections
+	return []Intersection{
+		i1,
+		i2,
+	}
 }
 
 func (s *Sphere) NormalAt(worldPoint Point) Vec {

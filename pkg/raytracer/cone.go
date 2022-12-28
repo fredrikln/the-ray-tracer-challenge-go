@@ -4,7 +4,6 @@ import (
 	"math"
 	"sort"
 
-	c "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 	common "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
 
@@ -69,7 +68,7 @@ func (co *Cone) Intersect(worldRay Ray) []Intersection {
 		return []Intersection{}
 	}
 
-	xs := make([]Intersection, 0)
+	var xs []Intersection
 
 	if common.WithinTolerance(a, 0, 1e-5) && !common.WithinTolerance(b, 0, 1e-5) {
 		t := -c / (2 * b)
@@ -138,9 +137,9 @@ func checkCap2(r Ray, t float64, radius float64) bool {
 }
 
 func intersectCaps2(co *Cone, r Ray) []Intersection {
-	xs := make([]Intersection, 0)
+	var xs []Intersection
 
-	if !co.Closed || c.WithinTolerance(r.Direction.Y, 0, 1e-5) {
+	if !co.Closed || common.WithinTolerance(r.Direction.Y, 0, 1e-5) {
 		return []Intersection{}
 	}
 

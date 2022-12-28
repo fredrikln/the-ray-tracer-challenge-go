@@ -68,14 +68,14 @@ func (cy *Cylinder) Intersect(worldRay Ray) []Intersection {
 		return []Intersection{}
 	}
 
+	var xs []Intersection
+
 	t0 := (-b - math.Sqrt(disc)) / (2 * a)
 	t1 := (-b + math.Sqrt(disc)) / (2 * a)
 
 	if t0 > t1 {
 		t0, t1 = t1, t0
 	}
-
-	xs := make([]Intersection, 0)
 
 	y0 := localRay.Origin.Y + t0*localRay.Direction.Y
 	if cy.Minimum < y0 && y0 < cy.Maximum {
@@ -124,10 +124,10 @@ func checkCap(r Ray, t float64) bool {
 }
 
 func intersectCaps(cy *Cylinder, r Ray) []Intersection {
-	xs := make([]Intersection, 0)
+	var xs []Intersection
 
 	if !cy.Closed || c.WithinTolerance(r.Direction.Y, 0, 1e-5) {
-		return []Intersection{}
+		return xs
 	}
 
 	t := (cy.Minimum - r.Origin.Y) / r.Direction.Y
