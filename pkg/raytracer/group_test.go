@@ -164,7 +164,7 @@ func TestFindNormalOnObjectInGroup(t *testing.T) {
 
 	g2.AddChild(s)
 
-	n := s.NormalAt(NewPoint(1.7321, 1.1547, -5.5774))
+	n := s.NormalAt(NewPoint(1.7321, 1.1547, -5.5774), NewIntersection(1, s))
 	want := NewVec(0.285703, 0.428543, -0.857160)
 
 	if !n.Eq(want) {

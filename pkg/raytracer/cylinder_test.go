@@ -113,7 +113,7 @@ func TestFindingNormalOnCylinder(t *testing.T) {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			cy := NewCylinder()
 
-			got := cy.NormalAt(tC.point)
+			got := cy.NormalAt(tC.point, NewIntersection(1, cy))
 
 			if !got.Eq(tC.normal) {
 				t.Errorf("Got %v, want %v", got, tC.normal)
@@ -283,7 +283,7 @@ func TestNormalVectorOnEndcaps(t *testing.T) {
 			cy.Maximum = 2
 			cy.Closed = true
 
-			normal := cy.NormalAt(tC.point)
+			normal := cy.NormalAt(tC.point, NewIntersection(1, cy))
 
 			if !normal.Eq(tC.normal) {
 				t.Errorf("Got %v, want %v", normal, tC.normal)

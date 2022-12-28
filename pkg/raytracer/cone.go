@@ -126,7 +126,7 @@ func (co *Cone) LocalNormalAt(objectPoint Point) Vec {
 	return objectNormal
 }
 
-func (co *Cone) NormalAt(worldPoint Point) Vec {
+func (co *Cone) NormalAt(worldPoint Point, i Intersection) Vec {
 	objectPoint := co.WorldToObject(worldPoint)
 
 	objectNormal := co.LocalNormalAt(objectPoint)

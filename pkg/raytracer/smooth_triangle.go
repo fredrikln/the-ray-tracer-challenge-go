@@ -1,9 +1,12 @@
 package raytracer
 
-type Triangle struct {
+type SmoothTriangle struct {
 	P1        Point
 	P2        Point
 	P3        Point
+	N1        Vec
+	N2        Vec
+	N3        Vec
 	E1        Vec
 	E2        Vec
 	Normal    Vec
@@ -12,11 +15,14 @@ type Triangle struct {
 	Parent    *Group
 }
 
-func NewTriangle(p1, p2, p3 Point) *Triangle {
-	return &Triangle{
+func NewSmoothTriangle(p1, p2, p3 Point, n1, n2, n3 Vec) *SmoothTriangle {
+	return &SmoothTriangle{
 		P1:        p1,
 		P2:        p2,
 		P3:        p3,
+		N1:        n1,
+		N2:        n2,
+		N3:        n3,
 		E1:        p2.Sub(p1),
 		E2:        p3.Sub(p1),
 		Normal:    (p3.Sub(p1).Cross(p2.Sub(p1))).Norm(),
@@ -25,7 +31,7 @@ func NewTriangle(p1, p2, p3 Point) *Triangle {
 	}
 }
 
-func (tr *Triangle) Intersect(r Ray) []Intersection {
+func (tr *SmoothTriangle) Intersect(r Ray) []Intersection {
 	dirCrossE2 := r.Direction.Cross(tr.E2)
 	det := tr.E1.Dot(dirCrossE2)
 
@@ -54,38 +60,42 @@ func (tr *Triangle) Intersect(r Ray) []Intersection {
 
 	return []Intersection{NewIntersectionWithUV(t, tr, u, v)}
 }
-func (tr *Triangle) NormalAt(p Point, i Intersection) Vec {
-	return tr.Normal
+func (tr *SmoothTriangle) NormalAt(p Point, hit Intersection) Vec {
+	a := tr.N2.Mul(*hit.U)
+	b := tr.N3.Mul(*hit.V)
+	c := tr.N1.Mul(1 - *hit.U - *hit.V)
+
+	return a.Add(b).Add(c).Norm()
 }
 
-func (tr *Triangle) SetMaterial(m *Material) Intersectable {
+func (tr *SmoothTriangle) SetMaterial(m *Material) Intersectable {
 	tr.Material = m
 
 	return tr
 }
-func (tr *Triangle) GetMaterial() *Material {
+func (tr *SmoothTriangle) GetMaterial() *Material {
 	return tr.Material
 }
 
-func (tr *Triangle) SetTransform(t *Matrix) Intersectable {
+func (tr *SmoothTriangle) SetTransform(t *Matrix) Intersectable {
 	tr.Transform = t
 
 	return tr
 }
-func (tr *Triangle) GetTransform() *Matrix {
+func (tr *SmoothTriangle) GetTransform() *Matrix {
 	return tr.Transform
 }
 
-func (tr *Triangle) SetParent(g *Group) Intersectable {
+func (tr *SmoothTriangle) SetParent(g *Group) Intersectable {
 	tr.Parent = g
 
 	return tr
 }
-func (tr *Triangle) GetParent() *Group {
+func (tr *SmoothTriangle) GetParent() *Group {
 	return tr.Parent
 }
 
-func (tr *Triangle) WorldToObject(p Point) Point {
+func (tr *SmoothTriangle) WorldToObject(p Point) Point {
 	parent := tr.GetParent()
 
 	if parent != nil {
@@ -95,7 +105,7 @@ func (tr *Triangle) WorldToObject(p Point) Point {
 	return tr.GetTransform().Inverse().MulPoint(p)
 }
 
-func (tr *Triangle) NormalToWorld(n Vec) Vec {
+func (tr *SmoothTriangle) NormalToWorld(n Vec) Vec {
 	normal := tr.GetTransform().Inverse().Transpose().MulVec(n).Norm()
 
 	parent := tr.GetParent()

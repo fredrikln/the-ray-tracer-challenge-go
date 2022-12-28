@@ -69,7 +69,7 @@ func (c *Cube) Intersect(worldRay Ray) []Intersection {
 	}
 }
 
-func (c *Cube) NormalAt(worldPoint Point) Vec {
+func (c *Cube) NormalAt(worldPoint Point, i Intersection) Vec {
 	objectPoint := c.WorldToObject(worldPoint)
 
 	maxC := math.Max(math.Max(math.Abs(objectPoint.X), math.Abs(objectPoint.Y)), math.Abs(objectPoint.Z))

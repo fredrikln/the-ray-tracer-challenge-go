@@ -30,9 +30,9 @@ func TestCreatingTriangle(t *testing.T) {
 func TestNormalVectorForTriangle(t *testing.T) {
 	tr := NewTriangle(NewPoint(0, 1, 0), NewPoint(-1, 0, 0), NewPoint(1, 0, 0))
 
-	n1 := tr.NormalAt(NewPoint(0, 0.5, 0))
-	n2 := tr.NormalAt(NewPoint(-0.5, 0.75, 0))
-	n3 := tr.NormalAt(NewPoint(0.5, 0.25, 0))
+	n1 := tr.NormalAt(NewPoint(0, 0.5, 0), NewIntersection(1, tr))
+	n2 := tr.NormalAt(NewPoint(-0.5, 0.75, 0), NewIntersection(1, tr))
+	n3 := tr.NormalAt(NewPoint(0.5, 0.25, 0), NewIntersection(1, tr))
 
 	if !n1.Eq(tr.Normal) || !n2.Eq(tr.Normal) || !n3.Eq(tr.Normal) {
 		t.Error("Invalid normal")

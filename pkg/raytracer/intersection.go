@@ -4,7 +4,7 @@ import "sort"
 
 type Intersectable interface {
 	Intersect(Ray) []Intersection
-	NormalAt(Point) Vec
+	NormalAt(Point, Intersection) Vec
 
 	SetMaterial(*Material) Intersectable
 	GetMaterial() *Material
@@ -22,6 +22,8 @@ type Intersectable interface {
 type Intersection struct {
 	Time   float64
 	Object *Intersectable
+	U      *float64
+	V      *float64
 }
 
 func (i *Intersection) PrepareComputations(r Ray) Computations {
@@ -32,6 +34,17 @@ func NewIntersection(time float64, object Intersectable) Intersection {
 	return Intersection{
 		time,
 		&object,
+		nil,
+		nil,
+	}
+}
+
+func NewIntersectionWithUV(time float64, object Intersectable, u, v float64) Intersection {
+	return Intersection{
+		time,
+		&object,
+		&u,
+		&v,
 	}
 }
 

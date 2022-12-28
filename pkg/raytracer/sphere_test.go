@@ -166,7 +166,7 @@ func TestSphereNormalAt(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := sphere.NormalAt(tt.p); !got.Eq(tt.want) {
+			if got := sphere.NormalAt(tt.p, NewIntersection(1, sphere)); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})
@@ -199,7 +199,7 @@ func TestSphereNormalAtTransformed(t *testing.T) {
 			s := NewSphere()
 			s.SetTransform(tt.m)
 
-			if got := s.NormalAt(tt.p); !got.Eq(tt.want) {
+			if got := s.NormalAt(tt.p, NewIntersection(1, s)); !got.Eq(tt.want) {
 				t.Errorf("Got %v, want %v", got, tt.want)
 			}
 		})

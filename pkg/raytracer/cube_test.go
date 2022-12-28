@@ -175,7 +175,7 @@ func TestFindingNormalOnCube(t *testing.T) {
 			c := NewCube()
 			p := tC.point
 
-			normal := c.NormalAt(p)
+			normal := c.NormalAt(p, NewIntersection(1, c))
 
 			if !normal.Eq(tC.normal) {
 				t.Errorf("Got %v, want %v", normal, tC.normal)

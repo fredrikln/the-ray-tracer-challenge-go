@@ -67,7 +67,7 @@ func (g *Group) Intersect(worldRay Ray) []Intersection {
 
 	return xs
 }
-func (g *Group) NormalAt(Point) Vec {
+func (g *Group) NormalAt(Point, Intersection) Vec {
 	panic("Should never happen")
 }
 

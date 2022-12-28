@@ -30,7 +30,7 @@ func TestNormalIsConstant(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			p := NewPlane()
 
-			got := p.NormalAt(tC.point)
+			got := p.NormalAt(tC.point, NewIntersection(1, p))
 			want := tC.want
 
 			if !got.Eq(want) {

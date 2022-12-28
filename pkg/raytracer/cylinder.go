@@ -97,7 +97,7 @@ func (cy *Cylinder) Intersect(worldRay Ray) []Intersection {
 	return xs
 }
 
-func (c *Cylinder) NormalAt(worldPoint Point) Vec {
+func (c *Cylinder) NormalAt(worldPoint Point, i Intersection) Vec {
 	objectPoint := c.WorldToObject(worldPoint)
 
 	var objectNormal Vec

@@ -58,7 +58,7 @@ func (p *Plane) Intersect(worldRay Ray) []Intersection {
 	return []Intersection{NewIntersection(t, p)}
 }
 
-func (p *Plane) NormalAt(worldPoint Point) Vec {
+func (p *Plane) NormalAt(worldPoint Point, i Intersection) Vec {
 	// objectPoint := p.WorldToObject(worldPoint)
 	objectNormal := NewVec(0, 1, 0)
 	worldNormal := p.NormalToWorld(objectNormal)

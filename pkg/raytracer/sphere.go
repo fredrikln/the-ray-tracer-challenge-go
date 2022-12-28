@@ -78,7 +78,7 @@ func (s *Sphere) Intersect(worldRay Ray) []Intersection {
 	}
 }
 
-func (s *Sphere) NormalAt(worldPoint Point) Vec {
+func (s *Sphere) NormalAt(worldPoint Point, i Intersection) Vec {
 	objectPoint := s.WorldToObject(worldPoint)
 	objectNormal := objectPoint.Sub(NewPoint(0, 0, 0))
 	worldNormal := s.NormalToWorld(objectNormal)

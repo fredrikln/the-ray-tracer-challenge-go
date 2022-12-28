@@ -9,7 +9,7 @@ type MockShape struct{}
 func (MockShape) Intersect(ray Ray) []Intersection {
 	return []Intersection{}
 }
-func (MockShape) NormalAt(point Point) Vec {
+func (MockShape) NormalAt(point Point, i Intersection) Vec {
 	return Vec{}
 }
 func (MockShape) GetMaterial() *Material {
