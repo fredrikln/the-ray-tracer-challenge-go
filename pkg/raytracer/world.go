@@ -5,6 +5,18 @@ import (
 	"sort"
 )
 
+type IntersectonSorter []Intersection
+
+func (is IntersectonSorter) Len() int {
+	return len(is)
+}
+func (is IntersectonSorter) Less(i, j int) bool {
+	return is[i].Time < is[j].Time
+}
+func (is IntersectonSorter) Swap(i, j int) {
+	is[i], is[j] = is[j], is[i]
+}
+
 type World struct {
 	Objects []*Intersectable
 	Lights  []*Light
@@ -52,9 +64,7 @@ func (w *World) Intersect(r Ray) []Intersection {
 		xs = append(xs, objectXs...)
 	}
 
-	sort.Slice(xs, func(i, j int) bool {
-		return xs[i].Time < xs[j].Time
-	})
+	sort.Sort(IntersectonSorter(xs))
 
 	return xs
 }

@@ -2,7 +2,6 @@ package raytracer
 
 import (
 	"math"
-	"sort"
 
 	common "github.com/fredrikln/the-ray-tracer-challenge-go/common"
 )
@@ -95,10 +94,6 @@ func (co *Cone) Intersect(worldRay Ray) []Intersection {
 	}
 
 	xs = append(xs, intersectCaps2(co, localRay)...)
-
-	sort.Slice(xs, func(i, j int) bool {
-		return xs[i].Time < xs[j].Time
-	})
 
 	return xs
 }
