@@ -159,6 +159,52 @@ func GetTestScene3() (*r.World, *r.Matrix) {
 	return w, r.ViewTransform(r.NewPoint(0, 0, -10), r.NewPoint(0, 0, 0), r.NewVec(0, 1, 0))
 }
 
+func GetTestScene4() (*r.World, *r.Matrix) {
+	w := r.NewWorld()
+
+	farleft := r.NewPoint(-1, 0, -1)
+	farright := r.NewPoint(1, 0, -1)
+	nearleft := r.NewPoint(-1, 0, 1)
+	nearright := r.NewPoint(1, 0, 1)
+	top := r.NewPoint(0, 1, 0)
+
+	m1 := r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetTransparency(0.7).SetReflective(0.7).SetRefractiveIndex(1.5).SetSpecular(1).SetShininess(200).SetDiffuse(0.2).SetAmbient(0.0)
+	// m1 := r.NewMaterial().SetColor(r.NewColor(1, 0, 0))
+	t1 := r.NewTriangle(nearleft, farleft, farright)
+	t1.SetMaterial(m1)
+	t2 := r.NewTriangle(nearleft, nearright, farright)
+	t2.SetMaterial(m1)
+
+	t3 := r.NewTriangle(nearleft, top, farleft)
+	t3.SetMaterial(m1)
+	t4 := r.NewTriangle(farleft, top, farright)
+	t4.SetMaterial(m1)
+	t5 := r.NewTriangle(farright, top, nearright)
+	t5.SetMaterial(m1)
+	t6 := r.NewTriangle(nearright, top, nearleft)
+	t6.SetMaterial(m1)
+
+	g := r.NewGroup()
+	g.AddChild(t1)
+	g.AddChild(t2)
+	g.AddChild(t3)
+	g.AddChild(t4)
+	g.AddChild(t5)
+	g.AddChild(t6)
+
+	g.SetTransform(r.NewRotationY(math.Pi / 4))
+	w.AddObject(g)
+
+	m2 := r.NewMaterial().SetColor(r.NewColor(1, 1, 1)).SetPattern(r.NewCheckerPattern(r.NewColor(0.5, 0.5, 0.5), r.NewColor(1, 1, 1)))
+	p := r.NewPlane().SetTransform(r.NewTranslation(0, -10, 0)).SetMaterial(m2)
+	w.AddObject(p)
+
+	w.AddLight(r.NewPointLight(r.NewPoint(50, 100, -50), r.NewColor(1, 1, 1)))
+	w.AddLight(r.NewPointLight(r.NewPoint(-400, 50, -10), r.NewColor(0.2, 0.2, 0.2)))
+
+	return w, r.ViewTransform(r.NewPoint(0, 1, -4), r.NewPoint(0, 0.25, 0), r.NewVec(0, 1, 0))
+}
+
 func main() {
 	// Set up canvas
 	w, ct := GetTestScene2()
