@@ -72,6 +72,7 @@ func (c *Camera) Render(w *World) *Canvas {
 
 	var linesRendered int
 	start := time.Now()
+	prev := start
 
 	for y := 0; y < c.Vsize; y++ {
 		for x := 0; x < c.Hsize; x++ {
@@ -80,23 +81,29 @@ func (c *Camera) Render(w *World) *Canvas {
 			canvas.SetPixel(x, y, color)
 		}
 
-		elapsed := time.Since(start)
-
 		linesRendered++
-		linesLeft := c.Vsize - linesRendered
-		avgTimePerLine := (elapsed.Seconds() / float64(linesRendered))
 
-		timeLeft := avgTimePerLine * float64(linesLeft)
+		if time.Since(prev).Seconds() > 1 {
+			elapsed := time.Since(start)
 
-		fmt.Printf(
-			"Progress: %d of %d (%.2f%%) (%.0fs/%.0fs)",
-			linesRendered,
-			c.Vsize,
-			float64(linesRendered)/float64(c.Vsize)*100,
-			elapsed.Seconds(),
-			timeLeft+elapsed.Seconds(),
-		)
-		fmt.Println()
+			linesLeft := c.Vsize - linesRendered
+			avgTimePerLine := (elapsed.Seconds() / float64(linesRendered))
+
+			timeLeft := avgTimePerLine * float64(linesLeft)
+
+			fmt.Printf(
+				"Progress: %d of %d (%.2f%%) (%.0fs/%.0fs)",
+				linesRendered,
+				c.Vsize,
+				float64(linesRendered)/float64(c.Vsize)*100,
+				elapsed.Seconds(),
+				timeLeft+elapsed.Seconds(),
+			)
+			fmt.Println()
+
+			prev = time.Now()
+		}
+
 	}
 
 	return canvas
@@ -171,29 +178,35 @@ func (c *Camera) RenderMultiThreaded(w *World, cores int) *Canvas {
 	go func() {
 		var linesRendered int
 		start := time.Now()
+		prev := start
 
 		for response := range responseChan {
 			for x := 0; x < c.Hsize; x++ {
 				canvas.SetPixel(x, response.Y, response.line[x])
 			}
 
-			elapsed := time.Since(start)
-
 			linesRendered++
-			linesLeft := c.Vsize - linesRendered
-			avgTimePerLine := (elapsed.Seconds() / float64(linesRendered))
 
-			timeLeft := avgTimePerLine * float64(linesLeft)
+			if time.Since(prev).Seconds() > 1 {
+				elapsed := time.Since(start)
 
-			fmt.Printf(
-				"Progress: %d of %d (%.2f%%) (%.0fs/%.0fs)",
-				linesRendered,
-				c.Vsize,
-				float64(linesRendered)/float64(c.Vsize)*100,
-				elapsed.Seconds(),
-				timeLeft+elapsed.Seconds(),
-			)
-			fmt.Println()
+				linesLeft := c.Vsize - linesRendered
+				avgTimePerLine := (elapsed.Seconds() / float64(linesRendered))
+
+				timeLeft := avgTimePerLine * float64(linesLeft)
+
+				fmt.Printf(
+					"Progress: %d of %d (%.2f%%) (%.0fs/%.0fs)",
+					linesRendered,
+					c.Vsize,
+					float64(linesRendered)/float64(c.Vsize)*100,
+					elapsed.Seconds(),
+					timeLeft+elapsed.Seconds(),
+				)
+				fmt.Println()
+
+				prev = time.Now()
+			}
 		}
 	}()
 
