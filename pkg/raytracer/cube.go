@@ -70,7 +70,7 @@ func (c *Cube) Intersect(worldRay Ray) []Intersection {
 }
 
 func (c *Cube) NormalAt(worldPoint Point) Vec {
-	objectPoint := worldPoint.MulMat(c.Transform.Inverse())
+	objectPoint := c.WorldToObject(worldPoint)
 
 	maxC := math.Max(math.Max(math.Abs(objectPoint.X), math.Abs(objectPoint.Y)), math.Abs(objectPoint.Z))
 
@@ -84,7 +84,7 @@ func (c *Cube) NormalAt(worldPoint Point) Vec {
 		objectNormal = NewVec(0, 0, objectPoint.Z)
 	}
 
-	worldNormal := objectNormal.MulMat(c.Transform.Inverse().Transpose())
+	worldNormal := c.NormalToWorld(objectNormal)
 
 	return worldNormal.Norm()
 }
@@ -108,4 +108,28 @@ func checkAxis(origin, direction float64) (float64, float64) {
 	}
 
 	return tmin, tmax
+}
+
+func (cu *Cube) WorldToObject(p Point) Point {
+	parent := cu.GetParent()
+
+	if parent != nil {
+		p = parent.WorldToObject(p)
+	}
+
+	return cu.GetTransform().Inverse().MulPoint(p)
+}
+
+func (cu *Cube) NormalToWorld(n Vec) Vec {
+	inv := cu.GetTransform().Inverse()
+	trans := inv.Transpose()
+	normal := trans.MulVec(n).Norm()
+
+	parent := cu.GetParent()
+
+	if parent != nil {
+		normal = parent.NormalToWorld(normal)
+	}
+
+	return normal
 }

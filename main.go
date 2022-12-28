@@ -59,11 +59,18 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 	wall := r.NewPlane().SetTransform(t)
 	w.AddObject(wall)
 
-	rand.Seed(1339)
+	seed := 1672236286765 //time.Now().UnixMilli()
+	rand.Seed(int64(seed))
+	fmt.Println("Seed", seed)
 
-	for x := -2; x <= 2; x++ {
-		for y := -2; y <= 2; y++ {
-			for z := -2; z <= 2; z++ {
+	stepsEachSide := 2
+	offset := 3
+
+	for y := -stepsEachSide; y <= stepsEachSide; y++ {
+		group := r.NewGroup()
+
+		for x := -stepsEachSide; x <= stepsEachSide; x++ {
+			for z := -stepsEachSide; z <= stepsEachSide; z++ {
 
 				var object r.Intersectable
 
@@ -93,8 +100,7 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 					object = r.NewSphere()
 				}
 
-				offset := 3
-				objTransform := r.NewTranslation(float64(offset*x), float64(offset*y), float64(offset*z)).Mul(object.GetTransform())
+				objTransform := r.NewTranslation(float64(offset*x), 0, float64(offset*z)).Mul(object.GetTransform())
 
 				object.SetTransform(objTransform)
 
@@ -116,9 +122,11 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 
 				object.SetMaterial(material)
 
-				w.AddObject(object)
+				group.AddChild(object)
 			}
 		}
+		group.SetTransform(r.NewTranslation(0, float64(offset*y), 0))
+		w.AddObject(group)
 	}
 
 	w.AddLight(r.NewPointLight(r.NewPoint(50, 100, -50), r.NewColor(1, 1, 1)))

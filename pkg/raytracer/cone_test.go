@@ -129,7 +129,7 @@ func TestNormalVectorOnCone(t *testing.T) {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
 			co := NewCone()
 
-			normal := co.NormalAt(tC.point)
+			normal := co.LocalNormalAt(tC.point)
 
 			if !normal.Eq(tC.normal) {
 				t.Errorf("got %v, want %v", normal, tC.normal)

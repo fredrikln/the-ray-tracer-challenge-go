@@ -98,7 +98,7 @@ func (cy *Cylinder) Intersect(worldRay Ray) []Intersection {
 }
 
 func (c *Cylinder) NormalAt(worldPoint Point) Vec {
-	objectPoint := worldPoint.MulMat(c.Transform.Inverse())
+	objectPoint := c.WorldToObject(worldPoint)
 
 	var objectNormal Vec
 
@@ -112,7 +112,7 @@ func (c *Cylinder) NormalAt(worldPoint Point) Vec {
 		objectNormal = NewVec(objectPoint.X, 0, objectPoint.Z)
 	}
 
-	worldNormal := objectNormal.MulMat(c.Transform.Inverse().Transpose())
+	worldNormal := c.NormalToWorld(objectNormal)
 
 	return worldNormal.Norm()
 }
@@ -142,4 +142,28 @@ func intersectCaps(cy *Cylinder, r Ray) []Intersection {
 	}
 
 	return xs
+}
+
+func (cy *Cylinder) WorldToObject(p Point) Point {
+	parent := cy.GetParent()
+
+	if parent != nil {
+		p = parent.WorldToObject(p)
+	}
+
+	return cy.GetTransform().Inverse().MulPoint(p)
+}
+
+func (cy *Cylinder) NormalToWorld(n Vec) Vec {
+	inv := cy.GetTransform().Inverse()
+	trans := inv.Transpose()
+	normal := trans.MulVec(n).Norm()
+
+	parent := cy.GetParent()
+
+	if parent != nil {
+		normal = parent.NormalToWorld(normal)
+	}
+
+	return normal
 }

@@ -79,10 +79,33 @@ func (s *Sphere) Intersect(worldRay Ray) []Intersection {
 }
 
 func (s *Sphere) NormalAt(worldPoint Point) Vec {
-	objectPoint := worldPoint.MulMat(s.Transform.Inverse())
-
+	objectPoint := s.WorldToObject(worldPoint)
 	objectNormal := objectPoint.Sub(NewPoint(0, 0, 0))
-	worldNormal := objectNormal.MulMat(s.Transform.Inverse().Transpose())
+	worldNormal := s.NormalToWorld(objectNormal)
 
 	return worldNormal.Norm()
+}
+
+func (s *Sphere) WorldToObject(p Point) Point {
+	parent := s.GetParent()
+
+	if parent != nil {
+		p = parent.WorldToObject(p)
+	}
+
+	return s.GetTransform().Inverse().MulPoint(p)
+}
+
+func (s *Sphere) NormalToWorld(n Vec) Vec {
+	inv := s.GetTransform().Inverse()
+	trans := inv.Transpose()
+	normal := trans.MulVec(n).Norm()
+
+	parent := s.GetParent()
+
+	if parent != nil {
+		normal = parent.NormalToWorld(normal)
+	}
+
+	return normal
 }

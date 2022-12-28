@@ -30,6 +30,12 @@ func (ms MockShape) GetParent() *Group {
 func (ms MockShape) SetParent(g *Group) Intersectable {
 	return nil
 }
+func (ms MockShape) WorldToObject(p Point) Point {
+	return p
+}
+func (ms MockShape) NormalToWorld(n Vec) Vec {
+	return n
+}
 
 func TestIntersection(t *testing.T) {
 	element := MockShape{}

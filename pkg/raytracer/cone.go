@@ -104,9 +104,7 @@ func (co *Cone) Intersect(worldRay Ray) []Intersection {
 	return xs
 }
 
-func (co *Cone) NormalAt(worldPoint Point) Vec {
-	objectPoint := worldPoint.MulMat(co.Transform.Inverse())
-
+func (co *Cone) LocalNormalAt(objectPoint Point) Vec {
 	var objectNormal Vec
 
 	dist := objectPoint.X*objectPoint.X + objectPoint.Z*objectPoint.Z
@@ -125,7 +123,15 @@ func (co *Cone) NormalAt(worldPoint Point) Vec {
 		objectNormal = NewVec(objectPoint.X, y, objectPoint.Z)
 	}
 
-	worldNormal := objectNormal.MulMat(co.Transform.Inverse().Transpose())
+	return objectNormal
+}
+
+func (co *Cone) NormalAt(worldPoint Point) Vec {
+	objectPoint := co.WorldToObject(worldPoint)
+
+	objectNormal := co.LocalNormalAt(objectPoint)
+
+	worldNormal := co.NormalToWorld(objectNormal)
 
 	return worldNormal
 }
@@ -155,4 +161,28 @@ func intersectCaps2(co *Cone, r Ray) []Intersection {
 	}
 
 	return xs
+}
+
+func (co *Cone) WorldToObject(p Point) Point {
+	parent := co.GetParent()
+
+	if parent != nil {
+		p = parent.WorldToObject(p)
+	}
+
+	return co.GetTransform().Inverse().MulPoint(p)
+}
+
+func (co *Cone) NormalToWorld(n Vec) Vec {
+	inv := co.GetTransform().Inverse()
+	trans := inv.Transpose()
+	normal := trans.MulVec(n).Norm()
+
+	parent := co.GetParent()
+
+	if parent != nil {
+		normal = parent.NormalToWorld(normal)
+	}
+
+	return normal
 }
