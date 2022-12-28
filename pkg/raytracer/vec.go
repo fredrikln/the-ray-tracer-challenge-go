@@ -77,7 +77,7 @@ func (a Vec) Div(b float64) Vec {
 }
 
 func (a Vec) Mag() float64 {
-	return math.Sqrt(math.Pow(a.X, 2.0) + math.Pow(a.Y, 2.0) + math.Pow(a.Z, 2.0))
+	return math.Sqrt(a.X*a.X + a.Y*a.Y + a.Z*a.Z)
 }
 
 func (a Vec) Norm() Vec {

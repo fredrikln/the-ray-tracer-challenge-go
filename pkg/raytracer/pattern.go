@@ -99,7 +99,7 @@ func (rp *RingPattern) SetTransform(m *Matrix) Pattern {
 	return rp
 }
 func (rp *RingPattern) ColorAt(p Point) Color {
-	if math.Mod(math.Floor(math.Sqrt(math.Pow(p.X, 2)+math.Pow(p.Z, 2))), 2) == 0 {
+	if math.Mod(math.Floor(math.Sqrt(p.X*p.X+p.Z*p.Z)), 2) == 0 {
 		return rp.A
 	}
 

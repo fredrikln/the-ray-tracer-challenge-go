@@ -139,7 +139,7 @@ func (w *World) RefractedColor(comps Computations, remaining int) Color {
 
 	nRatio := comps.N1 / comps.N2
 	cosI := comps.Eyev.Dot(comps.Normalv)
-	sin2T := math.Pow(nRatio, 2) * (1 - math.Pow(cosI, 2))
+	sin2T := nRatio * nRatio * (1 - cosI*cosI)
 
 	if sin2T > 1 {
 		return NewColor(0, 0, 0)

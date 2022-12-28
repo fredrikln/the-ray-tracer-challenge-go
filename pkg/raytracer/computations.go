@@ -95,7 +95,7 @@ func Schlick(comps Computations) float64 {
 	if comps.N1 > comps.N2 {
 		n := comps.N1 / comps.N2
 
-		sin2T := math.Pow(n, 2) * (1 - math.Pow(cos, 2))
+		sin2T := n * n * (1 - cos*cos)
 
 		if sin2T > 1.0 {
 			return 1.0
@@ -106,7 +106,13 @@ func Schlick(comps Computations) float64 {
 		cos = cosT
 	}
 
-	r0 := math.Pow((comps.N1-comps.N2)/(comps.N1+comps.N2), 2)
+	d := (comps.N1 - comps.N2) / (comps.N1 + comps.N2)
+	d2 := d * d
 
-	return r0 + (1-r0)*math.Pow(1-cos, 5)
+	r0 := d2
+
+	e := 1 - cos
+	e5 := e * e * e * e * e
+
+	return r0 + (1-r0)*e5
 }

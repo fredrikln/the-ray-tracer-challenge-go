@@ -58,11 +58,11 @@ func (c *Cylinder) SetTransform(m *Matrix) Intersectable {
 func (cy *Cylinder) Intersect(worldRay Ray) []Intersection {
 	localRay := worldRay.Mul(cy.Transform.Inverse())
 
-	a := math.Pow(localRay.Direction.X, 2) + math.Pow(localRay.Direction.Z, 2)
+	a := localRay.Direction.X*localRay.Direction.X + localRay.Direction.Z*localRay.Direction.Z
 	b := 2*localRay.Origin.X*localRay.Direction.X + 2*localRay.Origin.Z*localRay.Direction.Z
-	c := math.Pow(localRay.Origin.X, 2) + math.Pow(localRay.Origin.Z, 2) - 1
+	c := localRay.Origin.X*localRay.Origin.X + localRay.Origin.Z*localRay.Origin.Z - 1
 
-	disc := math.Pow(b, 2) - 4*a*c
+	disc := b*b - 4*a*c
 
 	if disc < 0 {
 		return []Intersection{}
@@ -101,7 +101,7 @@ func (c *Cylinder) NormalAt(worldPoint Point) Vec {
 
 	var objectNormal Vec
 
-	dist := math.Pow(objectPoint.X, 2) + math.Pow(objectPoint.Z, 2)
+	dist := objectPoint.X*objectPoint.X + objectPoint.Z*objectPoint.Z
 
 	if dist < 1 && objectPoint.Y >= c.Maximum-1e-5 {
 		objectNormal = NewVec(0, 1, 0)
@@ -120,7 +120,7 @@ func checkCap(r Ray, t float64) bool {
 	x := r.Origin.X + t*r.Direction.X
 	z := r.Origin.Z + t*r.Direction.Z
 
-	return (math.Pow(x, 2) + math.Pow(z, 2)) <= 1.0
+	return (x*x + z*z) <= 1.0
 }
 
 func intersectCaps(cy *Cylinder, r Ray) []Intersection {

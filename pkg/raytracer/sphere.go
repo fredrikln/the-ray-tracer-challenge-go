@@ -54,7 +54,7 @@ func (s *Sphere) Intersect(worldRay Ray) []Intersection {
 	b := 2 * localRay.Direction.Dot(sphereToRay)
 	c := sphereToRay.Dot(sphereToRay) - 1
 
-	discriminant := math.Pow(b, 2) - 4*a*c
+	discriminant := b*b - 4*a*c
 
 	if discriminant < 0 {
 		return intersections

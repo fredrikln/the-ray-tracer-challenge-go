@@ -59,11 +59,11 @@ func (co *Cone) SetTransform(m *Matrix) Intersectable {
 func (co *Cone) Intersect(worldRay Ray) []Intersection {
 	localRay := worldRay.Mul(co.Transform.Inverse())
 
-	a := math.Pow(localRay.Direction.X, 2) - math.Pow(localRay.Direction.Y, 2) + math.Pow(localRay.Direction.Z, 2)
+	a := localRay.Direction.X*localRay.Direction.X - localRay.Direction.Y*localRay.Direction.Y + localRay.Direction.Z*localRay.Direction.Z
 	b := 2*localRay.Origin.X*localRay.Direction.X - 2*localRay.Origin.Y*localRay.Direction.Y + 2*localRay.Origin.Z*localRay.Direction.Z
-	c := math.Pow(localRay.Origin.X, 2) - math.Pow(localRay.Origin.Y, 2) + math.Pow(localRay.Origin.Z, 2)
+	c := localRay.Origin.X*localRay.Origin.X - localRay.Origin.Y*localRay.Origin.Y + localRay.Origin.Z*localRay.Origin.Z
 
-	disc := math.Pow(b, 2) - 4*a*c
+	disc := b*b - 4*a*c
 
 	if disc < 0 {
 		return []Intersection{}
@@ -109,14 +109,14 @@ func (co *Cone) NormalAt(worldPoint Point) Vec {
 
 	var objectNormal Vec
 
-	dist := math.Pow(objectPoint.X, 2) + math.Pow(objectPoint.Z, 2)
+	dist := objectPoint.X*objectPoint.X + objectPoint.Z*objectPoint.Z
 
 	if dist < 1 && objectPoint.Y >= co.Maximum-1e-5 {
 		objectNormal = NewVec(0, 1, 0)
 	} else if dist < 1 && objectPoint.Y <= co.Minimum+1e-5 {
 		objectNormal = NewVec(0, -1, 0)
 	} else {
-		y := math.Sqrt(math.Pow(objectPoint.X, 2) + math.Pow(objectPoint.Z, 2))
+		y := math.Sqrt(objectPoint.X*objectPoint.X + objectPoint.Z*objectPoint.Z)
 
 		if objectPoint.Y > 0 {
 			y = -y
@@ -134,7 +134,7 @@ func checkCap2(r Ray, t float64, radius float64) bool {
 	x := r.Origin.X + t*r.Direction.X
 	z := r.Origin.Z + t*r.Direction.Z
 
-	return (math.Pow(x, 2) + math.Pow(z, 2)) <= math.Abs(radius)
+	return (x*x + z*z) <= math.Abs(radius)
 }
 
 func intersectCaps2(co *Cone, r Ray) []Intersection {
