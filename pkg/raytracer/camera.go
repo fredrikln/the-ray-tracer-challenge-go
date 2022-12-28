@@ -1,8 +1,10 @@
 package raytracer
 
 import (
+	"fmt"
 	"math"
 	"sync"
+	"time"
 )
 
 type Camera struct {
@@ -68,12 +70,33 @@ func (c *Camera) SetTransform(m *Matrix) *Camera {
 func (c *Camera) Render(w *World) *Canvas {
 	canvas := NewCanvas(c.Hsize, c.Vsize)
 
+	var linesRendered int
+	start := time.Now()
+
 	for y := 0; y < c.Vsize; y++ {
 		for x := 0; x < c.Hsize; x++ {
 			color := c.getColorForPixels(float64(x), float64(y), w)
 
 			canvas.SetPixel(x, y, color)
 		}
+
+		elapsed := time.Since(start)
+
+		linesRendered++
+		linesLeft := c.Vsize - linesRendered
+		avgTimePerLine := (elapsed.Seconds() / float64(linesRendered))
+
+		timeLeft := avgTimePerLine * float64(linesLeft)
+
+		fmt.Printf(
+			"Progress: %d of %d (%.2f%%) (%.0fs/%.0fs)",
+			linesRendered,
+			c.Vsize,
+			float64(linesRendered)/float64(c.Vsize)*100,
+			elapsed.Seconds(),
+			timeLeft+elapsed.Seconds(),
+		)
+		fmt.Println()
 	}
 
 	return canvas
@@ -146,10 +169,31 @@ func (c *Camera) RenderMultiThreaded(w *World, cores int) *Canvas {
 
 	// Handle responses
 	go func() {
+		var linesRendered int
+		start := time.Now()
+
 		for response := range responseChan {
 			for x := 0; x < c.Hsize; x++ {
 				canvas.SetPixel(x, response.Y, response.line[x])
 			}
+
+			elapsed := time.Since(start)
+
+			linesRendered++
+			linesLeft := c.Vsize - linesRendered
+			avgTimePerLine := (elapsed.Seconds() / float64(linesRendered))
+
+			timeLeft := avgTimePerLine * float64(linesLeft)
+
+			fmt.Printf(
+				"Progress: %d of %d (%.2f%%) (%.0fs/%.0fs)",
+				linesRendered,
+				c.Vsize,
+				float64(linesRendered)/float64(c.Vsize)*100,
+				elapsed.Seconds(),
+				timeLeft+elapsed.Seconds(),
+			)
+			fmt.Println()
 		}
 	}()
 
