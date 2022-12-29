@@ -346,6 +346,7 @@ func main() {
 
 	camera := r.NewCamera(width, int(float64(width)/ratio), math.Pi/3).SetTransform(ct)
 	// camera.Bounces = 6
+	// camera.AntiAliasingSteps = 2
 	// camera.Antialiasing = true
 
 	timeBefore := time.Now()

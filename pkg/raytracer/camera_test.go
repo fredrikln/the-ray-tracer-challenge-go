@@ -71,7 +71,7 @@ func TestRayThroughCanvas(t *testing.T) {
 	}
 	for _, tC := range testCases {
 		t.Run(tC.desc, func(t *testing.T) {
-			ray := (*tC.camera).RayForPixel(tC.x, tC.y, 0.5, 0.5)
+			ray := (*tC.camera).RayForPixel(tC.x+0.5, tC.y+0.5)
 
 			if !ray.Direction.Eq(tC.want.Direction) || !ray.Origin.Eq(tC.want.Origin) {
 				t.Errorf("Got %v, want %v", ray, tC.want)

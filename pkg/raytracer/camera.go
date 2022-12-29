@@ -8,15 +8,16 @@ import (
 )
 
 type Camera struct {
-	Hsize        int
-	Vsize        int
-	Fov          float64
-	Transform    *Matrix
-	PixelSize    float64
-	HalfWidth    float64
-	HalfHeight   float64
-	Antialiasing bool
-	Bounces      int
+	Hsize             int
+	Vsize             int
+	Fov               float64
+	Transform         *Matrix
+	PixelSize         float64
+	HalfWidth         float64
+	HalfHeight        float64
+	Antialiasing      bool
+	AntiAliasingSteps int
+	Bounces           int
 }
 
 func NewCamera(hsize, vsize int, fov float64) *Camera {
@@ -34,21 +35,22 @@ func NewCamera(hsize, vsize int, fov float64) *Camera {
 	}
 
 	return &Camera{
-		Hsize:        hsize,
-		Vsize:        vsize,
-		Fov:          fov,
-		Transform:    NewIdentityMatrix(),
-		PixelSize:    (halfWidth * 2) / float64(hsize),
-		HalfWidth:    halfWidth,
-		HalfHeight:   halfHeight,
-		Antialiasing: false,
-		Bounces:      4,
+		Hsize:             hsize,
+		Vsize:             vsize,
+		Fov:               fov,
+		Transform:         NewIdentityMatrix(),
+		PixelSize:         (halfWidth * 2) / float64(hsize),
+		HalfWidth:         halfWidth,
+		HalfHeight:        halfHeight,
+		Antialiasing:      false,
+		AntiAliasingSteps: 2,
+		Bounces:           4,
 	}
 }
 
-func (c *Camera) RayForPixel(x, y, offsetX, offsetY float64) Ray {
-	xOffset := (x + offsetX) * c.PixelSize
-	yOffset := (y + offsetY) * c.PixelSize
+func (c *Camera) RayForPixel(x, y float64) Ray {
+	xOffset := x * c.PixelSize
+	yOffset := y * c.PixelSize
 
 	worldX := c.HalfWidth - xOffset
 	worldY := c.HalfHeight - yOffset
@@ -110,8 +112,10 @@ func (c *Camera) Render(w *World) *Canvas {
 }
 
 func (c *Camera) getColorForPixels(x, y float64, w *World) Color {
+	x = x + 0.5
+	y = y + 0.5
 	if !c.Antialiasing {
-		ray := c.RayForPixel(float64(x), float64(y), 0.5, 0.5)
+		ray := c.RayForPixel(x, y)
 		color := w.ColorAt(ray, c.Bounces)
 
 		return color
@@ -119,18 +123,23 @@ func (c *Camera) getColorForPixels(x, y float64, w *World) Color {
 
 	var outColor Color
 
-	for i := 0; i < 2; i++ {
-		for j := 0; j < 2; j++ {
-			offsetX := 0.25 + float64(i)*0.5
-			offsetY := 0.25 + float64(j)*0.5
-			ray := c.RayForPixel(float64(x), float64(y), offsetX, offsetY)
+	var steps float64 = float64(c.AntiAliasingSteps)
+
+	for i := 0.0; i < steps; i++ {
+		for j := 0.0; j < steps; j++ {
+			offsetX := (1 / (steps * 2)) + i*1/steps
+			offsetY := (1 / (steps * 2)) + j*1/steps
+
+			ray := c.RayForPixel(x+offsetX, y+offsetY)
 			color := w.ColorAt(ray, c.Bounces)
 
 			outColor = outColor.Add(color)
 		}
 	}
 
-	outColor = outColor.MulFloat(0.25)
+	// gamma correction
+	scale := 1.0 / (steps * steps)
+	outColor = NewColor(math.Sqrt(outColor.R*scale), math.Sqrt(outColor.G*scale), math.Sqrt(outColor.B*scale))
 
 	return outColor
 }
