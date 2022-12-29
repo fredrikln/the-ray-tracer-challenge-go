@@ -187,7 +187,7 @@ func (c *Camera) RenderMultiThreaded(w *World, cores int) *Canvas {
 
 			linesRendered++
 
-			if time.Since(prev).Seconds() > 1 {
+			if time.Since(prev).Seconds() > 5 {
 				elapsed := time.Since(start)
 
 				linesLeft := c.Vsize - linesRendered

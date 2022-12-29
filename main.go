@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
 	"os"
 	"runtime"
+	"runtime/pprof"
 	"strings"
 	"time"
 
@@ -308,7 +310,34 @@ func GetTestScene6() (*r.World, *r.Matrix) {
 	return w, r.ViewTransform(r.NewPoint(0, 5, -10), r.NewPoint(0, 0.5, 0), r.NewVec(0, 1, 0))
 }
 
+func startProfiling() func() {
+	f, err := os.Create("profile-cpu.pb.gz")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	f2, err := os.Create("profile-mem.pb.gz")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = pprof.StartCPUProfile(f)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return func() {
+		pprof.StopCPUProfile()
+		pprof.WriteHeapProfile(f2)
+		f.Close()
+		f2.Close()
+	}
+}
+
 func main() {
+	// stop := startProfiling()
+	// defer stop()
+
 	// Set up canvas
 	w, ct := GetTestScene2()
 

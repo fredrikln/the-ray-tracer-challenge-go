@@ -5,5 +5,5 @@ raytracer
 *.ppm
 *.png
 !pkg/raytracer
-profile.pb.gz
+*.pb.gz
 pumpkin_tall_10k.obj
