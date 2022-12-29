@@ -191,3 +191,8 @@ func (csg *CSG) Bounds() *BoundingBox {
 
 	return csg.SavedBounds
 }
+
+func (csg *CSG) Divide(threshold int) {
+	csg.Left.Divide(threshold)
+	csg.Right.Divide(threshold)
+}

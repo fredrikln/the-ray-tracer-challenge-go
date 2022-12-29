@@ -126,3 +126,7 @@ func (st *SmoothTriangle) Bounds() *BoundingBox {
 
 	return bb.Transform(st.Transform)
 }
+
+func (st *SmoothTriangle) Divide(int) {
+	// does nothing
+}

@@ -115,3 +115,63 @@ func bbCheckAxis(origin, direction, min, max float64) (float64, float64) {
 
 	return tmin, tmax
 }
+
+func SplitBoundingBox(bb *BoundingBox) (*BoundingBox, *BoundingBox) {
+	dx := bb.Maximum.X - bb.Minimum.X
+	dy := bb.Maximum.Y - bb.Minimum.Y
+	dz := bb.Maximum.Z - bb.Minimum.Z
+
+	greatest := math.Max(dz, math.Max(dx, dy))
+
+	x0, y0, z0 := bb.Minimum.X, bb.Minimum.Y, bb.Minimum.Z
+	x1, y1, z1 := bb.Maximum.X, bb.Maximum.Y, bb.Maximum.Z
+
+	if WithinTolerance(dx, greatest, 1e-5) {
+		val := x0 + dx/2
+		x0, x1 = val, val
+	} else if WithinTolerance(dy, greatest, 1e-5) {
+		val := y0 + dy/2
+		y0, y1 = val, val
+	} else {
+		val := z0 + dz/2
+		z0, z1 = val, val
+	}
+
+	midMin := NewPoint(x0, y0, z0)
+	midMax := NewPoint(x1, y1, z1)
+
+	left := NewBoundingBoxWithValues(bb.Minimum, midMax)
+	right := NewBoundingBoxWithValues(midMin, bb.Maximum)
+
+	return left, right
+}
+
+func PartitionChildren(g *Group) ([]Intersectable, []Intersectable) {
+	var left, right []Intersectable
+
+	leftBounds, rightBounds := SplitBoundingBox(g.Bounds())
+
+	for i := len(g.Items) - 1; i >= 0; i-- {
+		item := g.Items[i]
+
+		if leftBounds.ContainsBox(item.Bounds()) {
+			left = append(left, item)
+			g.Items = append(g.Items[:i], g.Items[i+1:]...)
+		} else if rightBounds.ContainsBox(item.Bounds()) {
+			right = append(right, item)
+			g.Items = append(g.Items[:i], g.Items[i+1:]...)
+		}
+	}
+
+	return left, right
+}
+
+func MakeSubGroup(g *Group, items []Intersectable) {
+	g2 := NewGroup()
+
+	for _, i := range items {
+		g2.AddChild(i)
+	}
+
+	g.AddChild(g2)
+}

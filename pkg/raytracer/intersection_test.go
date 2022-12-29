@@ -41,6 +41,9 @@ func (ms MockShape) NormalToWorld(n Vec) Vec {
 func (ms MockShape) Bounds() *BoundingBox {
 	return NewBoundingBoxWithValues(NewPoint(-1, -1, -1), NewPoint(1, 1, 1))
 }
+func (ms MockShape) Divide(int) {
+	return
+}
 
 func TestIntersection(t *testing.T) {
 	element := MockShape{}

@@ -172,3 +172,7 @@ func (cy *Cylinder) Bounds() *BoundingBox {
 
 	return NewBoundingBoxWithValues(NewPoint(-1, minY, -1), NewPoint(1, maxY, 1)).Transform(cy.Transform)
 }
+
+func (cy *Cylinder) Divide(int) {
+	// does nothing
+}

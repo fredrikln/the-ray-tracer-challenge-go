@@ -19,6 +19,7 @@ type Intersectable interface {
 	NormalToWorld(Vec) Vec
 
 	Bounds() *BoundingBox
+	Divide(int)
 }
 
 type Intersection struct {

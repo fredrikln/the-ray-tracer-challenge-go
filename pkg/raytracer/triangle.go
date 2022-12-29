@@ -116,3 +116,7 @@ func (tr *Triangle) Bounds() *BoundingBox {
 
 	return bb.Transform(tr.Transform)
 }
+
+func (tr *Triangle) Divide(int) {
+	// Does nothing
+}

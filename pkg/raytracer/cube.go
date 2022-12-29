@@ -135,3 +135,7 @@ func (cu *Cube) NormalToWorld(n Vec) Vec {
 func (cu *Cube) Bounds() *BoundingBox {
 	return NewBoundingBoxWithValues(NewPoint(-1, -1, -1), NewPoint(1, 1, 1)).Transform(cu.Transform)
 }
+
+func (cu *Cube) Divide(int) {
+	// does nothing
+}

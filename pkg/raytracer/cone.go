@@ -193,3 +193,7 @@ func (co *Cone) Bounds() *BoundingBox {
 
 	return NewBoundingBoxWithValues(NewPoint(-limit, co.Minimum, -limit), NewPoint(limit, co.Maximum, limit)).Transform(co.Transform)
 }
+
+func (co *Cone) Divide(int) {
+	// does nothing
+}

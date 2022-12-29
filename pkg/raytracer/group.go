@@ -130,3 +130,20 @@ func (g *Group) Bounds() *BoundingBox {
 
 	return g.SavedBounds
 }
+
+func (g *Group) Divide(threshold int) {
+	if threshold <= len(g.Items) {
+		left, right := PartitionChildren(g)
+
+		if len(left) != 0 {
+			MakeSubGroup(g, left)
+		}
+		if len(right) != 0 {
+			MakeSubGroup(g, right)
+		}
+	}
+
+	for _, child := range g.Items {
+		child.Divide(threshold)
+	}
+}
