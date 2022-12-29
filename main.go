@@ -358,6 +358,8 @@ func main() {
 	diff := timeAfter.Sub(timeBefore)
 
 	fmt.Println("Render time:", diff)
+	filename := fmt.Sprintf("render-%d.png", time.Now().UnixMilli())
+	fmt.Println("Saved:", filename)
 
-	canvas.SavePNG("test.png")
+	canvas.SavePNG(filename)
 }

@@ -118,7 +118,7 @@ func (c *Camera) getColorForPixels(x, y float64, w *World) Color {
 		ray := c.RayForPixel(x, y)
 		color := w.ColorAt(ray, c.Bounces)
 
-		return color
+		return NewColor(math.Sqrt(color.R), math.Sqrt(color.G), math.Sqrt(color.B))
 	}
 
 	var outColor Color
