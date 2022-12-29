@@ -12,7 +12,7 @@ type SmoothTriangle struct {
 	Normal    Vec
 	Transform *Matrix
 	Material  *Material
-	Parent    *Group
+	Parent    Intersectable
 }
 
 func NewSmoothTriangle(p1, p2, p3 Point, n1, n2, n3 Vec) *SmoothTriangle {
@@ -86,12 +86,12 @@ func (tr *SmoothTriangle) GetTransform() *Matrix {
 	return tr.Transform
 }
 
-func (tr *SmoothTriangle) SetParent(g *Group) Intersectable {
-	tr.Parent = g
+func (tr *SmoothTriangle) SetParent(p Intersectable) Intersectable {
+	tr.Parent = p
 
 	return tr
 }
-func (tr *SmoothTriangle) GetParent() *Group {
+func (tr *SmoothTriangle) GetParent() Intersectable {
 	return tr.Parent
 }
 

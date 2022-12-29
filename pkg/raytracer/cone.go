@@ -10,7 +10,7 @@ type Cone struct {
 	Minimum   float64
 	Maximum   float64
 	Closed    bool
-	Parent    *Group
+	Parent    Intersectable
 }
 
 func NewCone() *Cone {
@@ -51,11 +51,11 @@ func (co *Cone) SetTransform(m *Matrix) Intersectable {
 	return co
 }
 
-func (co *Cone) GetParent() *Group {
+func (co *Cone) GetParent() Intersectable {
 	return co.Parent
 }
-func (co *Cone) SetParent(g *Group) Intersectable {
-	co.Parent = g
+func (co *Cone) SetParent(p Intersectable) Intersectable {
+	co.Parent = p
 
 	return co
 }

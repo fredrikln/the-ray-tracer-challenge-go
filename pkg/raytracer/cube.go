@@ -5,7 +5,7 @@ import "math"
 type Cube struct {
 	Transform *Matrix
 	Material  *Material
-	Parent    *Group
+	Parent    Intersectable
 }
 
 func NewCube() *Cube {
@@ -40,11 +40,11 @@ func (c *Cube) SetTransform(m *Matrix) Intersectable {
 	return c
 }
 
-func (c *Cube) GetParent() *Group {
+func (c *Cube) GetParent() Intersectable {
 	return c.Parent
 }
-func (c *Cube) SetParent(g *Group) Intersectable {
-	c.Parent = g
+func (c *Cube) SetParent(p Intersectable) Intersectable {
+	c.Parent = p
 
 	return c
 }

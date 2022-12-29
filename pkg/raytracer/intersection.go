@@ -12,8 +12,8 @@ type Intersectable interface {
 	SetTransform(*Matrix) Intersectable
 	GetTransform() *Matrix
 
-	GetParent() *Group
-	SetParent(*Group) Intersectable
+	GetParent() Intersectable
+	SetParent(Intersectable) Intersectable
 
 	WorldToObject(Point) Point
 	NormalToWorld(Vec) Vec

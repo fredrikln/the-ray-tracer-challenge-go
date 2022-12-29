@@ -24,10 +24,10 @@ func (MockShape) GetTransform() *Matrix {
 func (ms MockShape) SetTransform(*Matrix) Intersectable {
 	return &MockShape{}
 }
-func (ms MockShape) GetParent() *Group {
+func (ms MockShape) GetParent() Intersectable {
 	return nil
 }
-func (ms MockShape) SetParent(g *Group) Intersectable {
+func (ms MockShape) SetParent(g Intersectable) Intersectable {
 	return nil
 }
 func (ms MockShape) WorldToObject(p Point) Point {

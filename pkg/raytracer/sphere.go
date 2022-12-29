@@ -7,7 +7,7 @@ import (
 type Sphere struct {
 	Transform *Matrix
 	Material  *Material
-	Parent    *Group
+	Parent    Intersectable
 }
 
 func NewSphere() *Sphere {
@@ -42,11 +42,11 @@ func (s *Sphere) SetTransform(m *Matrix) Intersectable {
 	return s
 }
 
-func (s *Sphere) GetParent() *Group {
+func (s *Sphere) GetParent() Intersectable {
 	return s.Parent
 }
-func (s *Sphere) SetParent(g *Group) Intersectable {
-	s.Parent = g
+func (s *Sphere) SetParent(p Intersectable) Intersectable {
+	s.Parent = p
 
 	return s
 }

@@ -7,7 +7,7 @@ import (
 type Plane struct {
 	Transform *Matrix
 	Material  *Material
-	Parent    *Group
+	Parent    Intersectable
 }
 
 func NewPlane() *Plane {
@@ -37,13 +37,13 @@ func (p *Plane) SetTransform(m *Matrix) Intersectable {
 	return p
 }
 
-func (p *Plane) GetParent() *Group {
+func (p *Plane) GetParent() Intersectable {
 	return p.Parent
 }
-func (p *Plane) SetParent(g *Group) Intersectable {
-	p.Parent = g
+func (pl *Plane) SetParent(p Intersectable) Intersectable {
+	pl.Parent = p
 
-	return p
+	return pl
 }
 
 func (p *Plane) Intersect(worldRay Ray) []Intersection {

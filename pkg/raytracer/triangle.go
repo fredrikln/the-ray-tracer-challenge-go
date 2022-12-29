@@ -9,7 +9,7 @@ type Triangle struct {
 	Normal    Vec
 	Transform *Matrix
 	Material  *Material
-	Parent    *Group
+	Parent    Intersectable
 }
 
 func NewTriangle(p1, p2, p3 Point) *Triangle {
@@ -76,12 +76,12 @@ func (tr *Triangle) GetTransform() *Matrix {
 	return tr.Transform
 }
 
-func (tr *Triangle) SetParent(g *Group) Intersectable {
+func (tr *Triangle) SetParent(g Intersectable) Intersectable {
 	tr.Parent = g
 
 	return tr
 }
-func (tr *Triangle) GetParent() *Group {
+func (tr *Triangle) GetParent() Intersectable {
 	return tr.Parent
 }
 

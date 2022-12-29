@@ -7,7 +7,7 @@ import (
 type Group struct {
 	Transform *Matrix
 	Items     []Intersectable
-	Parent    *Group
+	Parent    Intersectable
 }
 
 func NewGroup() *Group {
@@ -41,10 +41,10 @@ func (g *Group) GetTransform() *Matrix {
 	return g.Transform
 }
 
-func (g *Group) GetParent() *Group {
+func (g *Group) GetParent() Intersectable {
 	return g.Parent
 }
-func (g *Group) SetParent(p *Group) Intersectable {
+func (g *Group) SetParent(p Intersectable) Intersectable {
 	g.Parent = p
 
 	return g
@@ -93,4 +93,19 @@ func (g *Group) NormalToWorld(n Vec) Vec {
 	}
 
 	return normal
+}
+
+func (g *Group) Includes(object Intersectable) bool {
+	for _, child := range g.Items {
+		switch child.(type) {
+		case *Group:
+			return (child.(*Group)).Includes(object)
+		case *CSG:
+			return (child.(*CSG)).Includes(object)
+		default:
+			return object == child
+		}
+	}
+
+	return false
 }

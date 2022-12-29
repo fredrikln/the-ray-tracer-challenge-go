@@ -10,7 +10,7 @@ type Cylinder struct {
 	Minimum   float64
 	Maximum   float64
 	Closed    bool
-	Parent    *Group
+	Parent    Intersectable
 }
 
 func NewCylinder() *Cylinder {
@@ -51,11 +51,11 @@ func (c *Cylinder) SetTransform(m *Matrix) Intersectable {
 	return c
 }
 
-func (c *Cylinder) GetParent() *Group {
+func (c *Cylinder) GetParent() Intersectable {
 	return c.Parent
 }
-func (c *Cylinder) SetParent(g *Group) Intersectable {
-	c.Parent = g
+func (c *Cylinder) SetParent(p Intersectable) Intersectable {
+	c.Parent = p
 
 	return c
 }

@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-
 	"math"
 	"math/rand"
-
+	"os"
 	"runtime"
-
+	"strings"
 	"time"
 
+	"github.com/fredrikln/the-ray-tracer-challenge-go/pkg/objparser"
 	r "github.com/fredrikln/the-ray-tracer-challenge-go/pkg/raytracer"
 )
 
@@ -53,6 +53,12 @@ func GetTestScene() (*r.World, *r.Matrix) {
 }
 
 func GetTestScene2() (*r.World, *r.Matrix) {
+	teapotData, err := os.ReadFile("models/teapot2.obj")
+
+	if err != nil {
+		panic(err)
+	}
+
 	w := r.NewWorld()
 
 	t := r.NewTranslation(0, 0, 500).Mul(r.NewRotationX(math.Pi / 2))
@@ -96,6 +102,11 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 					co.SetTransform(t)
 
 					object = co
+				case 4:
+					g := r.NewGroup()
+					g.SetTransform(r.NewScaling(0.1, 0.1, 0.1))
+
+					object = g
 				default:
 					object = r.NewSphere()
 				}
@@ -120,7 +131,14 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 					material = r.NewMaterial().SetColor(r.NewColor(1, 0, 0)).SetAmbient(1).SetDiffuse(0).SetShininess(0).SetSpecular(0)
 				}
 
-				object.SetMaterial(material)
+				if objectType == 4 {
+					p := objparser.NewParser()
+					p.SetMaterial(material)
+					teapot := p.Parse(strings.Trim(string(teapotData), "\n"))
+					object.(*r.Group).AddChild(teapot)
+				} else {
+					object.SetMaterial(material)
+				}
 
 				group.AddChild(object)
 			}
@@ -203,6 +221,91 @@ func GetTestScene4() (*r.World, *r.Matrix) {
 	w.AddLight(r.NewPointLight(r.NewPoint(-400, 50, -10), r.NewColor(0.2, 0.2, 0.2)))
 
 	return w, r.ViewTransform(r.NewPoint(0, 1, -4), r.NewPoint(0, 0.25, 0), r.NewVec(0, 1, 0))
+}
+
+func GetTestScene5() (*r.World, *r.Matrix) {
+	w := r.NewWorld()
+
+	content, err := os.ReadFile("models/teapot2.obj")
+
+	if err != nil {
+		panic(err)
+	}
+
+	p := objparser.NewParser()
+	// m := r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetTransparency(1).SetReflective(1).SetRefractiveIndex(1.5).SetSpecular(1).SetShininess(300).SetDiffuse(0.05).SetAmbient(0.05)
+	m := r.NewMaterial().SetColor(r.NewColor(0.75, 0.75, 0.75))
+	p.SetMaterial(m)
+	g := p.Parse(strings.Trim(string(content), "\n"))
+	t1 := r.NewScaling(0.25, 0.25, 0.25)
+	g.SetTransform(t1)
+
+	w.AddObject(g)
+
+	pl := r.NewPlane()
+	t2 := r.NewTranslation(0, 0, 30).Mul(r.NewRotationX(math.Pi / 2))
+	pl.SetTransform(t2)
+	pl.SetMaterial(r.NewMaterial().SetPattern(r.NewCheckerPattern(r.NewColor(0.5, 0.5, 0.5), r.NewColor(1, 1, 1))))
+
+	w.AddObject(pl)
+
+	w.AddLight(r.NewPointLight(r.NewPoint(50, 100, -50), r.NewColor(1, 1, 1)))
+	w.AddLight(r.NewPointLight(r.NewPoint(-400, 50, -10), r.NewColor(0.2, 0.2, 0.2)))
+
+	return w, r.ViewTransform(r.NewPoint(0, 5, -10), r.NewPoint(0, 0, 0), r.NewVec(0, 1, 0))
+}
+
+func GetTestScene6() (*r.World, *r.Matrix) {
+	w := r.NewWorld()
+
+	pl := r.NewPlane()
+	t2 := r.NewTranslation(0, -1, 0)
+	pl.SetTransform(t2)
+	pl.SetMaterial(r.NewMaterial().SetPattern(r.NewCheckerPattern(r.NewColor(0.5, 0.5, 0.5), r.NewColor(1, 1, 1))))
+	w.AddObject(pl)
+
+	c := r.NewCube()
+	c.SetMaterial(r.NewMaterial().SetColor(r.NewColor(1, 1, 0)))
+	sp := r.NewSphere()
+	sp.SetTransform(r.NewScaling(math.Sqrt(2), math.Sqrt(2), math.Sqrt(2)))
+	sp.SetMaterial(r.NewMaterial().SetColor(r.NewColor(1, 0, 1)))
+
+	csg1 := r.NewCSG(r.Intersect, c, sp)
+
+	cy1 := r.NewCylinder()
+	cy1.Minimum = -10
+	cy1.Maximum = 10
+	cy1.Closed = true
+	cy1.SetTransform(r.NewScaling(0.5, 0.5, 0.5))
+	cy1.SetMaterial(r.NewMaterial().SetColor(r.NewColor(1, 0, 0)))
+
+	cy2 := r.NewCylinder()
+	cy2.Minimum = -10
+	cy2.Maximum = 10
+	cy2.Closed = true
+	cy2.SetTransform(r.NewScaling(0.5, 0.5, 0.5).Mul(r.NewRotationX(math.Pi / 2)))
+	cy2.SetMaterial(r.NewMaterial().SetColor(r.NewColor(0, 1, 0)))
+
+	csg2 := r.NewCSG(r.Union, cy1, cy2)
+
+	cy3 := r.NewCylinder()
+	cy3.Minimum = -10
+	cy3.Maximum = 10
+	cy3.Closed = true
+	cy3.SetTransform(r.NewScaling(0.5, 0.5, 0.5).Mul(r.NewRotationX(math.Pi / 2).Mul(r.NewRotationZ(math.Pi / 2))))
+	cy3.SetMaterial(r.NewMaterial().SetColor(r.NewColor(0, 0, 1)))
+
+	csg3 := r.NewCSG(r.Union, csg2, cy3)
+	csg4 := r.NewCSG(r.Difference, csg1, csg3)
+	t := r.NewTranslation(0, 1, 0).Mul(r.NewRotationY(math.Pi / 5)).Mul(r.NewScaling(2, 2, 2))
+	csg4.SetTransform(t)
+
+	w.AddObject(csg4)
+
+	w.AddLight(r.NewPointLight(r.NewPoint(50, 100, -50), r.NewColor(1, 1, 1)))
+	w.AddLight(r.NewPointLight(r.NewPoint(-400, 50, -10), r.NewColor(0.2, 0.2, 0.2)))
+
+	return w, r.ViewTransform(r.NewPoint(0, 5, -10), r.NewPoint(0, 0.5, 0), r.NewVec(0, 1, 0))
 }
 
 func main() {
