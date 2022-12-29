@@ -5,9 +5,10 @@ import (
 )
 
 type Group struct {
-	Transform *Matrix
-	Items     []Intersectable
-	Parent    Intersectable
+	Transform   *Matrix
+	Items       []Intersectable
+	Parent      Intersectable
+	SavedBounds *BoundingBox
 }
 
 func NewGroup() *Group {
@@ -51,6 +52,10 @@ func (g *Group) SetParent(p Intersectable) Intersectable {
 }
 
 func (g *Group) Intersect(worldRay Ray) []Intersection {
+	if !g.Bounds().Intersect(worldRay) {
+		return []Intersection{}
+	}
+
 	if len(g.Items) == 0 {
 		return []Intersection{}
 	}
@@ -97,15 +102,31 @@ func (g *Group) NormalToWorld(n Vec) Vec {
 
 func (g *Group) Includes(object Intersectable) bool {
 	for _, child := range g.Items {
-		switch child.(type) {
+		switch child := child.(type) {
 		case *Group:
-			return (child.(*Group)).Includes(object)
+			return child.Includes(object)
 		case *CSG:
-			return (child.(*CSG)).Includes(object)
+			return child.Includes(object)
 		default:
 			return object == child
 		}
 	}
 
 	return false
+}
+
+func (g *Group) Bounds() *BoundingBox {
+	if g.SavedBounds != nil {
+		return g.SavedBounds
+	}
+
+	bb := NewBoundingBox()
+
+	for _, child := range g.Items {
+		bb.AddBoundingBox(*child.Bounds())
+	}
+
+	g.SavedBounds = bb.Transform(g.Transform)
+
+	return g.SavedBounds
 }

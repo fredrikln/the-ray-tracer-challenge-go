@@ -17,6 +17,8 @@ type Intersectable interface {
 
 	WorldToObject(Point) Point
 	NormalToWorld(Vec) Vec
+
+	Bounds() *BoundingBox
 }
 
 type Intersection struct {

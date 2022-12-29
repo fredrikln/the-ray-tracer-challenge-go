@@ -14,8 +14,9 @@ const (
 )
 
 type CSG struct {
-	Transform *Matrix
-	Parent    Intersectable
+	Transform   *Matrix
+	Parent      Intersectable
+	SavedBounds *BoundingBox
 
 	Operand Operation
 	Left    Intersectable
@@ -38,6 +39,10 @@ func NewCSG(operation Operation, left Intersectable, right Intersectable) *CSG {
 }
 
 func (csg *CSG) Intersect(worldRay Ray) []Intersection {
+	if !csg.Bounds().Intersect(worldRay) {
+		return []Intersection{}
+	}
+
 	var result []Intersection
 
 	localRay := worldRay.Mul(csg.Transform.Inverse())
@@ -170,4 +175,19 @@ func (csg *CSG) Includes(object Intersectable) bool {
 	}
 
 	return false
+}
+
+func (csg *CSG) Bounds() *BoundingBox {
+	if csg.SavedBounds != nil {
+		return csg.SavedBounds
+	}
+
+	bb := NewBoundingBox()
+
+	bb.AddBoundingBox(*csg.Left.Bounds())
+	bb.AddBoundingBox(*csg.Right.Bounds())
+
+	csg.SavedBounds = bb.Transform(csg.Transform)
+
+	return csg.SavedBounds
 }

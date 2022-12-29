@@ -184,3 +184,12 @@ func (co *Cone) NormalToWorld(n Vec) Vec {
 
 	return normal
 }
+
+func (co *Cone) Bounds() *BoundingBox {
+	a := math.Abs(co.Minimum)
+	b := math.Abs(co.Maximum)
+
+	limit := math.Max(a, b)
+
+	return NewBoundingBoxWithValues(NewPoint(-limit, co.Minimum, -limit), NewPoint(limit, co.Maximum, limit)).Transform(co.Transform)
+}

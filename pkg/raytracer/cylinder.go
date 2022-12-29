@@ -165,3 +165,10 @@ func (cy *Cylinder) NormalToWorld(n Vec) Vec {
 
 	return normal
 }
+
+func (cy *Cylinder) Bounds() *BoundingBox {
+	minY := cy.Minimum
+	maxY := cy.Maximum
+
+	return NewBoundingBoxWithValues(NewPoint(-1, minY, -1), NewPoint(1, maxY, 1)).Transform(cy.Transform)
+}

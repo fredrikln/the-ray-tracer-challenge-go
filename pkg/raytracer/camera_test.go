@@ -92,7 +92,8 @@ func TestRenderWorldWithCamera(t *testing.T) {
 
 	canvas := c.Render(w)
 	got := canvas.GetPixel(5, 5)
-	want := NewColor(0.380661, 0.475826, 0.285495)
+	// want := NewColor(0.380661, 0.475826, 0.285495)
+	want := NewColor(0.616977, 0.689801, 0.534318) // gamma corrected
 
 	if !got.Eq(want) {
 		t.Errorf("Got %v, want %v", got, want)

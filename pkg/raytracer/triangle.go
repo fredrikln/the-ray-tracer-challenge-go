@@ -106,3 +106,13 @@ func (tr *Triangle) NormalToWorld(n Vec) Vec {
 
 	return normal
 }
+
+func (tr *Triangle) Bounds() *BoundingBox {
+	bb := NewBoundingBox()
+
+	bb.Add(tr.P1)
+	bb.Add(tr.P2)
+	bb.Add(tr.P3)
+
+	return bb.Transform(tr.Transform)
+}

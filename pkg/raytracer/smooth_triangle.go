@@ -116,3 +116,13 @@ func (tr *SmoothTriangle) NormalToWorld(n Vec) Vec {
 
 	return normal
 }
+
+func (st *SmoothTriangle) Bounds() *BoundingBox {
+	bb := NewBoundingBox()
+
+	bb.Add(st.P1)
+	bb.Add(st.P2)
+	bb.Add(st.P3)
+
+	return bb.Transform(st.Transform)
+}

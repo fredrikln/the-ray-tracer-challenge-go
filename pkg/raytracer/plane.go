@@ -87,3 +87,7 @@ func (pl *Plane) NormalToWorld(n Vec) Vec {
 
 	return normal
 }
+
+func (pl *Plane) Bounds() *BoundingBox {
+	return NewBoundingBoxWithValues(NewPoint(math.Inf(-1), 0, math.Inf(-1)), NewPoint(math.Inf(1), 0, math.Inf(1))).Transform(pl.Transform)
+}
