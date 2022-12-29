@@ -18,6 +18,7 @@ type Camera struct {
 	Antialiasing      bool
 	AntiAliasingSteps int
 	Bounces           int
+	GammaCorrection   bool
 }
 
 func NewCamera(hsize, vsize int, fov float64) *Camera {
@@ -45,6 +46,7 @@ func NewCamera(hsize, vsize int, fov float64) *Camera {
 		Antialiasing:      false,
 		AntiAliasingSteps: 2,
 		Bounces:           4,
+		GammaCorrection:   false,
 	}
 }
 
@@ -118,7 +120,11 @@ func (c *Camera) getColorForPixels(x, y float64, w *World) Color {
 		ray := c.RayForPixel(x, y)
 		color := w.ColorAt(ray, c.Bounces)
 
-		return NewColor(math.Sqrt(color.R), math.Sqrt(color.G), math.Sqrt(color.B))
+		if c.GammaCorrection {
+			return NewColor(math.Sqrt(color.R), math.Sqrt(color.G), math.Sqrt(color.B))
+		} else {
+			return color
+		}
 	}
 
 	var outColor Color
@@ -137,9 +143,10 @@ func (c *Camera) getColorForPixels(x, y float64, w *World) Color {
 		}
 	}
 
-	// gamma correction
-	scale := 1.0 / (steps * steps)
-	outColor = NewColor(math.Sqrt(outColor.R*scale), math.Sqrt(outColor.G*scale), math.Sqrt(outColor.B*scale))
+	if c.GammaCorrection {
+		scale := 1.0 / (steps * steps)
+		outColor = NewColor(math.Sqrt(outColor.R*scale), math.Sqrt(outColor.G*scale), math.Sqrt(outColor.B*scale))
+	}
 
 	return outColor
 }

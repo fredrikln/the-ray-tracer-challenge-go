@@ -67,7 +67,7 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 	wall := r.NewPlane().SetTransform(t)
 	w.AddObject(wall)
 
-	seed := 1672236286765 //time.Now().UnixMilli()
+	seed := 1672343151908 //time.Now().UnixMilli()
 	rand.Seed(int64(seed))
 	fmt.Println("Seed", seed)
 
@@ -75,13 +75,15 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 	offset := 3
 
 	for y := -stepsEachSide; y <= stepsEachSide; y++ {
-		group := r.NewGroup()
-
+		yGroup := r.NewGroup()
 		for x := -stepsEachSide; x <= stepsEachSide; x++ {
+			xGroup := r.NewGroup()
+
 			for z := -stepsEachSide; z <= stepsEachSide; z++ {
 
 				var object r.Intersectable
 
+				//objectType := rand.Intn(5)
 				objectType := rand.Intn(4)
 				switch objectType {
 				case 0:
@@ -142,11 +144,12 @@ func GetTestScene2() (*r.World, *r.Matrix) {
 					object.SetMaterial(material)
 				}
 
-				group.AddChild(object)
+				xGroup.AddChild(object)
 			}
+			yGroup.AddChild(xGroup)
 		}
-		group.SetTransform(r.NewTranslation(0, float64(offset*y), 0))
-		w.AddObject(group)
+		yGroup.SetTransform(r.NewTranslation(0, float64(offset*y), 0))
+		w.AddObject(yGroup)
 	}
 
 	w.AddLight(r.NewPointLight(r.NewPoint(50, 100, -50), r.NewColor(1, 1, 1)))
@@ -310,6 +313,38 @@ func GetTestScene6() (*r.World, *r.Matrix) {
 	return w, r.ViewTransform(r.NewPoint(0, 5, -10), r.NewPoint(0, 0.5, 0), r.NewVec(0, 1, 0))
 }
 
+func GetTestScene7() (*r.World, *r.Matrix) {
+	w := r.NewWorld()
+
+	content, err := os.ReadFile("models/dragon.obj")
+
+	if err != nil {
+		panic(err)
+	}
+
+	p := objparser.NewParser()
+	// m := r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetTransparency(1).SetReflective(1).SetRefractiveIndex(1.5).SetSpecular(1).SetShininess(300).SetDiffuse(0.05).SetAmbient(0.05)
+	m := r.NewMaterial().SetColor(r.NewColor(0.135, 0.2225, 0.1575)).SetSpecular(0.316228).SetTransparency(0.05)
+	p.SetMaterial(m)
+	g := p.Parse(strings.Trim(string(content), "\n"))
+	t1 := r.NewTranslation(0, -2.25, 0)
+	g.SetTransform(t1)
+
+	w.AddObject(g)
+
+	// pl := r.NewPlane()
+	// t2 := r.NewTranslation(0, 0, 30).Mul(r.NewRotationX(math.Pi / 2))
+	// pl.SetTransform(t2)
+	// pl.SetMaterial(r.NewMaterial().SetPattern(r.NewCheckerPattern(r.NewColor(0.5, 0.5, 0.5), r.NewColor(1, 1, 1))))
+
+	// w.AddObject(pl)
+
+	w.AddLight(r.NewPointLight(r.NewPoint(50, 100, -50), r.NewColor(1, 1, 1)))
+	w.AddLight(r.NewPointLight(r.NewPoint(-400, 50, -10), r.NewColor(0.2, 0.2, 0.2)))
+
+	return w, r.ViewTransform(r.NewPoint(0, 5, -10), r.NewPoint(0, 0, 0), r.NewVec(0, 1, 0))
+}
+
 func startProfiling() func() {
 	f, err := os.Create("profile-cpu.pb.gz")
 	if err != nil {
@@ -348,6 +383,7 @@ func main() {
 	// camera.Bounces = 6
 	// camera.AntiAliasingSteps = 2
 	// camera.Antialiasing = true
+	camera.GammaCorrection = true
 
 	timeBefore := time.Now()
 
