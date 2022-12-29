@@ -5,8 +5,9 @@ import (
 )
 
 type Matrix struct {
-	data [4][4]float64
-	inv  *Matrix
+	data      [4][4]float64
+	inverse   *Matrix
+	transpose *Matrix
 }
 
 func NewMatrix(a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4 float64) *Matrix {
@@ -144,6 +145,10 @@ func (a *Matrix) MulPoint(b Point) Point {
 }
 
 func (a *Matrix) Transpose() *Matrix {
+	if a.transpose != nil {
+		return a.transpose
+	}
+
 	m := Matrix{}
 
 	for r := 0; r < 4; r += 1 {
@@ -151,6 +156,8 @@ func (a *Matrix) Transpose() *Matrix {
 			m.data[c][r] = a.data[r][c]
 		}
 	}
+
+	a.transpose = &m
 
 	return &m
 }
@@ -164,8 +171,8 @@ func (a *Matrix) Invertible() bool {
 }
 
 func (a *Matrix) Inverse() *Matrix {
-	if a.inv != nil {
-		return a.inv
+	if a.inverse != nil {
+		return a.inverse
 	}
 
 	if !a.Invertible() {
@@ -184,7 +191,7 @@ func (a *Matrix) Inverse() *Matrix {
 		}
 	}
 
-	a.inv, i.inv = i, a
+	a.inverse, i.inverse = i, a
 
 	return i
 }

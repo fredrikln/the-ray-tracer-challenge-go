@@ -259,8 +259,7 @@ func GetTestScene6() (*r.World, *r.Matrix) {
 	w := r.NewWorld()
 
 	pl := r.NewPlane()
-	t2 := r.NewTranslation(0, -1, 0)
-	pl.SetTransform(t2)
+	pl.SetTransform(r.NewTranslation(0, -1, 0))
 	pl.SetMaterial(r.NewMaterial().SetPattern(r.NewCheckerPattern(r.NewColor(0.5, 0.5, 0.5), r.NewColor(1, 1, 1))))
 	w.AddObject(pl)
 
@@ -283,7 +282,7 @@ func GetTestScene6() (*r.World, *r.Matrix) {
 	cy2.Minimum = -10
 	cy2.Maximum = 10
 	cy2.Closed = true
-	cy2.SetTransform(r.NewScaling(0.5, 0.5, 0.5).Mul(r.NewRotationX(math.Pi / 2)))
+	cy2.SetTransform(r.NewScaling(0.5, 0.5, 0.5).RotateX(math.Pi / 2))
 	cy2.SetMaterial(r.NewMaterial().SetColor(r.NewColor(0, 1, 0)))
 
 	csg2 := r.NewCSG(r.Union, cy1, cy2)
@@ -292,12 +291,13 @@ func GetTestScene6() (*r.World, *r.Matrix) {
 	cy3.Minimum = -10
 	cy3.Maximum = 10
 	cy3.Closed = true
-	cy3.SetTransform(r.NewScaling(0.5, 0.5, 0.5).Mul(r.NewRotationX(math.Pi / 2).Mul(r.NewRotationZ(math.Pi / 2))))
+
+	cy3.SetTransform(r.NewScaling(0.5, 0.5, 0.5).RotateX(math.Pi / 2).RotateZ(math.Pi / 2))
 	cy3.SetMaterial(r.NewMaterial().SetColor(r.NewColor(0, 0, 1)))
 
 	csg3 := r.NewCSG(r.Union, csg2, cy3)
 	csg4 := r.NewCSG(r.Difference, csg1, csg3)
-	t := r.NewTranslation(0, 1, 0).Mul(r.NewRotationY(math.Pi / 5)).Mul(r.NewScaling(2, 2, 2))
+	t := r.NewTranslation(0, 1, 0).RotateY(math.Pi/5).Scale(2, 2, 2)
 	csg4.SetTransform(t)
 
 	w.AddObject(csg4)
