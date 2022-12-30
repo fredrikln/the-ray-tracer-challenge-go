@@ -323,15 +323,22 @@ func GetTestScene7() (*r.World, *r.Matrix) {
 		panic(err)
 	}
 
+	transform := r.NewTranslation(0, -2.25, 0)
+	checker := r.NewCheckerPattern(r.NewColor(0.5, 0.5, 0.5), r.NewColor(1, 1, 1))
+	material := r.NewMaterial().SetPattern(checker)
+	wall := r.NewPlane().SetTransform(transform).SetMaterial(material)
+
+	w.AddObject(wall)
+
 	p := objparser.NewParser()
 	// m := r.NewMaterial().SetColor(r.NewColor(0.373, 0.404, 0.550)).SetTransparency(1).SetReflective(1).SetRefractiveIndex(1.5).SetSpecular(1).SetShininess(300).SetDiffuse(0.05).SetAmbient(0.05)
-	m := r.NewMaterial().SetColor(r.NewColor(0.135, 0.2225, 0.1575)).SetSpecular(0.316228)
+	m := r.NewMaterial().SetColor(r.NewColor(0.135, 0.2225, 0.1575)).SetDiffuse(0.63).SetSpecular(0.316228).SetShininess(12.9).SetReflective(0.05)
 	p.SetMaterial(m)
 	g := p.Parse(strings.Trim(string(content), "\n"))
 	t1 := r.NewTranslation(0, -2.25, 0)
 	g.SetTransform(t1)
 
-	//g.Divide(1)
+	g.Divide(1)
 
 	w.AddObject(g)
 
