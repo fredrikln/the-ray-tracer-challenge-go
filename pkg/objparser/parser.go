@@ -14,6 +14,7 @@ type Objparser struct {
 	numIgnoredLines int
 	defaultGroup    *r.Group
 	material        *r.Material
+	NewMaterial     r.Scatters
 }
 
 func NewParser() *Objparser {
@@ -62,6 +63,15 @@ func (p *Objparser) Parse(input string) *r.Group {
 			for _, triangle := range triangles {
 				if p.material != nil {
 					triangle.SetMaterial(p.material)
+				}
+
+				if p.NewMaterial != nil {
+					switch triangle.(type) {
+					case (*r.Triangle):
+						triangle.(*r.Triangle).NewMaterial = p.NewMaterial
+					case (*r.SmoothTriangle):
+						triangle.(*r.SmoothTriangle).NewMaterial = p.NewMaterial
+					}
 				}
 
 				if curGroup != nil {

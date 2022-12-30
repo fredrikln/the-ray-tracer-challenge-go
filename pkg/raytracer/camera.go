@@ -8,17 +8,16 @@ import (
 )
 
 type Camera struct {
-	Hsize             int
-	Vsize             int
-	Fov               float64
-	Transform         *Matrix
-	PixelSize         float64
-	HalfWidth         float64
-	HalfHeight        float64
-	Antialiasing      bool
-	AntiAliasingSteps int
-	Bounces           int
-	GammaCorrection   bool
+	Hsize           int
+	Vsize           int
+	Fov             float64
+	Transform       *Matrix
+	PixelSize       float64
+	HalfWidth       float64
+	HalfHeight      float64
+	Samples         int
+	Depth           int
+	GammaCorrection bool
 }
 
 func NewCamera(hsize, vsize int, fov float64) *Camera {
@@ -36,17 +35,16 @@ func NewCamera(hsize, vsize int, fov float64) *Camera {
 	}
 
 	return &Camera{
-		Hsize:             hsize,
-		Vsize:             vsize,
-		Fov:               fov,
-		Transform:         NewIdentityMatrix(),
-		PixelSize:         (halfWidth * 2) / float64(hsize),
-		HalfWidth:         halfWidth,
-		HalfHeight:        halfHeight,
-		Antialiasing:      false,
-		AntiAliasingSteps: 2,
-		Bounces:           4,
-		GammaCorrection:   false,
+		Hsize:           hsize,
+		Vsize:           vsize,
+		Fov:             fov,
+		Transform:       NewIdentityMatrix(),
+		PixelSize:       (halfWidth * 2) / float64(hsize),
+		HalfWidth:       halfWidth,
+		HalfHeight:      halfHeight,
+		Samples:         10,
+		Depth:           8,
+		GammaCorrection: false,
 	}
 }
 
@@ -114,37 +112,17 @@ func (c *Camera) Render(w *World) *Canvas {
 }
 
 func (c *Camera) getColorForPixels(x, y float64, w *World) Color {
-	x = x + 0.5
-	y = y + 0.5
-	if !c.Antialiasing {
-		ray := c.RayForPixel(x, y)
-		color := w.ColorAt(ray, c.Bounces)
-
-		if c.GammaCorrection {
-			return NewColor(math.Sqrt(color.R), math.Sqrt(color.G), math.Sqrt(color.B))
-		} else {
-			return color
-		}
-	}
-
 	var outColor Color
 
-	var steps float64 = float64(c.AntiAliasingSteps)
-
-	for i := 0.0; i < steps; i++ {
-		for j := 0.0; j < steps; j++ {
-			offsetX := (1 / (steps * 2)) + i*1/steps
-			offsetY := (1 / (steps * 2)) + j*1/steps
-
-			ray := c.RayForPixel(x+offsetX, y+offsetY)
-			color := w.ColorAt(ray, c.Bounces)
-
-			outColor = outColor.Add(color)
-		}
+	for i := 0; i < c.Samples; i++ {
+		x := x + w.Source.Float64()
+		y := y + w.Source.Float64()
+		ray := c.RayForPixel(x, y)
+		outColor = outColor.Add(w.ColorAt(&ray, c.Depth))
 	}
 
 	if c.GammaCorrection {
-		scale := 1.0 / (steps * steps)
+		scale := 1.0 / float64(c.Samples)
 		outColor = NewColor(math.Sqrt(outColor.R*scale), math.Sqrt(outColor.G*scale), math.Sqrt(outColor.B*scale))
 	}
 
@@ -178,7 +156,7 @@ func worker(jobChan chan job, responseChan chan response, wg *sync.WaitGroup) {
 	}
 }
 
-func (c *Camera) RenderMultiThreaded(w *World, cores int) *Canvas {
+func (c *Camera) RenderMultiThreaded(generator func() (*World, *Matrix), cores int) *Canvas {
 	canvas := NewCanvas(c.Hsize, c.Vsize)
 
 	jobChan := make(chan job)
@@ -234,6 +212,8 @@ func (c *Camera) RenderMultiThreaded(w *World, cores int) *Canvas {
 	// Send jobs
 	go func() {
 		for y := 0; y < c.Vsize; y++ {
+			w, _ := generator()
+
 			jobChan <- job{y, c, w}
 		}
 	}()

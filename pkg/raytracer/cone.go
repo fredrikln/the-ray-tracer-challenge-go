@@ -5,12 +5,13 @@ import (
 )
 
 type Cone struct {
-	Transform *Matrix
-	Material  *Material
-	Minimum   float64
-	Maximum   float64
-	Closed    bool
-	Parent    Intersectable
+	Transform   *Matrix
+	Material    *Material
+	Minimum     float64
+	Maximum     float64
+	Closed      bool
+	Parent      Intersectable
+	NewMaterial Scatters
 }
 
 func NewCone() *Cone {
@@ -58,6 +59,10 @@ func (co *Cone) SetParent(p Intersectable) Intersectable {
 	co.Parent = p
 
 	return co
+}
+
+func (co *Cone) GetNewMaterial() Scatters {
+	return co.NewMaterial
 }
 
 func (co *Cone) Intersect(worldRay Ray) []Intersection {

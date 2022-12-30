@@ -51,6 +51,10 @@ func (g *Group) SetParent(p Intersectable) Intersectable {
 	return g
 }
 
+func (g *Group) GetNewMaterial() Scatters {
+	panic("Should never happen")
+}
+
 func (g *Group) Intersect(worldRay Ray) []Intersection {
 	if !g.Bounds().Intersect(worldRay) {
 		return []Intersection{}
@@ -132,6 +136,8 @@ func (g *Group) Bounds() *BoundingBox {
 }
 
 func (g *Group) Divide(threshold int) {
+	g.SavedBounds = nil
+
 	if threshold <= len(g.Items) {
 		left, right := PartitionChildren(g)
 

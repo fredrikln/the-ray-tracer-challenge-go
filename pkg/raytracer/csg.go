@@ -87,6 +87,10 @@ func (csg *CSG) SetParent(p Intersectable) Intersectable {
 	return csg
 }
 
+func (csg *CSG) GetNewMaterial() Scatters {
+	panic("GetMaterial should not happen")
+}
+
 func (csg *CSG) WorldToObject(p Point) Point {
 	parent := csg.GetParent()
 
@@ -193,6 +197,8 @@ func (csg *CSG) Bounds() *BoundingBox {
 }
 
 func (csg *CSG) Divide(threshold int) {
+	csg.SavedBounds = nil
+
 	csg.Left.Divide(threshold)
 	csg.Right.Divide(threshold)
 }

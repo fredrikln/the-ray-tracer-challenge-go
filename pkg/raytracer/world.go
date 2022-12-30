@@ -1,8 +1,9 @@
 package raytracer
 
 import (
-	"math"
+	"math/rand"
 	"sort"
+	"time"
 )
 
 type IntersectonSorter []Intersection
@@ -18,12 +19,16 @@ func (is IntersectonSorter) Swap(i, j int) {
 }
 
 type World struct {
-	Objects []*Intersectable
-	Lights  []*Light
+	Objects    []*Intersectable
+	Lights     []*Light
+	Background *Color
+	Source     *rand.Rand
 }
 
 func NewWorld() *World {
-	return &World{}
+	return &World{
+		Source: rand.New(rand.NewSource(time.Now().Unix() + rand.Int63())),
+	}
 }
 
 func NewDefaultWorld() *World {
@@ -69,41 +74,74 @@ func (w *World) Intersect(r Ray) []Intersection {
 	return xs
 }
 
-func (w *World) ShadeHit(comps Computations, remaining int) Color {
-	color := NewColor(0, 0, 0)
+// func (w *World) ShadeHit(comps Computations, remaining int) Color {
+// 	color := NewColor(0, 0, 0)
 
-	for _, light := range w.Lights {
-		inShadow := w.IsShadowed(*light, comps.OverPoint)
+// 	for _, light := range w.Lights {
+// 		inShadow := w.IsShadowed(*light, comps.OverPoint)
 
-		c2 := (*comps.Object).GetMaterial().Lighting(*comps.Object, *light, comps.OverPoint, comps.Eyev, comps.Normalv, inShadow)
-		color = color.Add(c2)
+// 		c2 := (*comps.Object).GetMaterial().Lighting(*comps.Object, *light, comps.OverPoint, comps.Eyev, comps.Normalv, inShadow)
+// 		color = color.Add(c2)
+// 	}
+
+// 	reflected := w.ReflectedColor(comps, remaining)
+// 	refracted := w.RefractedColor(comps, remaining)
+
+// 	material := (*comps.Object).GetMaterial()
+
+// 	if material.Reflectivity > 0 && material.Transparency > 0 {
+// 		reflectance := Schlick(comps)
+
+// 		return color.Add(reflected.MulFloat(reflectance)).Add(refracted.MulFloat(1 - reflectance))
+// 	}
+
+// 	return color.Add(reflected).Add(refracted)
+// }
+
+var colorBlack Color = Color{0, 0, 0}
+
+func (w *World) ColorAt(r *Ray, remaining int) Color {
+	if remaining <= 0 {
+		return colorBlack
 	}
 
-	reflected := w.ReflectedColor(comps, remaining)
-	refracted := w.RefractedColor(comps, remaining)
-
-	material := (*comps.Object).GetMaterial()
-
-	if material.Reflectivity > 0 && material.Transparency > 0 {
-		reflectance := Schlick(comps)
-
-		return color.Add(reflected.MulFloat(reflectance)).Add(refracted.MulFloat(1 - reflectance))
-	}
-
-	return color.Add(reflected).Add(refracted)
-}
-
-func (w *World) ColorAt(r Ray, remaining int) Color {
-	xs := w.Intersect(r)
+	xs := w.Intersect(*r)
 	hit, didHit := GetHit(xs)
 
 	if !didHit {
-		return NewColor(0, 0, 0)
+		if w.Background != nil {
+			return *w.Background
+		}
+
+		return colorBlack
 	}
 
-	comps := PrepareComputationsWithHit(hit, r, xs)
+	var scattered Ray
+	var attenuation Color
 
-	return w.ShadeHit(comps, remaining)
+	comps := PrepareComputationsWithHit(hit, *r, xs)
+	object := *comps.Object
+
+	emit := object.GetNewMaterial().Emit()
+
+	if !object.GetNewMaterial().Scatter(r, comps, &attenuation, &scattered, w.Source) {
+		return emit
+	}
+
+	return emit.Add(attenuation.Mul(w.ColorAt(&scattered, remaining-1)))
+
+	// unitDirection := r.Direction.Norm()
+	// t := 0.5 * (unitDirection.Y + 1.0)
+
+	// return (NewColor(1, 1, 1).MulFloat(1 - t)).Add(NewColor(0.5, 0.7, 1.0).MulFloat(t))
+
+	// if !didHit {
+	// 	return NewColor(0, 0, 0)
+	// }
+
+	// comps := PrepareComputationsWithHit(hit, r, xs)
+
+	// return w.ShadeHit(comps, remaining)
 }
 
 func (w *World) IsShadowed(l Light, p Point) bool {
@@ -123,45 +161,45 @@ func (w *World) IsShadowed(l Light, p Point) bool {
 	return false
 }
 
-func (w *World) ReflectedColor(comps Computations, remaining int) Color {
-	if remaining <= 0 {
-		return NewColor(0, 0, 0)
-	}
+// func (w *World) ReflectedColor(comps Computations, remaining int) Color {
+// 	if remaining <= 0 {
+// 		return NewColor(0, 0, 0)
+// 	}
 
-	if (*comps.Object).GetMaterial().Reflectivity == 0 {
-		return Color{0, 0, 0}
-	}
+// 	if (*comps.Object).GetMaterial().Reflectivity == 0 {
+// 		return Color{0, 0, 0}
+// 	}
 
-	reflectRay := NewRay(comps.OverPoint, comps.Reflectv)
-	color := w.ColorAt(reflectRay, remaining-1)
+// 	reflectRay := NewRay(comps.OverPoint, comps.Reflectv)
+// 	color := w.ColorAt(reflectRay, remaining-1)
 
-	return color.MulFloat((*comps.Object).GetMaterial().Reflectivity)
-}
+// 	return color.MulFloat((*comps.Object).GetMaterial().Reflectivity)
+// }
 
-func (w *World) RefractedColor(comps Computations, remaining int) Color {
-	if remaining <= 0 {
-		return NewColor(0, 0, 0)
-	}
+// func (w *World) RefractedColor(comps Computations, remaining int) Color {
+// 	if remaining <= 0 {
+// 		return NewColor(0, 0, 0)
+// 	}
 
-	if (*comps.Object).GetMaterial().Transparency == 0 {
-		return NewColor(0, 0, 0)
-	}
+// 	if (*comps.Object).GetMaterial().Transparency == 0 {
+// 		return NewColor(0, 0, 0)
+// 	}
 
-	nRatio := comps.N1 / comps.N2
-	cosI := comps.Eyev.Dot(comps.Normalv)
-	sin2T := nRatio * nRatio * (1 - cosI*cosI)
+// 	nRatio := comps.N1 / comps.N2
+// 	cosI := comps.Eyev.Dot(comps.Normalv)
+// 	sin2T := nRatio * nRatio * (1 - cosI*cosI)
 
-	if sin2T > 1 {
-		return NewColor(0, 0, 0)
-	}
+// 	if sin2T > 1 {
+// 		return NewColor(0, 0, 0)
+// 	}
 
-	cosT := math.Sqrt(1.0 - sin2T)
+// 	cosT := math.Sqrt(1.0 - sin2T)
 
-	direction := comps.Normalv.Mul(nRatio*cosI - cosT).Sub(comps.Eyev.Mul(nRatio))
+// 	direction := comps.Normalv.Mul(nRatio*cosI - cosT).Sub(comps.Eyev.Mul(nRatio))
 
-	refractRay := NewRay(comps.UnderPoint, direction)
+// 	refractRay := NewRay(comps.UnderPoint, direction)
 
-	color := w.ColorAt(refractRay, remaining-1).MulFloat((*comps.Object).GetMaterial().Transparency)
+// 	color := w.ColorAt(refractRay, remaining-1).MulFloat((*comps.Object).GetMaterial().Transparency)
 
-	return color
-}
+// 	return color
+// }

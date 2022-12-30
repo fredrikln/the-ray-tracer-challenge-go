@@ -103,3 +103,11 @@ func (a Vec) Cross(b Vec) Vec {
 func (a Vec) Reflect(n Vec) Vec {
 	return a.Sub(n.Mul(2).Mul(a.Dot(n)))
 }
+
+func (a Vec) NearZero() bool {
+	return WithinTolerance(a.X, 0, 1e-5) && WithinTolerance(a.Y, 0, 1e-5) && WithinTolerance(a.Z, 0, 1e-5)
+}
+
+func (a Vec) LengthSquared() float64 {
+	return a.X*a.X + a.Y*a.Y + a.Z*a.Z
+}

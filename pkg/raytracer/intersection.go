@@ -20,6 +20,8 @@ type Intersectable interface {
 
 	Bounds() *BoundingBox
 	Divide(int)
+
+	GetNewMaterial() Scatters
 }
 
 type Intersection struct {

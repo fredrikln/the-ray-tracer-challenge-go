@@ -5,9 +5,10 @@ import (
 )
 
 type Sphere struct {
-	Transform *Matrix
-	Material  *Material
-	Parent    Intersectable
+	Transform   *Matrix
+	Material    *Material
+	NewMaterial Scatters
+	Parent      Intersectable
 }
 
 func NewSphere() *Sphere {
@@ -49,6 +50,10 @@ func (s *Sphere) SetParent(p Intersectable) Intersectable {
 	s.Parent = p
 
 	return s
+}
+
+func (s *Sphere) GetNewMaterial() Scatters {
+	return s.NewMaterial
 }
 
 func (s *Sphere) Intersect(worldRay Ray) []Intersection {

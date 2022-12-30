@@ -1,18 +1,19 @@
 package raytracer
 
 type SmoothTriangle struct {
-	P1        Point
-	P2        Point
-	P3        Point
-	N1        Vec
-	N2        Vec
-	N3        Vec
-	E1        Vec
-	E2        Vec
-	Normal    Vec
-	Transform *Matrix
-	Material  *Material
-	Parent    Intersectable
+	P1          Point
+	P2          Point
+	P3          Point
+	N1          Vec
+	N2          Vec
+	N3          Vec
+	E1          Vec
+	E2          Vec
+	Normal      Vec
+	Transform   *Matrix
+	Material    *Material
+	Parent      Intersectable
+	NewMaterial Scatters
 }
 
 func NewSmoothTriangle(p1, p2, p3 Point, n1, n2, n3 Vec) *SmoothTriangle {
@@ -93,6 +94,10 @@ func (tr *SmoothTriangle) SetParent(p Intersectable) Intersectable {
 }
 func (tr *SmoothTriangle) GetParent() Intersectable {
 	return tr.Parent
+}
+
+func (tr *SmoothTriangle) GetNewMaterial() Scatters {
+	return tr.NewMaterial
 }
 
 func (tr *SmoothTriangle) WorldToObject(p Point) Point {

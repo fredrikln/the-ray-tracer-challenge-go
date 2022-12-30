@@ -45,6 +45,10 @@ func (ms MockShape) Divide(int) {
 	return
 }
 
+func (ms MockShape) GetNewMaterial() Scatters {
+	return NewDiffuse(NewColor(0.8, 0.8, 0.8))
+}
+
 func TestIntersection(t *testing.T) {
 	element := MockShape{}
 	time := 3.5

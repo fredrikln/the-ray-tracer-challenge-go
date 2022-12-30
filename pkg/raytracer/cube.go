@@ -3,9 +3,10 @@ package raytracer
 import "math"
 
 type Cube struct {
-	Transform *Matrix
-	Material  *Material
-	Parent    Intersectable
+	Transform   *Matrix
+	Material    *Material
+	Parent      Intersectable
+	NewMaterial Scatters
 }
 
 func NewCube() *Cube {
@@ -47,6 +48,10 @@ func (c *Cube) SetParent(p Intersectable) Intersectable {
 	c.Parent = p
 
 	return c
+}
+
+func (c *Cube) GetNewMaterial() Scatters {
+	return c.NewMaterial
 }
 
 func (c *Cube) Intersect(worldRay Ray) []Intersection {

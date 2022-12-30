@@ -16,7 +16,7 @@ type Computations struct {
 	N2         float64
 }
 
-func PrepareComputationsWithHit(i Intersection, r Ray, xs []Intersection) Computations {
+func PrepareComputationsWithHit(i Intersection, r Ray, xs []Intersection) *Computations {
 	comps := PrepareComputations(i, r)
 
 	var n1, n2 float64 = 1.0, 1.0
@@ -58,7 +58,7 @@ func PrepareComputationsWithHit(i Intersection, r Ray, xs []Intersection) Comput
 	comps.N1 = n1
 	comps.N2 = n2
 
-	return comps
+	return &comps
 }
 
 func PrepareComputations(i Intersection, r Ray) Computations {

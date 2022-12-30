@@ -5,9 +5,10 @@ import (
 )
 
 type Plane struct {
-	Transform *Matrix
-	Material  *Material
-	Parent    Intersectable
+	Transform   *Matrix
+	Material    *Material
+	Parent      Intersectable
+	NewMaterial Scatters
 }
 
 func NewPlane() *Plane {
@@ -20,7 +21,6 @@ func NewPlane() *Plane {
 func (p *Plane) GetMaterial() *Material {
 	return p.Material
 }
-
 func (p *Plane) SetMaterial(m *Material) Intersectable {
 	p.Material = m
 
@@ -30,7 +30,6 @@ func (p *Plane) SetMaterial(m *Material) Intersectable {
 func (p *Plane) GetTransform() *Matrix {
 	return p.Transform
 }
-
 func (p *Plane) SetTransform(m *Matrix) Intersectable {
 	p.Transform = m
 
@@ -44,6 +43,10 @@ func (pl *Plane) SetParent(p Intersectable) Intersectable {
 	pl.Parent = p
 
 	return pl
+}
+
+func (p *Plane) GetNewMaterial() Scatters {
+	return p.NewMaterial
 }
 
 func (p *Plane) Intersect(worldRay Ray) []Intersection {

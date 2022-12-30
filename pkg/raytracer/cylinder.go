@@ -5,12 +5,13 @@ import (
 )
 
 type Cylinder struct {
-	Transform *Matrix
-	Material  *Material
-	Minimum   float64
-	Maximum   float64
-	Closed    bool
-	Parent    Intersectable
+	Transform   *Matrix
+	Material    *Material
+	Minimum     float64
+	Maximum     float64
+	Closed      bool
+	Parent      Intersectable
+	NewMaterial Scatters
 }
 
 func NewCylinder() *Cylinder {
@@ -58,6 +59,10 @@ func (c *Cylinder) SetParent(p Intersectable) Intersectable {
 	c.Parent = p
 
 	return c
+}
+
+func (c *Cylinder) GetNewMaterial() Scatters {
+	return c.NewMaterial
 }
 
 func (cy *Cylinder) Intersect(worldRay Ray) []Intersection {

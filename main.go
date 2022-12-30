@@ -348,6 +348,108 @@ func GetTestScene7() (*r.World, *r.Matrix) {
 	return w, r.ViewTransform(r.NewPoint(0, 5, -10), r.NewPoint(0, 0, 0), r.NewVec(0, 1, 0))
 }
 
+func GetTestScene8() (*r.World, *r.Matrix) {
+	w := r.NewWorld()
+
+	g := r.NewGroup()
+
+	c := r.NewColor(0.1, 0.1, 0.1)
+	w.Background = &c
+
+	// floor := r.NewPlane()
+	// floor.NewMaterial = r.NewDiffuse(r.NewColor(0.7, 0.8, 0.7))
+	// floor.SetTransform(r.NewTranslation(0, -1, 0))
+	// g.AddChild(floor)
+
+	floor := r.NewGroup()
+
+	m := r.NewDiffuse(r.NewColor(0.7, 0.8, 0.7))
+	localSource := rand.New(rand.NewSource(1337))
+	count := 20
+	for i := 0; i < count; i++ {
+		for j := 0; j < count; j++ {
+			b := r.NewCube()
+			b.NewMaterial = m
+
+			b.SetTransform(r.NewTranslation(float64(i)*2, -1*localSource.Float64(), float64(j)*2).Translate(-float64(count), -2, -float64(count)))
+
+			floor.AddChild(b)
+		}
+	}
+
+	g.AddChild(floor)
+
+	// container := r.NewSphere()
+	// container.SetTransform(r.NewScaling(50, 50, 50))
+	// containerMaterial := r.NewDiffuse(r.NewColor(0.1, 0.1, 0.1))
+	// container.NewMaterial = containerMaterial
+
+	// g.AddChild(container)
+
+	// leftwall := r.NewPlane()
+	// leftwall.NewMaterial = r.NewDiffuse(r.NewColor(0.8, 0.7, 0.7))
+	// leftwall.SetTransform(r.NewTranslation(-15, 0, 0).RotateX(math.Pi / 2).RotateZ(math.Pi / 2))
+	// g.AddChild(leftwall)
+
+	// rightwall := r.NewPlane()
+	// rightwall.NewMaterial = &r.Diffuse{Albedo: r.NewColor(0.7, 0.7, 0.8)}
+	// rightwall.SetTransform(r.NewTranslation(15, 0, 0).RotateX(math.Pi / 2).RotateZ(math.Pi / 2))
+	// g.AddChild(rightwall)
+
+	// backwall := r.NewPlane()
+	// backwall.NewMaterial = &r.Diffuse{Albedo: r.NewColor(0.8, 0.8, 0.7)}
+	// backwall.SetTransform(r.NewTranslation(0, 0, 15).RotateX(math.Pi / 2))
+	// g.AddChild(backwall)
+
+	// behindcamerawall := r.NewPlane()
+	// behindcamerawall.NewMaterial = &r.Diffuse{Albedo: r.NewColor(0.7, 0.8, 0.8)}
+	// behindcamerawall.SetTransform(r.NewTranslation(0, 0, -15).RotateX(math.Pi / 2))
+	// g.AddChild(behindcamerawall)
+
+	light := r.NewCube()
+	light.NewMaterial = r.NewEmissive(r.NewColor(1, 1, 1))
+	// light.NewMaterial = r.NewDiffuse(r.NewColor(0.5, 0.5, 0.3))
+	light.SetTransform(r.NewTranslation(0, 10, 0).Scale(10, 0.01, 10))
+	g.AddChild(light)
+
+	// content, err := os.ReadFile("models/dragon.obj")
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// p := objparser.NewParser()
+	// p.NewMaterial = r.NewMetal(r.NewColor(0.135, 0.2225, 0.1575), 0.75)
+	// g2 := p.Parse(strings.Trim(string(content), "\n"))
+	// t1 := r.NewTranslation(0, -2.25, 0)
+	// g2.SetTransform(t1)
+
+	// g.AddChild(g2)
+
+	s1 := r.NewSphere()
+	m2 := r.NewDiffuse(r.NewColor(0.8, 0.5, 0.5))
+	s1.NewMaterial = m2
+	g.AddChild(s1)
+
+	s2 := r.NewSphere()
+	s2.SetTransform(r.NewTranslation(-2.5, 0, 0))
+	m3 := r.NewMetal(r.NewColor(0.5, 0.8, 0.8), 0.2)
+	s2.NewMaterial = m3
+	g.AddChild(s2)
+
+	s3 := r.NewSphere()
+	s3.SetTransform(r.NewTranslation(2.5, 0, 0))
+	m4 := r.NewDielectric(1.5)
+	s3.NewMaterial = m4
+	g.AddChild(s3)
+
+	g.Divide(1)
+
+	w.AddObject(g)
+
+	return w, r.ViewTransform(r.NewPoint(0, 4, -10), r.NewPoint(0, 0, 0), r.NewVec(0, 1, 0))
+}
+
 func startProfiling() func() {
 	f, err := os.Create("profile-cpu.pb.gz")
 	if err != nil {
@@ -373,31 +475,30 @@ func startProfiling() func() {
 }
 
 func main() {
-	// stop := startProfiling()
-	// defer stop()
+	stop := startProfiling()
+	defer stop()
 
 	// Set up canvas
-	w, ct := GetTestScene2()
+	_, ct := GetTestScene8()
 
-	width := 640
+	width := 1280
 	ratio := 16.0 / 9.0
 
 	camera := r.NewCamera(width, int(float64(width)/ratio), math.Pi/3).SetTransform(ct)
-	// camera.Bounces = 6
-	// camera.AntiAliasingSteps = 2
-	// camera.Antialiasing = true
+	camera.Samples = 1000
+	camera.Depth = 10
 	camera.GammaCorrection = true
 
 	timeBefore := time.Now()
 
-	canvas := camera.RenderMultiThreaded(w, runtime.NumCPU())
+	canvas := camera.RenderMultiThreaded(GetTestScene8, runtime.NumCPU())
 
 	timeAfter := time.Now()
 
 	diff := timeAfter.Sub(timeBefore)
 
 	fmt.Println("Render time:", diff)
-	filename := fmt.Sprintf("render-%d.png", time.Now().UnixMilli())
+	filename := fmt.Sprintf("render-%d-%d-%d-%s.png", time.Now().UnixMilli(), camera.Samples, camera.Depth, diff)
 	fmt.Println("Saved:", filename)
 
 	canvas.SavePNG(filename)

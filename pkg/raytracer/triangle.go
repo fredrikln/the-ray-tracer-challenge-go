@@ -1,15 +1,16 @@
 package raytracer
 
 type Triangle struct {
-	P1        Point
-	P2        Point
-	P3        Point
-	E1        Vec
-	E2        Vec
-	Normal    Vec
-	Transform *Matrix
-	Material  *Material
-	Parent    Intersectable
+	P1          Point
+	P2          Point
+	P3          Point
+	E1          Vec
+	E2          Vec
+	Normal      Vec
+	Transform   *Matrix
+	Material    *Material
+	Parent      Intersectable
+	NewMaterial Scatters
 }
 
 func NewTriangle(p1, p2, p3 Point) *Triangle {
@@ -83,6 +84,10 @@ func (tr *Triangle) SetParent(g Intersectable) Intersectable {
 }
 func (tr *Triangle) GetParent() Intersectable {
 	return tr.Parent
+}
+
+func (tr *Triangle) GetNewMaterial() Scatters {
+	return tr.NewMaterial
 }
 
 func (tr *Triangle) WorldToObject(p Point) Point {
