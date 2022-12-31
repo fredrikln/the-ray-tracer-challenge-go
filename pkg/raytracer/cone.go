@@ -5,72 +5,47 @@ import (
 )
 
 type Cone struct {
-	Transform   *Matrix
-	Material    *Material
-	Minimum     float64
-	Maximum     float64
-	Closed      bool
-	Parent      Intersectable
-	NewMaterial Scatters
+	Minimum float64
+	Maximum float64
+	Closed  bool
+	*object
 }
 
 func NewCone() *Cone {
-	return &Cone{
-		Transform: NewIdentityMatrix(),
-		Material:  NewMaterial(),
-		Minimum:   math.Inf(-1),
-		Maximum:   math.Inf(1),
-		Closed:    false,
+	o := newObject()
+
+	c := Cone{
+		Minimum: math.Inf(-1),
+		Maximum: math.Inf(1),
+		Closed:  false,
+		object:  &o,
 	}
+
+	o.parentObject = &c
+
+	return &c
 }
 
 func NewGlassCone() *Cone {
-	return &Cone{
-		Transform: NewIdentityMatrix(),
-		Material:  NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
-		Minimum:   math.Inf(-1),
-		Maximum:   math.Inf(1),
-		Closed:    false,
+	o := newObject()
+	o.SetNewMaterial(NewDielectric(1.5))
+
+	c := Cone{
+		Minimum: math.Inf(-1),
+		Maximum: math.Inf(1),
+		Closed:  false,
+		object:  &o,
 	}
+
+	o.parentObject = &c
+
+	return &c
 }
 
-func (co *Cone) GetMaterial() *Material {
-	return co.Material
-}
-func (co *Cone) SetMaterial(m *Material) Intersectable {
-	co.Material = m
-
-	return co
-}
-
-func (co *Cone) GetTransform() *Matrix {
-	return co.Transform
-}
-func (co *Cone) SetTransform(m *Matrix) Intersectable {
-	co.Transform = m
-
-	return co
-}
-
-func (co *Cone) GetParent() Intersectable {
-	return co.Parent
-}
-func (co *Cone) SetParent(p Intersectable) Intersectable {
-	co.Parent = p
-
-	return co
-}
-
-func (co *Cone) GetNewMaterial() Scatters {
-	return co.NewMaterial
-}
-
-func (co *Cone) Intersect(worldRay Ray) []Intersection {
-	localRay := worldRay.Mul(co.Transform.Inverse())
-
-	a := localRay.Direction.X*localRay.Direction.X - localRay.Direction.Y*localRay.Direction.Y + localRay.Direction.Z*localRay.Direction.Z
-	b := 2*localRay.Origin.X*localRay.Direction.X - 2*localRay.Origin.Y*localRay.Direction.Y + 2*localRay.Origin.Z*localRay.Direction.Z
-	c := localRay.Origin.X*localRay.Origin.X - localRay.Origin.Y*localRay.Origin.Y + localRay.Origin.Z*localRay.Origin.Z
+func (co *Cone) LocalIntersect(objectRay Ray) []Intersection {
+	a := objectRay.Direction.X*objectRay.Direction.X - objectRay.Direction.Y*objectRay.Direction.Y + objectRay.Direction.Z*objectRay.Direction.Z
+	b := 2*objectRay.Origin.X*objectRay.Direction.X - 2*objectRay.Origin.Y*objectRay.Direction.Y + 2*objectRay.Origin.Z*objectRay.Direction.Z
+	c := objectRay.Origin.X*objectRay.Origin.X - objectRay.Origin.Y*objectRay.Origin.Y + objectRay.Origin.Z*objectRay.Origin.Z
 
 	disc := b*b - 4*a*c
 
@@ -93,23 +68,23 @@ func (co *Cone) Intersect(worldRay Ray) []Intersection {
 		t0, t1 = t1, t0
 	}
 
-	y0 := localRay.Origin.Y + t0*localRay.Direction.Y
+	y0 := objectRay.Origin.Y + t0*objectRay.Direction.Y
 
 	if co.Minimum < y0 && y0 < co.Maximum {
 		xs = append(xs, NewIntersection(t0, co))
 	}
 
-	y1 := localRay.Origin.Y + t1*localRay.Direction.Y
+	y1 := objectRay.Origin.Y + t1*objectRay.Direction.Y
 	if co.Minimum < y1 && y1 < co.Maximum {
 		xs = append(xs, NewIntersection(t1, co))
 	}
 
-	xs = append(xs, intersectCaps2(co, localRay)...)
+	xs = append(xs, intersectCaps2(co, objectRay)...)
 
 	return xs
 }
 
-func (co *Cone) LocalNormalAt(objectPoint Point) Vec {
+func (co *Cone) LocalNormalAt(objectPoint Point, i Intersection) Vec {
 	var objectNormal Vec
 
 	dist := objectPoint.X*objectPoint.X + objectPoint.Z*objectPoint.Z
@@ -129,16 +104,6 @@ func (co *Cone) LocalNormalAt(objectPoint Point) Vec {
 	}
 
 	return objectNormal
-}
-
-func (co *Cone) NormalAt(worldPoint Point, i Intersection) Vec {
-	objectPoint := co.WorldToObject(worldPoint)
-
-	objectNormal := co.LocalNormalAt(objectPoint)
-
-	worldNormal := co.NormalToWorld(objectNormal)
-
-	return worldNormal
 }
 
 func checkCap2(r Ray, t float64, radius float64) bool {
@@ -168,37 +133,11 @@ func intersectCaps2(co *Cone, r Ray) []Intersection {
 	return xs
 }
 
-func (co *Cone) WorldToObject(p Point) Point {
-	parent := co.GetParent()
-
-	if parent != nil {
-		p = parent.WorldToObject(p)
-	}
-
-	return co.GetTransform().Inverse().MulPoint(p)
-}
-
-func (co *Cone) NormalToWorld(n Vec) Vec {
-	normal := co.GetTransform().Inverse().Transpose().MulVec(n).Norm()
-
-	parent := co.GetParent()
-
-	if parent != nil {
-		normal = parent.NormalToWorld(normal)
-	}
-
-	return normal
-}
-
 func (co *Cone) Bounds() *BoundingBox {
 	a := math.Abs(co.Minimum)
 	b := math.Abs(co.Maximum)
 
 	limit := math.Max(a, b)
 
-	return NewBoundingBoxWithValues(NewPoint(-limit, co.Minimum, -limit), NewPoint(limit, co.Maximum, limit)).Transform(co.Transform)
-}
-
-func (co *Cone) Divide(int) {
-	// does nothing
+	return NewBoundingBoxWithValues(NewPoint(-limit, co.Minimum, -limit), NewPoint(limit, co.Maximum, limit)).Transform(co.GetTransform())
 }

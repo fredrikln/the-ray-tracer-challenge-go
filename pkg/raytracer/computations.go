@@ -1,6 +1,8 @@
 package raytracer
 
-import "math"
+import (
+	"math"
+)
 
 type Computations struct {
 	Time       float64
@@ -19,44 +21,44 @@ type Computations struct {
 func PrepareComputationsWithHit(i Intersection, r Ray, xs []Intersection) *Computations {
 	comps := PrepareComputations(i, r)
 
-	var n1, n2 float64 = 1.0, 1.0
+	// var n1, n2 float64 = 1.0, 1.0
 
-	containers := make([]*Intersectable, 0)
-	for _, item := range xs {
-		if i == item {
-			if len(containers) == 0 {
-				n1 = 1.0
-			} else {
-				n1 = (*containers[len(containers)-1]).GetMaterial().RefractiveIndex
-			}
-		}
+	// containers := make([]*Intersectable, 0)
+	// for _, item := range xs {
+	// 	if i == item {
+	// 		if len(containers) == 0 {
+	// 			n1 = 1.0
+	// 		} else {
+	// 			n1 = (*containers[len(containers)-1]).GetMaterial().RefractiveIndex
+	// 		}
+	// 	}
 
-		var itemIndex int = -1
-		for index := 0; index < len(containers); index++ {
-			if *containers[index] == *item.Object {
-				itemIndex = index
-			}
-		}
+	// 	var itemIndex int = -1
+	// 	for index := 0; index < len(containers); index++ {
+	// 		if *containers[index] == *item.Object {
+	// 			itemIndex = index
+	// 		}
+	// 	}
 
-		if itemIndex != -1 {
-			containers = append(containers[:itemIndex], containers[itemIndex+1:]...)
-		} else {
-			containers = append(containers, item.Object)
-		}
-		if i == item {
-			if len(containers) == 0 {
-				n2 = 1.0
-			} else {
-				n2 = (*containers[len(containers)-1]).GetMaterial().RefractiveIndex
-			}
+	// 	if itemIndex != -1 {
+	// 		containers = append(containers[:itemIndex], containers[itemIndex+1:]...)
+	// 	} else {
+	// 		containers = append(containers, item.Object)
+	// 	}
+	// 	if i == item {
+	// 		if len(containers) == 0 {
+	// 			n2 = 1.0
+	// 		} else {
+	// 			n2 = (*containers[len(containers)-1]).GetMaterial().RefractiveIndex
+	// 		}
 
-			break
-		}
+	// 		break
+	// 	}
 
-	}
+	// }
 
-	comps.N1 = n1
-	comps.N2 = n2
+	// comps.N1 = n1
+	// comps.N2 = n2
 
 	return &comps
 }
@@ -65,6 +67,7 @@ func PrepareComputations(i Intersection, r Ray) Computations {
 	p := r.Position(i.Time)
 
 	eyev := r.Direction.Neg()
+
 	normalv := (*i.Object).NormalAt(p, i).Norm()
 	inside := normalv.Dot(eyev) < 0
 

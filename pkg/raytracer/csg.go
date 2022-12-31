@@ -39,17 +39,21 @@ func NewCSG(operation Operation, left Intersectable, right Intersectable) *CSG {
 }
 
 func (csg *CSG) Intersect(worldRay Ray) []Intersection {
-	if !csg.Bounds().Intersect(worldRay) {
+	objectRay := worldRay.Mul(csg.Transform.Inverse())
+
+	return csg.Intersect(objectRay)
+}
+
+func (csg *CSG) LocalIntersect(objectRay Ray) []Intersection {
+	if !csg.Bounds().Intersect(objectRay) {
 		return []Intersection{}
 	}
 
 	var result []Intersection
 
-	localRay := worldRay.Mul(csg.Transform.Inverse())
-
-	leftxs := csg.Left.Intersect(localRay)
+	leftxs := csg.Left.Intersect(objectRay)
 	result = append(result, leftxs...)
-	rightxs := csg.Right.Intersect(localRay)
+	rightxs := csg.Right.Intersect(objectRay)
 	result = append(result, rightxs...)
 
 	sort.Sort(IntersectonSorter(result))
@@ -59,6 +63,9 @@ func (csg *CSG) Intersect(worldRay Ray) []Intersection {
 	return result
 }
 func (csg *CSG) NormalAt(p Point, i Intersection) Vec {
+	panic("should not happen")
+}
+func (csg *CSG) LocalNormalAt(p Point, i Intersection) Vec {
 	panic("should not happen")
 }
 

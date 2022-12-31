@@ -5,72 +5,47 @@ import (
 )
 
 type Cylinder struct {
-	Transform   *Matrix
-	Material    *Material
-	Minimum     float64
-	Maximum     float64
-	Closed      bool
-	Parent      Intersectable
-	NewMaterial Scatters
+	Minimum float64
+	Maximum float64
+	Closed  bool
+	*object
 }
 
 func NewCylinder() *Cylinder {
-	return &Cylinder{
-		Transform: NewIdentityMatrix(),
-		Material:  NewMaterial(),
-		Minimum:   math.Inf(-1),
-		Maximum:   math.Inf(1),
-		Closed:    false,
+	o := newObject()
+
+	c := Cylinder{
+		Minimum: math.Inf(-1),
+		Maximum: math.Inf(1),
+		Closed:  false,
+		object:  &o,
 	}
+
+	o.parentObject = &c
+
+	return &c
 }
 
 func NewGlassCylinder() *Cylinder {
-	return &Cylinder{
-		Transform: NewIdentityMatrix(),
-		Material:  NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
-		Minimum:   math.Inf(-1),
-		Maximum:   math.Inf(1),
-		Closed:    false,
+	o := newObject()
+	o.SetNewMaterial(NewDielectric(1.5))
+
+	c := Cylinder{
+		Minimum: math.Inf(-1),
+		Maximum: math.Inf(1),
+		Closed:  false,
+		object:  &o,
 	}
+
+	o.parentObject = &c
+
+	return &c
 }
 
-func (c *Cylinder) GetMaterial() *Material {
-	return c.Material
-}
-func (c *Cylinder) SetMaterial(m *Material) Intersectable {
-	c.Material = m
-
-	return c
-}
-
-func (c *Cylinder) GetTransform() *Matrix {
-	return c.Transform
-}
-func (c *Cylinder) SetTransform(m *Matrix) Intersectable {
-	c.Transform = m
-
-	return c
-}
-
-func (c *Cylinder) GetParent() Intersectable {
-	return c.Parent
-}
-func (c *Cylinder) SetParent(p Intersectable) Intersectable {
-	c.Parent = p
-
-	return c
-}
-
-func (c *Cylinder) GetNewMaterial() Scatters {
-	return c.NewMaterial
-}
-
-func (cy *Cylinder) Intersect(worldRay Ray) []Intersection {
-	localRay := worldRay.Mul(cy.Transform.Inverse())
-
-	a := localRay.Direction.X*localRay.Direction.X + localRay.Direction.Z*localRay.Direction.Z
-	b := 2*localRay.Origin.X*localRay.Direction.X + 2*localRay.Origin.Z*localRay.Direction.Z
-	c := localRay.Origin.X*localRay.Origin.X + localRay.Origin.Z*localRay.Origin.Z - 1
+func (cy *Cylinder) LocalIntersect(objectRay Ray) []Intersection {
+	a := objectRay.Direction.X*objectRay.Direction.X + objectRay.Direction.Z*objectRay.Direction.Z
+	b := 2*objectRay.Origin.X*objectRay.Direction.X + 2*objectRay.Origin.Z*objectRay.Direction.Z
+	c := objectRay.Origin.X*objectRay.Origin.X + objectRay.Origin.Z*objectRay.Origin.Z - 1
 
 	disc := b*b - 4*a*c
 
@@ -87,24 +62,22 @@ func (cy *Cylinder) Intersect(worldRay Ray) []Intersection {
 		t0, t1 = t1, t0
 	}
 
-	y0 := localRay.Origin.Y + t0*localRay.Direction.Y
+	y0 := objectRay.Origin.Y + t0*objectRay.Direction.Y
 	if cy.Minimum < y0 && y0 < cy.Maximum {
 		xs = append(xs, NewIntersection(t0, cy))
 	}
 
-	y1 := localRay.Origin.Y + t1*localRay.Direction.Y
+	y1 := objectRay.Origin.Y + t1*objectRay.Direction.Y
 	if cy.Minimum < y1 && y1 < cy.Maximum {
 		xs = append(xs, NewIntersection(t1, cy))
 	}
 
-	xs = append(xs, intersectCaps(cy, localRay)...)
+	xs = append(xs, intersectCaps(cy, objectRay)...)
 
 	return xs
 }
 
-func (c *Cylinder) NormalAt(worldPoint Point, i Intersection) Vec {
-	objectPoint := c.WorldToObject(worldPoint)
-
+func (c *Cylinder) LocalNormalAt(objectPoint Point, i Intersection) Vec {
 	var objectNormal Vec
 
 	dist := objectPoint.X*objectPoint.X + objectPoint.Z*objectPoint.Z
@@ -117,9 +90,7 @@ func (c *Cylinder) NormalAt(worldPoint Point, i Intersection) Vec {
 		objectNormal = NewVec(objectPoint.X, 0, objectPoint.Z)
 	}
 
-	worldNormal := c.NormalToWorld(objectNormal)
-
-	return worldNormal.Norm()
+	return objectNormal.Norm()
 }
 
 func checkCap(r Ray, t float64) bool {
@@ -149,35 +120,9 @@ func intersectCaps(cy *Cylinder, r Ray) []Intersection {
 	return xs
 }
 
-func (cy *Cylinder) WorldToObject(p Point) Point {
-	parent := cy.GetParent()
-
-	if parent != nil {
-		p = parent.WorldToObject(p)
-	}
-
-	return cy.GetTransform().Inverse().MulPoint(p)
-}
-
-func (cy *Cylinder) NormalToWorld(n Vec) Vec {
-	normal := cy.GetTransform().Inverse().Transpose().MulVec(n).Norm()
-
-	parent := cy.GetParent()
-
-	if parent != nil {
-		normal = parent.NormalToWorld(normal)
-	}
-
-	return normal
-}
-
 func (cy *Cylinder) Bounds() *BoundingBox {
 	minY := cy.Minimum
 	maxY := cy.Maximum
 
-	return NewBoundingBoxWithValues(NewPoint(-1, minY, -1), NewPoint(1, maxY, 1)).Transform(cy.Transform)
-}
-
-func (cy *Cylinder) Divide(int) {
-	// does nothing
+	return NewBoundingBoxWithValues(NewPoint(-1, minY, -1), NewPoint(1, maxY, 1)).Transform(cy.GetTransform())
 }

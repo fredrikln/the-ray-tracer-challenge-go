@@ -5,68 +5,46 @@ import (
 )
 
 type Plane struct {
-	Transform   *Matrix
-	Material    *Material
-	Parent      Intersectable
-	NewMaterial Scatters
+	*object
 }
 
 func NewPlane() *Plane {
-	return &Plane{
-		Transform: NewIdentityMatrix(),
-		Material:  NewMaterial(),
+	o := newObject()
+
+	p := Plane{
+		object: &o,
 	}
+
+	o.parentObject = &p
+
+	return &p
 }
 
-func (p *Plane) GetMaterial() *Material {
-	return p.Material
-}
-func (p *Plane) SetMaterial(m *Material) Intersectable {
-	p.Material = m
+func NewGlassPlane() *Plane {
+	o := newObject()
+	o.SetNewMaterial(NewDielectric(1.5))
 
-	return p
-}
+	p := Plane{
+		object: &o,
+	}
 
-func (p *Plane) GetTransform() *Matrix {
-	return p.Transform
-}
-func (p *Plane) SetTransform(m *Matrix) Intersectable {
-	p.Transform = m
+	o.parentObject = &p
 
-	return p
+	return &p
 }
 
-func (p *Plane) GetParent() Intersectable {
-	return p.Parent
-}
-func (pl *Plane) SetParent(p Intersectable) Intersectable {
-	pl.Parent = p
-
-	return pl
-}
-
-func (p *Plane) GetNewMaterial() Scatters {
-	return p.NewMaterial
-}
-
-func (p *Plane) Intersect(worldRay Ray) []Intersection {
-	localRay := worldRay.Mul(p.Transform.Inverse())
-
-	if WithinTolerance(0, math.Abs(localRay.Direction.Y), 1e-5) {
+func (p *Plane) LocalIntersect(objectRay Ray) []Intersection {
+	if WithinTolerance(0, math.Abs(objectRay.Direction.Y), 1e-5) {
 		return []Intersection{}
 	}
 
-	t := (-localRay.Origin.Y) / localRay.Direction.Y
+	t := (-objectRay.Origin.Y) / objectRay.Direction.Y
 
 	return []Intersection{NewIntersection(t, p)}
 }
 
-func (p *Plane) NormalAt(worldPoint Point, i Intersection) Vec {
-	// objectPoint := p.WorldToObject(worldPoint)
-	objectNormal := NewVec(0, 1, 0)
-	worldNormal := p.NormalToWorld(objectNormal)
-
-	return worldNormal
+func (p *Plane) LocalNormalAt(Point, Intersection) Vec {
+	return NewVec(0, 1, 0)
 }
 
 func (pl *Plane) WorldToObject(p Point) Point {
@@ -92,9 +70,5 @@ func (pl *Plane) NormalToWorld(n Vec) Vec {
 }
 
 func (pl *Plane) Bounds() *BoundingBox {
-	return NewBoundingBoxWithValues(NewPoint(math.Inf(-1), 0, math.Inf(-1)), NewPoint(math.Inf(1), 0, math.Inf(1))).Transform(pl.Transform)
-}
-
-func (pl *Plane) Divide(int) {
-	// does nothing
+	return NewBoundingBoxWithValues(NewPoint(math.Inf(-1), 0, math.Inf(-1)), NewPoint(math.Inf(1), 0, math.Inf(1))).Transform(pl.GetTransform())
 }

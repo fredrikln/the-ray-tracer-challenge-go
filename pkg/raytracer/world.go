@@ -33,18 +33,17 @@ func NewWorld() *World {
 
 func NewDefaultWorld() *World {
 	s1 := NewSphere()
-	m1 := NewMaterial().SetColor(NewColor(0.8, 1.0, 0.6)).SetDiffuse(0.7).SetSpecular(0.2)
-	s1.SetMaterial(m1)
+	m1 := NewDiffuse(NewColor(0.8, 1.0, 0.6))
+	s1.SetNewMaterial(m1)
 
 	s2 := NewSphere().SetTransform(NewScaling(0.5, 0.5, 0.5))
-
-	l1 := NewPointLight(NewPoint(-10, 10, -10), NewColor(1, 1, 1))
 
 	w := NewWorld()
 	w.AddObject(s1)
 	w.AddObject(s2)
 
-	w.AddLight(l1)
+	c := NewColor(0.1, 0.1, 0.1)
+	w.Background = &c
 
 	return w
 }

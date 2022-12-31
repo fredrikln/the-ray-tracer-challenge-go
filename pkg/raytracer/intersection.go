@@ -4,10 +4,9 @@ import "sort"
 
 type Intersectable interface {
 	Intersect(Ray) []Intersection
+	LocalIntersect(Ray) []Intersection
 	NormalAt(Point, Intersection) Vec
-
-	SetMaterial(*Material) Intersectable
-	GetMaterial() *Material
+	LocalNormalAt(Point, Intersection) Vec
 
 	SetTransform(*Matrix) Intersectable
 	GetTransform() *Matrix

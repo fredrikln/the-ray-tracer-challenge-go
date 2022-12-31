@@ -1,65 +1,42 @@
 package raytracer
 
-import "math"
+import (
+	"math"
+)
 
 type Cube struct {
-	Transform   *Matrix
-	Material    *Material
-	Parent      Intersectable
-	NewMaterial Scatters
+	*object
 }
 
 func NewCube() *Cube {
-	return &Cube{
-		Transform: NewIdentityMatrix(),
-		Material:  NewMaterial(),
+	o := newObject()
+
+	c := Cube{
+		object: &o,
 	}
+
+	o.parentObject = &c
+
+	return &c
 }
 
 func NewGlassCube() *Cube {
-	return &Cube{
-		Transform: NewIdentityMatrix(),
-		Material:  NewMaterial().SetTransparency(1.0).SetRefractiveIndex(1.5),
+	o := newObject()
+	o.SetNewMaterial(NewDielectric(1.5))
+
+	c := Cube{
+		object: &o,
 	}
+
+	o.parentObject = &c
+
+	return &c
 }
 
-func (c *Cube) GetMaterial() *Material {
-	return c.Material
-}
-func (c *Cube) SetMaterial(m *Material) Intersectable {
-	c.Material = m
-
-	return c
-}
-
-func (c *Cube) GetTransform() *Matrix {
-	return c.Transform
-}
-func (c *Cube) SetTransform(m *Matrix) Intersectable {
-	c.Transform = m
-
-	return c
-}
-
-func (c *Cube) GetParent() Intersectable {
-	return c.Parent
-}
-func (c *Cube) SetParent(p Intersectable) Intersectable {
-	c.Parent = p
-
-	return c
-}
-
-func (c *Cube) GetNewMaterial() Scatters {
-	return c.NewMaterial
-}
-
-func (c *Cube) Intersect(worldRay Ray) []Intersection {
-	localRay := worldRay.Mul(c.Transform.Inverse())
-
-	xtmin, xtmax := checkAxis(localRay.Origin.X, localRay.Direction.X)
-	ytmin, ytmax := checkAxis(localRay.Origin.Y, localRay.Direction.Y)
-	ztmin, ztmax := checkAxis(localRay.Origin.Z, localRay.Direction.Z)
+func (c *Cube) LocalIntersect(objectRay Ray) []Intersection {
+	xtmin, xtmax := checkAxis(objectRay.Origin.X, objectRay.Direction.X)
+	ytmin, ytmax := checkAxis(objectRay.Origin.Y, objectRay.Direction.Y)
+	ztmin, ztmax := checkAxis(objectRay.Origin.Z, objectRay.Direction.Z)
 
 	tmin := math.Max(math.Max(xtmin, ytmin), ztmin)
 	tmax := math.Min(math.Min(xtmax, ytmax), ztmax)
@@ -74,9 +51,7 @@ func (c *Cube) Intersect(worldRay Ray) []Intersection {
 	}
 }
 
-func (c *Cube) NormalAt(worldPoint Point, i Intersection) Vec {
-	objectPoint := c.WorldToObject(worldPoint)
-
+func (c *Cube) LocalNormalAt(objectPoint Point, i Intersection) Vec {
 	maxC := math.Max(math.Max(math.Abs(objectPoint.X), math.Abs(objectPoint.Y)), math.Abs(objectPoint.Z))
 
 	var objectNormal Vec
@@ -89,9 +64,7 @@ func (c *Cube) NormalAt(worldPoint Point, i Intersection) Vec {
 		objectNormal = NewVec(0, 0, objectPoint.Z)
 	}
 
-	worldNormal := c.NormalToWorld(objectNormal)
-
-	return worldNormal.Norm()
+	return objectNormal
 }
 
 func checkAxis(origin, direction float64) (float64, float64) {
@@ -138,9 +111,5 @@ func (cu *Cube) NormalToWorld(n Vec) Vec {
 }
 
 func (cu *Cube) Bounds() *BoundingBox {
-	return NewBoundingBoxWithValues(NewPoint(-1, -1, -1), NewPoint(1, 1, 1)).Transform(cu.Transform)
-}
-
-func (cu *Cube) Divide(int) {
-	// does nothing
+	return NewBoundingBoxWithValues(NewPoint(-1, -1, -1), NewPoint(1, 1, 1)).Transform(cu.GetTransform())
 }

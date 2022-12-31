@@ -1,38 +1,40 @@
 package raytracer
 
 type SmoothTriangle struct {
-	P1          Point
-	P2          Point
-	P3          Point
-	N1          Vec
-	N2          Vec
-	N3          Vec
-	E1          Vec
-	E2          Vec
-	Normal      Vec
-	Transform   *Matrix
-	Material    *Material
-	Parent      Intersectable
-	NewMaterial Scatters
+	P1     Point
+	P2     Point
+	P3     Point
+	N1     Vec
+	N2     Vec
+	N3     Vec
+	E1     Vec
+	E2     Vec
+	Normal Vec
+	*object
 }
 
 func NewSmoothTriangle(p1, p2, p3 Point, n1, n2, n3 Vec) *SmoothTriangle {
-	return &SmoothTriangle{
-		P1:        p1,
-		P2:        p2,
-		P3:        p3,
-		N1:        n1,
-		N2:        n2,
-		N3:        n3,
-		E1:        p2.Sub(p1),
-		E2:        p3.Sub(p1),
-		Normal:    (p3.Sub(p1).Cross(p2.Sub(p1))).Norm(),
-		Transform: NewIdentityMatrix(),
-		Material:  NewMaterial(),
+	o := newObject()
+
+	st := SmoothTriangle{
+		P1:     p1,
+		P2:     p2,
+		P3:     p3,
+		N1:     n1,
+		N2:     n2,
+		N3:     n3,
+		E1:     p2.Sub(p1),
+		E2:     p3.Sub(p1),
+		Normal: (p3.Sub(p1).Cross(p2.Sub(p1))).Norm(),
+		object: &o,
 	}
+
+	o.parentObject = &st
+
+	return &st
 }
 
-func (tr *SmoothTriangle) Intersect(r Ray) []Intersection {
+func (tr *SmoothTriangle) LocalIntersect(r Ray) []Intersection {
 	dirCrossE2 := r.Direction.Cross(tr.E2)
 	det := tr.E1.Dot(dirCrossE2)
 
@@ -61,65 +63,12 @@ func (tr *SmoothTriangle) Intersect(r Ray) []Intersection {
 
 	return []Intersection{NewIntersectionWithUV(t, tr, u, v)}
 }
-func (tr *SmoothTriangle) NormalAt(p Point, hit Intersection) Vec {
+func (tr *SmoothTriangle) LocalNormalAt(p Point, hit Intersection) Vec {
 	a := tr.N2.Mul(*hit.U)
 	b := tr.N3.Mul(*hit.V)
 	c := tr.N1.Mul(1 - *hit.U - *hit.V)
 
 	return a.Add(b).Add(c).Norm()
-}
-
-func (tr *SmoothTriangle) SetMaterial(m *Material) Intersectable {
-	tr.Material = m
-
-	return tr
-}
-func (tr *SmoothTriangle) GetMaterial() *Material {
-	return tr.Material
-}
-
-func (tr *SmoothTriangle) SetTransform(t *Matrix) Intersectable {
-	tr.Transform = t
-
-	return tr
-}
-func (tr *SmoothTriangle) GetTransform() *Matrix {
-	return tr.Transform
-}
-
-func (tr *SmoothTriangle) SetParent(p Intersectable) Intersectable {
-	tr.Parent = p
-
-	return tr
-}
-func (tr *SmoothTriangle) GetParent() Intersectable {
-	return tr.Parent
-}
-
-func (tr *SmoothTriangle) GetNewMaterial() Scatters {
-	return tr.NewMaterial
-}
-
-func (tr *SmoothTriangle) WorldToObject(p Point) Point {
-	parent := tr.GetParent()
-
-	if parent != nil {
-		p = parent.WorldToObject(p)
-	}
-
-	return tr.GetTransform().Inverse().MulPoint(p)
-}
-
-func (tr *SmoothTriangle) NormalToWorld(n Vec) Vec {
-	normal := tr.GetTransform().Inverse().Transpose().MulVec(n).Norm()
-
-	parent := tr.GetParent()
-
-	if parent != nil {
-		normal = parent.NormalToWorld(normal)
-	}
-
-	return normal
 }
 
 func (st *SmoothTriangle) Bounds() *BoundingBox {
@@ -129,9 +78,5 @@ func (st *SmoothTriangle) Bounds() *BoundingBox {
 	bb.Add(st.P2)
 	bb.Add(st.P3)
 
-	return bb.Transform(st.Transform)
-}
-
-func (st *SmoothTriangle) Divide(int) {
-	// does nothing
+	return bb.Transform(st.GetTransform())
 }

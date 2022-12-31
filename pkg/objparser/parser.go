@@ -13,8 +13,7 @@ type Objparser struct {
 	normals         []r.Vec
 	numIgnoredLines int
 	defaultGroup    *r.Group
-	material        *r.Material
-	NewMaterial     r.Scatters
+	newMaterial     r.Scatters
 }
 
 func NewParser() *Objparser {
@@ -26,8 +25,8 @@ func NewParser() *Objparser {
 	}
 }
 
-func (p *Objparser) SetMaterial(m *r.Material) *Objparser {
-	p.material = m
+func (p *Objparser) SetNewMaterial(m r.Scatters) *Objparser {
+	p.newMaterial = m
 
 	return p
 }
@@ -61,16 +60,12 @@ func (p *Objparser) Parse(input string) *r.Group {
 			triangles := createTriangles(vertices, normals)
 
 			for _, triangle := range triangles {
-				if p.material != nil {
-					triangle.SetMaterial(p.material)
-				}
-
-				if p.NewMaterial != nil {
+				if p.newMaterial != nil {
 					switch triangle.(type) {
 					case (*r.Triangle):
-						triangle.(*r.Triangle).NewMaterial = p.NewMaterial
+						triangle.(*r.Triangle).SetNewMaterial(p.newMaterial)
 					case (*r.SmoothTriangle):
-						triangle.(*r.SmoothTriangle).NewMaterial = p.NewMaterial
+						triangle.(*r.SmoothTriangle).SetNewMaterial(p.newMaterial)
 					}
 				}
 

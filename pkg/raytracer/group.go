@@ -56,7 +56,13 @@ func (g *Group) GetNewMaterial() Scatters {
 }
 
 func (g *Group) Intersect(worldRay Ray) []Intersection {
-	if !g.Bounds().Intersect(worldRay) {
+	objectRay := worldRay.Mul(g.Transform.Inverse())
+
+	return g.LocalIntersect(objectRay)
+}
+
+func (g *Group) LocalIntersect(objectRay Ray) []Intersection {
+	if !g.Bounds().Intersect(objectRay) {
 		return []Intersection{}
 	}
 
@@ -64,12 +70,10 @@ func (g *Group) Intersect(worldRay Ray) []Intersection {
 		return []Intersection{}
 	}
 
-	localRay := worldRay.Mul(g.Transform.Inverse())
-
 	xs := make([]Intersection, 0)
 
 	for _, childObject := range g.Items {
-		xs = append(xs, childObject.Intersect(localRay)...)
+		xs = append(xs, childObject.Intersect(objectRay)...)
 	}
 
 	sort.Sort(IntersectonSorter(xs))
@@ -77,6 +81,9 @@ func (g *Group) Intersect(worldRay Ray) []Intersection {
 	return xs
 }
 func (g *Group) NormalAt(Point, Intersection) Vec {
+	panic("Should never happen")
+}
+func (g *Group) LocalNormalAt(Point, Intersection) Vec {
 	panic("Should never happen")
 }
 
