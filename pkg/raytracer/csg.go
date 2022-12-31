@@ -69,13 +69,6 @@ func (csg *CSG) LocalNormalAt(p Point, i Intersection) Vec {
 	panic("should not happen")
 }
 
-func (csg *CSG) SetMaterial(*Material) Intersectable {
-	panic("SetMaterial should not happen")
-}
-func (csg *CSG) GetMaterial() *Material {
-	panic("GetMaterial should not happen")
-}
-
 func (csg *CSG) SetTransform(t *Matrix) Intersectable {
 	csg.Transform = t
 

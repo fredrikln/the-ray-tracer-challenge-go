@@ -25,13 +25,6 @@ func (g *Group) AddChild(c Intersectable) *Group {
 	return g
 }
 
-func (g *Group) SetMaterial(*Material) Intersectable {
-	panic("Should never happen")
-}
-func (g *Group) GetMaterial() *Material {
-	panic("Should never happen")
-}
-
 func (g *Group) SetTransform(m *Matrix) Intersectable {
 	g.Transform = m
 
